@@ -1,0 +1,23 @@
+{
+  "name": "hexaforge",
+  "version": "1.0.0",
+  "description": "This folder contains the unminified version of the game's frontend, extracted from `dist/app.js`.",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "json-server -p3001 --watch db.json",
+    "build:ui": "rimraf ..\\IncBackEnd\\dist && cd ../HexaForge && npm run build && xcopy dist ..\\IncBackEnd\\dist /E /I",
+
+    "deploy:full": "npm run build:ui && git add ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DavidJamesPugh/HexaForge.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DavidJamesPugh/HexaForge/issues"
+  },
+  "homepage": "https://github.com/DavidJamesPugh/HexaForge#readme"
+}
