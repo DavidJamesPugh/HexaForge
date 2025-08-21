@@ -6,6 +6,11 @@
     <meta charset="utf-8"/>
     <meta name="format-detection" content="telephone=no"/>
     <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-width"/>
+    
+    <!-- Disable caching for development -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
 
     <link href="main.css" type="text/css" rel="stylesheet"/>
 
@@ -146,8 +151,9 @@
     }, false);
 </script>
 
-<script src="httpMigrate.js" type="text/javascript"></script>
-<script type="text/javascript">httpMigration().inIndexFile()</script>
+<!-- Commented out for local development - uncomment for production -->
+<!-- <script src="httpMigrate.js" type="text/javascript"></script> -->
+<!-- <script type="text/javascript">httpMigration().inIndexFile()</script> -->
 
 </body>
 </html>
