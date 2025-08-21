@@ -1,0 +1,105 @@
+/**
+ * Main application controller module
+ * This is the primary entry point for the game application
+ */
+
+define("Main", [
+    "config/Meta",
+    "config/config", 
+    "config/event/GlobalUiEvent",
+    "config/event/GameUiEvent",
+    "config/event/GameEvent",
+    "config/event/FactoryEvent",
+    "config/event/ApiEvent",
+    "play/Play",
+    "base/ImageMap",
+    "ui/MainUi"
+], function (
+    metaConfig, 
+    gameConfig, 
+    globalUiEvent, 
+    gameUiEvent, 
+    gameEvent, 
+    factoryEvent, 
+    apiEvent, 
+    Play, 
+    ImageMap, 
+    MainUi
+) {
+    // Set global event constants for easy access
+    GameEvent = gameEvent;
+    FactoryEvent = factoryEvent;
+    GameUiEvent = gameUiEvent;
+    GlobalUiEvent = globalUiEvent;
+    ApiEvent = apiEvent;
+
+    /**
+     * Main application class
+     */
+    var Main = function() {};
+
+    /**
+     * Initialize the main application
+     * @param {boolean} isDevMode - Whether to run in development mode
+     * @param {Function} callback - Callback function to execute after initialization
+     */
+    Main.prototype.init = function(isDevMode, callback) {
+        // Create and load the image map
+        this.imageMap = this._createImageMap();
+        
+        this.imageMap.loadAll(function() {
+            // Create the play instance with user hash and API
+            this.play = new Play(this.userHash, this.api);
+            
+            // Initialize the play instance
+            this.play.init(isDevMode, function() {
+                // Check if in development mode
+                this.play.isDevMode();
+                
+                // Create and initialize the main UI
+                this.mainUi = new MainUi(this.play, this.imageMap);
+                
+                // Display the main UI in the game area
+                this.mainUi.display($("#gameArea"));
+                
+                // Execute callback if provided
+                if (callback) {
+                    callback();
+                }
+            }.bind(this));
+        }.bind(this));
+    };
+
+    /**
+     * Create the image map for the game
+     * @returns {ImageMap} The configured image map instance
+     */
+    Main.prototype._createImageMap = function() {
+        return new ImageMap(gameConfig.imageMap.path).addImages({
+            yellowSelection: "img/mouse/yellow.png",
+            greenSelection: "img/mouse/green.png", 
+            redSelection: "img/mouse/red.png",
+            blueSelection: "img/mouse/selected.png",
+            cantPlace: "img/mouse/cantPlace.png",
+            terrains: "img/terrains.png",
+            components: "img/components.png",
+            componentIcons: "img/componentIcons.png",
+            transportLine: "img/transportLine.png",
+            resources: "img/resources.png"
+        });
+    };
+
+    /**
+     * Clean up resources when destroying the application
+     */
+    Main.prototype.destroy = function() {
+        if (this.mainUi) {
+            this.mainUi.destroy();
+        }
+        if (this.play) {
+            this.play.destroy();
+        }
+    };
+
+    return Main;
+});
