@@ -67,6 +67,18 @@ define("ui/factory/MapUi", [
         this.canvas.style.cursor = 'grab';
         
         this.ctx = this.canvas.getContext('2d');
+
+        // Create an overlay canvas for selection/highlight (prevents ghosting)
+        this.overlayCanvas = document.createElement('canvas');
+        this.overlayCanvas.width = width;
+        this.overlayCanvas.height = height;
+        this.overlayCanvas.className = 'map-overlay-canvas';
+        this.overlayCanvas.style.position = 'absolute';
+        this.overlayCanvas.style.left = '0px';
+        this.overlayCanvas.style.top = '0px';
+        this.overlayCanvas.style.zIndex = '5';
+        this.overlayCanvas.style.pointerEvents = 'none';
+        this.overlayCtx = this.overlayCanvas.getContext('2d', { alpha: true });
     };
     
     /**
@@ -252,6 +264,9 @@ define("ui/factory/MapUi", [
      */
     MapUi.prototype._updateTransform = function() {
         this.canvas.style.transform = 'translate(' + this.offsetX + 'px, ' + this.offsetY + 'px)';
+        if (this.overlayCanvas) {
+            this.overlayCanvas.style.transform = 'translate(' + this.offsetX + 'px, ' + this.offsetY + 'px)';
+        }
     };
     
     /**
@@ -286,8 +301,8 @@ define("ui/factory/MapUi", [
         var terrainMapping = { 
             undefined: { y: 0, tiles: 6 }, 
             grass: { y: 0, tiles: 6 }, 
-            floor: { y: 1, tiles: 1 }, 
-            wall: { y: 1, tiles: 1 }, 
+            floor: { y: 1, tiles: 6 }, 
+            wall: { y: 1, tiles: 6 }, 
             road: { y: 0, tiles: 6 }  // Note: roads use y:0 but get overridden by drawRoad
         };
         
@@ -462,9 +477,17 @@ define("ui/factory/MapUi", [
      */
     MapUi.prototype.display = function(container) {
         if (this.canvas) {
-            container.empty().append(this.canvas);
+            container.empty();
+            // Ensure container is positioned relative so overlay can be absolutely positioned
+            if (container.length && getComputedStyle(container.get(0)).position === 'static') {
+                container.get(0).style.position = 'relative';
+            }
+            container.append(this.canvas);
+            if (this.overlayCanvas) {
+                container.append(this.overlayCanvas);
+            }
             // Cache viewport element for clamping (prefer the provided container)
-           // this.viewportEl = container && container.length ? container.get(0) : this.canvas.parentElement;
+            //this.viewportEl = container && container.length ? container.get(0) : this.canvas.parentElement;
             
             // Reset map to proper starting position
             this._resetToBoundaries();
@@ -491,8 +514,8 @@ define("ui/factory/MapUi", [
         // Notify other components
         this.factory.getEventManager().invokeEvent(FactoryEvent.COMPONENT_META_SELECTED, "noComponent");
         
-        // Redraw to hide buildable areas
-        this._renderMap(false); // Allow terrain refresh when clearing selection
+        // Redraw dynamic elements only (preserve terrain variants)
+        this._renderDynamicElements();
     };
     
     /**
@@ -523,8 +546,8 @@ define("ui/factory/MapUi", [
                     self._clearHoverPosition();
                 }
                 
-                // Redraw to show/hide buildable areas
-                self._renderMap(false); // Allow terrain refresh when changing selection
+                // Redraw dynamic layer only to avoid terrain re-randomization
+                self._renderDynamicElements();
             }
         );
         
@@ -570,6 +593,8 @@ define("ui/factory/MapUi", [
         // Clear references
         this.canvas = null;
         this.ctx = null;
+        this.overlayCanvas = null;
+        this.overlayCtx = null;
         this.terrainsImage = null;
         this.componentsImage = null;
         this.transportLineImage = null;
@@ -864,9 +889,9 @@ define("ui/factory/MapUi", [
         var mouseX = e.clientX - rect.left;
         var mouseY = e.clientY - rect.top;
         
-        // Convert to tile coordinates
-        var tileX = Math.floor((mouseX - this.offsetX) / this.tileSize);
-        var tileY = Math.floor((mouseY - this.offsetY) / this.tileSize);
+        // Convert to tile coordinates (do not subtract offsetX/offsetY since CSS transform already applied)
+        var tileX = Math.floor(mouseX / this.tileSize);
+        var tileY = Math.floor(mouseY / this.tileSize);
         
         // Check if we've moved to a different tile
         if (this.hoverTileX !== tileX || this.hoverTileY !== tileY) {
@@ -885,8 +910,8 @@ define("ui/factory/MapUi", [
      */
     MapUi.prototype._placeComponent = function(mouseX, mouseY) {
         var meta = this.factory.getMeta();
-        var tileX = Math.floor((mouseX - this.offsetX) / this.tileSize);
-        var tileY = Math.floor((mouseY - this.offsetY) / this.tileSize);
+        var tileX = Math.floor(mouseX / this.tileSize);
+        var tileY = Math.floor(mouseY / this.tileSize);
         
         console.log("MapUi: Attempting to place component at tile:", tileX, tileY);
         
@@ -934,7 +959,7 @@ define("ui/factory/MapUi", [
         console.log("MapUi: Checking placement for", componentMeta.id, "at", tileX, tileY);
         console.log("MapUi: Component dimensions:", componentMeta.width || 1, "x", componentMeta.height || 1);
         
-        // Only allow placement on floor tiles (marked with "-" in buildMap)
+        // Allow placement when all tiles are buildable: " " (yes) or "-" (partial)
         if (!buildMap) {
             console.log("MapUi: No buildMap available");
             return false;
@@ -957,7 +982,8 @@ define("ui/factory/MapUi", [
                 var buildable = buildMap[index];
                 console.log("MapUi: Tile at", checkX, checkY, "buildable:", buildable);
                 
-                if (buildable !== "-") {
+                // Red tiles (anything other than space or dash) are not buildable
+                if (buildable !== " " && buildable !== "-") {
                     console.log("MapUi: Cannot build on tile type:", buildable);
                     return false;
                 }
@@ -1034,13 +1060,10 @@ define("ui/factory/MapUi", [
         
         if (!buildMap) return;
         
-        // Clear the entire canvas to remove ALL previous hover effects
-        // This prevents ghosting by ensuring a clean slate
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        
-        // Now redraw everything from scratch to ensure no ghosting
-        // This includes terrain, components, transport lines, and new buildable areas
-        this._renderMap(true); // Pass true to preserve terrain
+        // Clear overlay each frame to prevent ghosting
+        if (this.overlayCtx && this.overlayCanvas) {
+            this.overlayCtx.clearRect(0, 0, this.overlayCanvas.width, this.overlayCanvas.height);
+        }
         
         // The _renderMap() call above will handle terrain, components, and transport lines
         // Now we just need to draw the current buildable areas on top
@@ -1062,43 +1085,52 @@ define("ui/factory/MapUi", [
         var meta = this.factory.getMeta();
         var buildMap = meta.buildMap;
         var tileSize = this.tileSize;
+        var widthTiles = Math.max(1, componentMeta.width || 1);
+        var heightTiles = Math.max(1, componentMeta.height || 1);
         
-        // Check each tile the component would occupy
-        for (var y = 0; y < (componentMeta.height || 1); y++) {
-            for (var x = 0; x < (componentMeta.width || 1); x++) {
-                var checkX = tileX + x;
-                var checkY = tileY + y;
-                
-                // Check bounds
-                if (checkX < 0 || checkX >= meta.tilesX || checkY < 0 || checkY >= meta.tilesY) {
-                    continue;
-                }
-                
-                var index = checkY * meta.tilesX + checkX;
+        // Clamp footprint to map bounds
+        var startX = Math.max(0, tileX);
+        var startY = Math.max(0, tileY);
+        var endX = Math.min(meta.tilesX, tileX + widthTiles);
+        var endY = Math.min(meta.tilesY, tileY + heightTiles);
+        var clampedWidthTiles = Math.max(0, endX - startX);
+        var clampedHeightTiles = Math.max(0, endY - startY);
+        if (clampedWidthTiles === 0 || clampedHeightTiles === 0) return;
+        
+        // Determine overall status across footprint
+        var hasRed = false;
+        var hasYellow = false;
+        for (var y = startY; y < endY; y++) {
+            for (var x = startX; x < endX; x++) {
+                var index = y * meta.tilesX + x;
                 var buildable = buildMap[index];
-                var drawX = checkX * tileSize;
-                var drawY = checkY * tileSize;
-                
-                // Select cursor image based on buildable type
-                var cursorImage = null;
                 if (buildable === "-") {
-                    cursorImage = this.greenSelectionImage; // Floor tiles - can build
+                    // ok
                 } else if (buildable === " ") {
-                    cursorImage = this.yellowSelectionImage; // Grass tiles - limited building
+                    hasYellow = true;
                 } else {
-                    cursorImage = this.redSelectionImage; // Walls/roads - cannot build
-                }
-                
-                if (cursorImage && cursorImage.complete) {
-                    this.ctx.drawImage(
-                        cursorImage,
-                        0, 0,
-                        tileSize, tileSize,
-                        drawX, drawY,
-                        tileSize, tileSize
-                    );
+                    hasRed = true;
                 }
             }
+        }
+        
+        // Pick image: red if any red; else yellow if any yellow; else green
+        var cursorImage = this.greenSelectionImage;
+        if (hasRed) {
+            cursorImage = this.redSelectionImage;
+        } else if (hasYellow) {
+            cursorImage = this.yellowSelectionImage;
+        }
+        
+        if (cursorImage && cursorImage.complete) {
+            var ctx = this.overlayCtx || this.ctx;
+            var drawX = startX * tileSize;
+            var drawY = startY * tileSize;
+            var drawW = clampedWidthTiles * tileSize;
+            var drawH = clampedHeightTiles * tileSize;
+            var srcW = cursorImage.width || tileSize;
+            var srcH = cursorImage.height || tileSize;
+            ctx.drawImage(cursorImage, 0, 0, srcW, srcH, drawX, drawY, drawW, drawH);
         }
     };
     

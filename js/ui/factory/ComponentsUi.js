@@ -75,8 +75,15 @@ define("ui/factory/ComponentsUi", [
     };
     
     ComponentsUi.prototype._canBuyComponent = function(componentMeta) {
-        // Placeholder for component buying logic
-        // TODO: Extract BuyComponentAction module
+        // Respect research requirements like the original app
+        if (componentMeta && componentMeta.requiresResearch) {
+            var researchManager = this.game.getResearchManager && this.game.getResearchManager();
+            // If research manager is not available yet, hide locked items by default
+            if (!researchManager || !researchManager.getResearch) {
+                return false;
+            }
+            return researchManager.getResearch(componentMeta.requiresResearch) > 0;
+        }
         return true;
     };
     

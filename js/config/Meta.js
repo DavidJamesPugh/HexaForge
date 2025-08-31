@@ -391,7 +391,15 @@ define("config/Meta", [], function() {
         // Component selection layout
         componentsSelection: [
             ["noComponent", "transportLine", "garbageCollector", "sorterVertical", "sorterHorizontal"],
-            ["ironBuyer", "ironFoundry", "ironSeller", null, "coalBuyer", "steelFoundry", "steelSeller"]
+            ["ironBuyer", "ironFoundry", "ironSeller", null, "coalBuyer", "steelFoundry", "steelSeller"],
+            ["oilBuyer", "gasBuyer", "plasticMaker", "plasticSeller", "siliconBuyer", "electronicsMaker", "electronicsSeller"],
+            ["explosivesBuyer", "bulletMaker", "gunMaker", "gunSeller"],
+            ["aluminiumBuyer", "engineMaker", "engineSeller"],
+            ["tankHullMaker", "tankTurretMaker", "tankAssembler", "tankSeller", "dieselRefinery"],
+            ["jetFuelRefinery", "rocketHullMaker", "rocketWarheadMaker", "rocketAssembler"],
+            ["droneMaker", "droneControlRoom", "droneSeller"],
+            ["metalsLab", "gasAndOilLab", "analystCenter", "qualityLab"],
+            ["researchCenter", "researchCenter2", "researchCenter3", "researchCenter4"],
         ],
         
         // Resources configuration
