@@ -22,6 +22,7 @@ define("ui/factory/MapUi", [
         this.dragStartY = 0;
         this._docMouseMove = null;
         this._docMouseUp = null;
+        this.viewportEl = null; // Preferred viewport element for clamping
         this.selectedComponentId = null; // Track selected component for placement
         this.shouldDrawBuildableAreas = false; // Show buildable areas when component selected
         this.isPlacingComponent = false; // Track if we're in component placement mode
@@ -199,56 +200,24 @@ define("ui/factory/MapUi", [
             var newOffsetX = e.clientX - this.dragStartX;
             var newOffsetY = e.clientY - this.dragStartY;
             
-            console.log("MapUi: Mouse move - new offset:", newOffsetX, newOffsetY);
             
-            // Apply boundary constraints
-            //var constrainedOffset = this._constrainOffset(newOffsetX, newOffsetY);
+            // Apply boundary constraints against preferred viewport (.mapContainer -> parent -> #gameArea)
+            var vp = this.viewportEl || document.getElementById('gameArea');
+            var viewportWidth = vp ? vp.clientWidth : 0;
+            var viewportHeight = vp ? vp.clientHeight : 0;
+            var mapWidth = this.canvas.width;
+            var mapHeight = this.canvas.height;
             
-            console.log("MapUi: Constrained offset:", newOffsetX, newOffsetY);
-            
-             this.offsetX = newOffsetX;
-             this.offsetY = newOffsetY;
-            
+            var minX = Math.min(0, viewportWidth - mapWidth-236);
+            var maxX = 0;
+            var minY = Math.min(0, viewportHeight - mapHeight-118);
+            var maxY = 0;
+
+            this.offsetX = Math.max(minX, Math.min(maxX, newOffsetX));
+            this.offsetY = Math.max(minY, Math.min(maxY, newOffsetY));
+                        
             this._updateTransform();
         }
-    };
-    
-    /**
-     * Constrain the offset to keep map boundaries visible
-     * @private
-     */
-    MapUi.prototype._constrainOffset = function(offsetX, offsetY) {
-        var meta = this.factory.getMeta();
-        var mapWidth = meta.tilesX * this.tileSize;
-        var mapHeight = meta.tilesY * this.tileSize;
-        
-        // Get container dimensions (approximate if not available)
-        var containerWidth = this.canvas.parentElement ? this.canvas.parentElement.clientWidth : 800;
-        var containerHeight = this.canvas.parentElement ? this.canvas.parentElement.clientHeight : 600;
-        
-        console.log("MapUi: Map dimensions:", mapWidth, "x", mapHeight);
-        console.log("MapUi: Container dimensions:", containerWidth, "x", containerHeight);
-        
-        // Handle constraints based on whether map fits in container
-        var maxOffsetX, minOffsetX, maxOffsetY, minOffsetY;
-        
-        // Horizontal constraints: keep within [containerWidth - mapWidth, 0]
-        // When the map is smaller than the container, this collapses to [0, 0]
-        maxOffsetX = 0;
-        minOffsetX = Math.min(0, containerWidth - mapWidth);
-        
-        // Vertical constraints: keep within [containerHeight - mapHeight, 0]
-        // When the map is smaller than the container, this collapses to [0, 0]
-        maxOffsetY = 0;
-        minOffsetY = Math.min(0, containerHeight - mapHeight);
-        
-        console.log("MapUi: Constraints - X:", minOffsetX, "to", maxOffsetX, "Y:", minOffsetY, "to", maxOffsetY);
-        
-        // Apply constraints
-        var constrainedX = Math.max(minOffsetX, Math.min(maxOffsetX, offsetX));
-        var constrainedY = Math.max(minOffsetY, Math.min(maxOffsetY, offsetY));
-        
-        return { x: constrainedX, y: constrainedY };
     };
     
     /**
@@ -257,6 +226,7 @@ define("ui/factory/MapUi", [
      */
     MapUi.prototype._onMouseUp = function(e) {
         if (e.button === 0) {
+            console.log("MapUi: Drag end - offsetX:", this.offsetX, "offsetY:", this.offsetY);
             this.isDragging = false;
             this.canvas.style.cursor = 'grab';
             this._detachDocumentDragListeners();
@@ -493,6 +463,8 @@ define("ui/factory/MapUi", [
     MapUi.prototype.display = function(container) {
         if (this.canvas) {
             container.empty().append(this.canvas);
+            // Cache viewport element for clamping (prefer the provided container)
+           // this.viewportEl = container && container.length ? container.get(0) : this.canvas.parentElement;
             
             // Reset map to proper starting position
             this._resetToBoundaries();
