@@ -45,6 +45,30 @@ define("game/Game", [
         this.profitMultiplier = 1;
         this.researchProductionMultiplier = 1;
         this.isPremium = false;
+        
+        // Initialize premium status based on achievements and purchases
+        this._initializePremiumStatus();
+    };
+
+    /**
+     * Initialize premium status based on user's achievements and purchases
+     * Based on original app's premium detection logic
+     * @private
+     */
+    Game.prototype._initializePremiumStatus = function() {
+        // Check if user has premium achievements
+        if (this.achievementsManager) {
+            var hasCollectingCash = this.achievementsManager.getAchievement("collectingCash");
+            var hasCollectingCash2 = this.achievementsManager.getAchievement("collectingCash2");
+            
+            // Premium users typically have access to extra features
+            if (hasCollectingCash && hasCollectingCash2) {
+                this.isPremium = true;
+            }
+        }
+        
+        // Check for premium purchases (time travel tickets, bonus ticks, etc.)
+        // This would be set when user makes premium purchases
     };
 
     /**
@@ -295,6 +319,49 @@ define("game/Game", [
                 };
             }
         };
+    };
+    
+    /**
+     * Check if user is premium
+     * Based on original app's premium detection logic
+     * @returns {boolean} True if user is premium
+     */
+    Game.prototype.getIsPremium = function() {
+        return this.isPremium;
+    };
+    
+    /**
+     * Set premium status
+     * @param {boolean} isPremium - Whether user is premium
+     */
+    Game.prototype.setIsPremium = function(isPremium) {
+        this.isPremium = !!isPremium;
+        
+        // Emit premium status change event
+        this.em.invokeEvent(GameEvent.PREMIUM_STATUS_CHANGED, this.isPremium);
+    };
+    
+    /**
+     * Check if user has premium access to specific features
+     * @param {string} feature - Feature to check (e.g., 'fullScreen', 'noAds')
+     * @returns {boolean} True if user has access to the feature
+     */
+    Game.prototype.hasPremiumFeature = function(feature) {
+        if (!this.isPremium) {
+            return false;
+        }
+        
+        // Premium users get access to all features
+        switch (feature) {
+            case 'fullScreen':
+            case 'noAds':
+            case 'extraTicks':
+            case 'timeTravel':
+            case 'bonusMultipliers':
+                return true;
+            default:
+                return false;
+        }
     };
 
     return Game;

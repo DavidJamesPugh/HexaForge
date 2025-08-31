@@ -22,6 +22,15 @@ define("ui/factory/MapUi", [
         this.dragStartY = 0;
         this._docMouseMove = null;
         this._docMouseUp = null;
+        this._docPlaceMove = null;
+        this._docPlaceUp = null;
+        this._isPlacingTrack = false;
+        this._trackComponentMeta = null;
+        this._lastTrackTileX = null;
+        this._lastTrackTileY = null;
+        this._isRemovingComponents = false; // Track if we're removing components
+        this._lastRemovedTileX = null; // Track last removed tile to avoid duplicates
+        this._lastRemovedTileY = null;
         this.viewportEl = null; // Preferred viewport element for clamping
         this.selectedComponentId = null; // Track selected component for placement
         this.shouldDrawBuildableAreas = false; // Show buildable areas when component selected
@@ -176,7 +185,12 @@ define("ui/factory/MapUi", [
             
             // Check if we're placing a component
             if (this.selectedComponentId && this.selectedComponentId !== "noComponent") {
-                this._placeComponent(mouseX, mouseY);
+                var meta = this._getComponentMeta(this.selectedComponentId);
+                if (meta && meta.drawStrategy === "track") {
+                    this._beginTrackPlacement(e);
+                } else {
+                    this._placeComponent(mouseX, mouseY);
+                }
             } else {
                 // Start dragging
                 console.log("MapUi: Mouse down at", e.clientX, e.clientY);
@@ -195,11 +209,10 @@ define("ui/factory/MapUi", [
                 e.preventDefault();
             }
         } else if (e.button === 2) { // Right click
-            // Clear component selection on right click
-            if (this.isPlacingComponent) {
-                this._clearComponentSelection();
-                e.preventDefault();
-            }
+            // Start component removal mode
+            console.log("MapUi: Start component removal mode");
+            this._beginComponentRemoval(e);
+            e.preventDefault();
         }
     };
     
@@ -220,15 +233,49 @@ define("ui/factory/MapUi", [
             var mapWidth = this.canvas.width;
             var mapHeight = this.canvas.height;
             
-            var minX = Math.min(0, viewportWidth - mapWidth-236);
+            var minX = Math.min(0, viewportWidth - mapWidth-220);
             var maxX = 0;
-            var minY = Math.min(0, viewportHeight - mapHeight-118);
+            var minY = Math.min(0, viewportHeight - mapHeight-125);
             var maxY = 0;
 
             this.offsetX = Math.max(minX, Math.min(maxX, newOffsetX));
             this.offsetY = Math.max(minY, Math.min(maxY, newOffsetY));
                         
             this._updateTransform();
+        }
+        // Track placement drag
+        if (this._isPlacingTrack) {
+            var rect = this.canvas.getBoundingClientRect();
+            var mouseX = e.clientX - rect.left;
+            var mouseY = e.clientY - rect.top;
+            var tileX = Math.floor(mouseX / this.tileSize);
+            var tileY = Math.floor(mouseY / this.tileSize);
+            if (tileX !== this._lastTrackTileX || tileY !== this._lastTrackTileY) {
+                // Check if drag direction has changed (corner piece)
+                var newDirection = this._determineDragDirection(tileX, tileY);
+                if (newDirection !== this._dragDirection) {
+                    // Direction changed - this is a corner piece
+                    this._dragDirection = newDirection;
+                }
+                
+                this._placeTransportTile(tileX, tileY);
+                this._lastTrackTileX = tileX;
+                this._lastTrackTileY = tileY;
+            }
+        }
+        
+        // Component removal drag
+        if (this._isRemovingComponents) {
+            var rect = this.canvas.getBoundingClientRect();
+            var mouseX = e.clientX - rect.left;
+            var mouseY = e.clientY - rect.top;
+            var tileX = Math.floor(mouseX / this.tileSize);
+            var tileY = Math.floor(mouseY / this.tileSize);
+            if (tileX !== this._lastRemovedTileX || tileY !== this._lastRemovedTileY) {
+                this._removeComponentAtTile(tileX, tileY);
+                this._lastRemovedTileX = tileX;
+                this._lastRemovedTileY = tileY;
+            }
         }
     };
     
@@ -245,6 +292,13 @@ define("ui/factory/MapUi", [
             if (document && document.body) {
                 document.body.style.userSelect = '';
             }
+            if (this._isPlacingTrack) {
+                this._endTrackPlacement();
+            }
+        } else if (e.button === 2) { // Right click
+            // End component removal mode
+            console.log("MapUi: End component removal mode");
+            this._endComponentRemoval();
         }
     };
     
@@ -378,20 +432,27 @@ define("ui/factory/MapUi", [
                 var y = componentData.y;
                 
                 var componentMeta = componentsById[componentId];
+                if (!componentMeta || componentMeta.id === "transportLine") continue;
                 if (componentMeta && componentMeta.spriteX !== undefined && componentMeta.spriteY !== undefined) {
                     var drawX = x * this.tileSize;
                     var drawY = y * this.tileSize;
-                    var width = (componentMeta.width || 1) * this.tileSize;
-                    var height = (componentMeta.height || 1) * this.tileSize;
-                    
-                    // Draw component sprite
-                    this.ctx.drawImage(
-                        this.componentsImage,
-                        componentMeta.spriteX * this.tileSize, componentMeta.spriteY * this.tileSize,
-                        width, height,
-                        drawX, drawY,
-                        width, height
-                    );
+                    var tilesW = (componentMeta.width || 1);
+                    var tilesH = (componentMeta.height || 1);
+                    var g = this.tileSize + 1;
+                    // Draw component by tiling each sub-tile from the atlas using (tileSize+1) stride
+                    for (var dy = 0; dy < tilesH; dy++) {
+                        for (var dx = 0; dx < tilesW; dx++) {
+                            var srcX = (componentMeta.spriteX + dx) * g;
+                            var srcY = (componentMeta.spriteY + dy) * g;
+                            this.ctx.drawImage(
+                                this.componentsImage,
+                                srcX, srcY,
+                                this.tileSize, this.tileSize,
+                                drawX + dx * this.tileSize, drawY + dy * this.tileSize,
+                                this.tileSize, this.tileSize
+                            );
+                        }
+                    }
                 }
             }
         }
@@ -402,90 +463,550 @@ define("ui/factory/MapUi", [
             var component = dynamicComponents[i];
             var componentMeta = component.meta;
             
-            if (!componentMeta) continue;
+            if (!componentMeta || componentMeta.id === "transportLine") continue;
             
             var drawX = component.x * this.tileSize;
             var drawY = component.y * this.tileSize;
-            var width = (componentMeta.width || 1) * this.tileSize;
-            var height = (componentMeta.height || 1) * this.tileSize;
+            var tilesW = (componentMeta.width || 1);
+            var tilesH = (componentMeta.height || 1);
             
             // Draw component sprite
             if (componentMeta.spriteX !== undefined && componentMeta.spriteY !== undefined) {
-                var spriteX = componentMeta.spriteX * (this.tileSize + 1);
-                var spriteY = componentMeta.spriteY * (this.tileSize + 1);
-                
-                this.ctx.drawImage(
-                    this.componentsImage,
-                    spriteX, spriteY,
-                    this.tileSize, this.tileSize,
-                    drawX, drawY,
-                    width, height
-                );
-            }
-            
-            // Draw component name
-            if (componentMeta.name) {
-                this.ctx.fillStyle = 'white';
-                this.ctx.strokeStyle = 'black';
-                this.ctx.lineWidth = 2;
-                this.ctx.font = '10px Arial';
-                this.ctx.textAlign = 'center';
-                
-                var textX = drawX + width / 2;
-                var textY = drawY + height / 2 + 3;
-                
-                this.ctx.strokeText(componentMeta.name, textX, textY);
-                this.ctx.fillText(componentMeta.name, textX, textY);
+                var g = this.tileSize + 1;
+                for (var dy = 0; dy < tilesH; dy++) {
+                    for (var dx = 0; dx < tilesW; dx++) {
+                        var srcX = (componentMeta.spriteX + dx) * g;
+                        var srcY = (componentMeta.spriteY + dy) * g;
+                        this.ctx.drawImage(
+                            this.componentsImage,
+                            srcX, srcY,
+                            this.tileSize, this.tileSize,
+                            drawX + dx * this.tileSize, drawY + dy * this.tileSize,
+                            this.tileSize, this.tileSize
+                        );
+                    }
+                }
             }
         }
     };
     
-    /**
-     * Render transport lines
-     * @private
-     */
+    // Begin drag placement for track
+    MapUi.prototype._beginTrackPlacement = function(e) {
+        var rect = this.canvas.getBoundingClientRect();
+        var mouseX = e.clientX - rect.left;
+        var mouseY = e.clientY - rect.top;
+        var tileX = Math.floor(mouseX / this.tileSize);
+        var tileY = Math.floor(mouseY / this.tileSize);
+        this._trackComponentMeta = this._getComponentMeta(this.selectedComponentId);
+        this._isPlacingTrack = true;
+        this._lastTrackTileX = tileX;
+        this._lastTrackTileY = tileY;
+        this._dragStartX = tileX;
+        this._dragStartY = tileY;
+        this._dragDirection = null; // Will be set on first move
+        this._placeTransportTile(tileX, tileY);
+        // Attach doc listeners to continue placing while dragging outside
+        if (!this._docPlaceMove) {
+            this._docPlaceMove = this._onMouseMove.bind(this);
+            document.addEventListener('mousemove', this._docPlaceMove);
+        }
+        if (!this._docPlaceUp) {
+            this._docPlaceUp = this._onMouseUp.bind(this);
+            document.addEventListener('mouseup', this._docPlaceUp);
+        }
+        e.preventDefault();
+    };
+
+    MapUi.prototype._endTrackPlacement = function() {
+        this._isPlacingTrack = false;
+        this._trackComponentMeta = null;
+        this._lastTrackTileX = null;
+        this._lastTrackTileY = null;
+        this._dragStartX = null;
+        this._dragStartY = null;
+        this._dragDirection = null;
+        if (this._docPlaceMove) {
+            document.removeEventListener('mousemove', this._docPlaceMove);
+            this._docPlaceMove = null;
+        }
+        if (this._docPlaceUp) {
+            document.removeEventListener('mouseup', this._docPlaceUp);
+            this._docPlaceUp = null;
+        }
+    };
+
+    MapUi.prototype._placeTransportTile = function(tileX, tileY) {
+        var meta = this.factory.getMeta();
+        if (tileX < 0 || tileX >= meta.tilesX || tileY < 0 || tileY >= meta.tilesY) return;
+        
+        // Check if tile is buildable
+        var buildMap = meta.buildMap;
+        if (!buildMap) return;
+        var index = tileY * meta.tilesX + tileX;
+        var buildable = buildMap[index];
+        if (buildable !== ' ' && buildable !== '-') return;
+        
+        // Check if tile already has a component
+        var existingComponent = this._getComponentAt(tileX, tileY);
+        if (existingComponent) return;
+        
+        // Determine drag direction if this is the first move
+        if (this._dragDirection === null) {
+            this._dragDirection = this._determineDragDirection(tileX, tileY);
+        }
+        
+        // Create a proper track component with input/output manager
+        var trackComponent = this._createTrackComponent(tileX, tileY);
+        if (!trackComponent) return;
+        
+        // Add to factory's component list
+        if (!this.factory.components) {
+            this.factory.components = [];
+        }
+        this.factory.components.push(trackComponent);
+        
+        // Update transport line connections for proper rendering
+        this._updateTransportLineConnections();
+        
+        this._renderDynamicElements();
+    };
+
+    // Determine the primary drag direction
+    MapUi.prototype._determineDragDirection = function(tileX, tileY) {
+        var deltaX = tileX - this._dragStartX;
+        var deltaY = tileY - this._dragStartY;
+        
+        // Determine primary direction (horizontal or vertical)
+        if (Math.abs(deltaX) > Math.abs(deltaY)) {
+            return deltaX > 0 ? 'right' : 'left';
+        } else {
+            return deltaY > 0 ? 'down' : 'up';
+        }
+    };
+
+    // Create a track component with proper input/output management
+    MapUi.prototype._createTrackComponent = function(tileX, tileY) {
+        var meta = this.factory.getMeta();
+        
+        // Create the component object with a fresh input/output manager
+        var component = {
+            id: "transportLine",
+            x: tileX,
+            y: tileY,
+            width: 1,
+            height: 1,
+            meta: { id: "transportLine", drawStrategy: "track" },
+            // Add input/output manager like the original app
+            getInputOutputManager: function() {
+                return this._inputOutputManager;
+            },
+            _inputOutputManager: {
+                getInputsByDirection: function() {
+                    return this._inputs;
+                },
+                getOutputsByDirection: function() {
+                    return this._outputs;
+                },
+                _inputs: { top: false, right: false, bottom: false, left: false },
+                _outputs: { top: false, right: false, bottom: false, left: false }
+            }
+        };
+        
+        // Determine input/output directions based on drag direction and neighboring tracks
+        this._updateTrackConnections(component);
+        
+        return component;
+    };
+
+    // Update track input/output connections based on neighboring tracks and drag direction
+    MapUi.prototype._updateTrackConnections = function(trackComponent) {
+        var x = trackComponent.x;
+        var y = trackComponent.y;
+        var inputs = trackComponent._inputOutputManager._inputs;
+        var outputs = trackComponent._inputOutputManager._outputs;
+        
+        // Reset all connections
+        inputs.top = inputs.right = inputs.bottom = inputs.left = false;
+        outputs.top = outputs.right = outputs.bottom = outputs.left = false;
+        
+        // Check for neighboring tracks
+        var neighbors = this._getNeighboringTracks(x, y);
+        
+        // If this is the first track (no neighbors), it should be neutral
+        var hasNeighbors = neighbors.top || neighbors.right || neighbors.bottom || neighbors.left;
+        
+        if (!hasNeighbors) {
+            // First track - no inputs or outputs (pattern "0000" -> "0000")
+            // This will render as sprite n: 0 (neutral track)
+            return;
+        }
+        
+        // For subsequent tracks, set ONLY outputs based on drag direction
+        // The original app NEVER sets inputs - they remain "0000"
+        // Only outputs are set to show the flow direction
+        
+        if (this._dragDirection === 'right') {
+            // Dragging right: output to right (where we're going)
+            outputs.right = true;
+        } else if (this._dragDirection === 'left') {
+            // Dragging left: output to left (where we're going)
+            outputs.left = true;
+        } else if (this._dragDirection === 'down') {
+            // Dragging down: output to bottom (where we're going)
+            outputs.bottom = true;
+        } else if (this._dragDirection === 'up') {
+            // Dragging up: output to top (where we're going)
+            outputs.top = true;
+        }
+        
+        // Handle corner pieces when drag direction changes
+        this._handleCornerPiece(trackComponent, neighbors);
+    };
+
+    // Handle corner pieces when the drag direction changes
+    MapUi.prototype._handleCornerPiece = function(trackComponent, neighbors) {
+        var x = trackComponent.x;
+        var y = trackComponent.y;
+        var inputs = trackComponent._inputOutputManager._inputs;
+        var outputs = trackComponent._inputOutputManager._outputs;
+        
+        // Check if this is a corner piece (has neighbors in perpendicular directions)
+        var hasPerpendicularNeighbors = false;
+        var perpendicularDirection = null;
+        
+        if (this._dragDirection === 'right' || this._dragDirection === 'left') {
+            // Horizontal drag - check for vertical neighbors
+            if (neighbors.top || neighbors.bottom) {
+                hasPerpendicularNeighbors = true;
+                if (neighbors.top) {
+                    perpendicularDirection = 'top';
+                }
+                if (neighbors.bottom) {
+                    perpendicularDirection = 'bottom';
+                }
+            }
+        } else if (this._dragDirection === 'up' || this._dragDirection === 'down') {
+            // Vertical drag - check for horizontal neighbors
+            if (neighbors.left || neighbors.right) {
+                hasPerpendicularNeighbors = true;
+                if (neighbors.left) {
+                    perpendicularDirection = 'left';
+                }
+                if (neighbors.right) {
+                    perpendicularDirection = 'right';
+                }
+            }
+        }
+        
+        // If this is a corner piece, we need to set outputs in both directions
+        // But remember: inputs remain "0000" (no inputs) as per original app
+        if (hasPerpendicularNeighbors) {
+            // Set output in the main drag direction (already set above)
+            // Also set output in the perpendicular direction
+            if (perpendicularDirection === 'top') {
+                outputs.top = true;
+            } else if (perpendicularDirection === 'bottom') {
+                outputs.bottom = true;
+            } else if (perpendicularDirection === 'left') {
+                outputs.left = true;
+            } else if (perpendicularDirection === 'right') {
+                outputs.right = true;
+            }
+        }
+    };
+
+    // Get neighboring tracks at a position
+    MapUi.prototype._getNeighboringTracks = function(x, y) {
+        var neighbors = { top: false, right: false, bottom: false, left: false };
+        
+        // Check factory components
+        if (this.factory.components) {
+            for (var i = 0; i < this.factory.components.length; i++) {
+                var comp = this.factory.components[i];
+                if (comp.meta && comp.meta.id === 'transportLine') {
+                    if (comp.x === x && comp.y === y - 1) neighbors.top = true;
+                    if (comp.x === x + 1 && comp.y === y) neighbors.right = true;
+                    if (comp.x === x && comp.y === y + 1) neighbors.bottom = true;
+                    if (comp.x === x - 1 && comp.y === y) neighbors.left = true;
+                }
+            }
+        }
+        
+        // Also check meta components
+        var meta = this.factory.getMeta();
+        if (meta.components) {
+            for (var i = 0; i < meta.components.length; i++) {
+                var comp = meta.components[i];
+                if (comp.meta && comp.meta.id === 'transportLine') {
+                    if (comp.x === x && comp.y === y - 1) neighbors.top = true;
+                    if (comp.x === x + 1 && comp.y === y) neighbors.right = true;
+                    if (comp.x === x && comp.y === y + 1) neighbors.bottom = true;
+                    if (comp.x === x - 1 && comp.y === y) neighbors.left = true;
+                }
+            }
+        }
+        
+        return neighbors;
+    };
+
+    // Render transport lines using the original app's Track strategy
     MapUi.prototype._renderTransportLines = function() {
         if (!this.transportLineImage || !this.ctx) return;
         
-        var meta = this.factory.getMeta();
-        var transportLineConnections = meta.transportLineConnections;
+        // Get all track components
+        var trackComponents = [];
         
-        if (!transportLineConnections) return;
-        
-        for (var i = 0; i < transportLineConnections.length; i++) {
-            var connection = transportLineConnections[i];
-            var x = connection.x;
-            var y = connection.y;
-            
-            var drawX = x * this.tileSize;
-            var drawY = y * this.tileSize;
-            
-            // Draw transport line sprite
-            this.ctx.drawImage(
-                this.transportLineImage,
-                0, 0,
-                this.tileSize, this.tileSize,
-                drawX, drawY,
-                this.tileSize, this.tileSize
-            );
+        // From factory components
+        if (this.factory.components) {
+            for (var i = 0; i < this.factory.components.length; i++) {
+                var comp = this.factory.components[i];
+                if (comp.meta && comp.meta.drawStrategy === 'track') {
+                    trackComponents.push(comp);
+                }
+            }
         }
+        
+        // From meta components
+        var meta = this.factory.getMeta();
+        if (meta.components) {
+            for (var i = 0; i < meta.components.length; i++) {
+                var comp = meta.components[i];
+                if (comp.meta && comp.meta.drawStrategy === 'track') {
+                    // Check if we already have this component
+                    var exists = false;
+                    for (var j = 0; j < trackComponents.length; j++) {
+                        if (trackComponents[j].x === comp.x && trackComponents[j].y === comp.y) {
+                            exists = true;
+                            break;
+                        }
+                    }
+                    if (!exists) {
+                        trackComponents.push(comp);
+                    }
+                }
+            }
+        }
+        
+        // Render each track component using the Track strategy
+        for (var i = 0; i < trackComponents.length; i++) {
+            var track = trackComponents[i];
+            this._renderTrackComponent(track);
+        }
+    };
+
+    // Render a single track component using the Track strategy
+    MapUi.prototype._renderTrackComponent = function(track) {
+        if (!track.getInputOutputManager) return;
+        
+        var inputOutputManager = track.getInputOutputManager();
+        var inputs = inputOutputManager.getInputsByDirection();
+        var outputs = inputOutputManager.getOutputsByDirection();
+        
+        // Create bit patterns like the original app
+        var inputPattern = (inputs.top ? "1" : "0") + (inputs.right ? "1" : "0") + (inputs.bottom ? "1" : "0") + (inputs.left ? "1" : "0");
+        var outputPattern = (outputs.top ? "1" : "0") + (outputs.right ? "1" : "0") + (outputs.bottom ? "1" : "0") + (outputs.left ? "1" : "0");
+        
+        // Get draw parameters from the draw map
+        var drawParams = this._getTrackDrawParameters(inputPattern, outputPattern);
+        if (!drawParams) return;
+        
+        // Calculate drawing coordinates
+        var drawX = track.x * this.tileSize;
+        var drawY = track.y * this.tileSize;
+        var spriteX = drawParams.n * this.tileSize;
+        var spriteY = 0;
+        
+        // Draw the track sprite
+        this.ctx.save();
+        
+        // Apply rotation and flipping like the original app
+        var rotation = drawParams.rotation * Math.PI / 180;
+        var centerX = drawX + this.tileSize / 2;
+        var centerY = drawY + this.tileSize / 2;
+        
+        this.ctx.translate(centerX, centerY);
+        this.ctx.rotate(rotation);
+        if (drawParams.flip) {
+            this.ctx.scale(-1, 1);
+        }
+        
+        this.ctx.drawImage(
+            this.transportLineImage,
+            spriteX, spriteY,
+            this.tileSize, this.tileSize,
+            -this.tileSize / 2, -this.tileSize / 2,
+            this.tileSize, this.tileSize
+        );
+        
+        this.ctx.restore();
+    };
+
+    // Get track draw parameters from the draw map (like original app)
+    MapUi.prototype._getTrackDrawParameters = function(inputPattern, outputPattern) {
+        var drawMap = this._getTrackDrawMap();
+        
+        // Check if we have a mapping for this input/output combination
+        if (drawMap[inputPattern] && drawMap[inputPattern][outputPattern]) {
+            return drawMap[inputPattern][outputPattern];
+        }
+        
+        // Fallback to error sprite
+        return drawMap.error;
+    };
+
+    // Get the track draw map (like original app's _getDrawMap)
+    MapUi.prototype._getTrackDrawMap = function() {
+        return {
+            error: { n: 17, rotation: 0, flip: false },
+            "0000": {
+                "0000": { n: 0, rotation: 0, flip: false },
+                "1000": { n: 1, rotation: 0, flip: false },
+                "0100": { n: 1, rotation: -90, flip: false },
+                "0010": { n: 1, rotation: 180, flip: false },
+                "0001": { n: 1, rotation: 90, flip: false }
+            },
+            "1000": {
+                "0000": { n: 2, rotation: 0, flip: false },
+                "0100": { n: 4, rotation: 0, flip: false },
+                "0010": { n: 3, rotation: 0, flip: false },
+                "0001": { n: 4, rotation: 0, flip: true },
+                "0110": { n: 5, rotation: 0, flip: true },
+                "0101": { n: 6, rotation: 0, flip: false },
+                "0011": { n: 5, rotation: 0, flip: false },
+                "0111": { n: 7, rotation: 0, flip: false }
+            },
+            "0100": {
+                "0000": { n: 2, rotation: 270, flip: false },
+                "1000": { n: 4, rotation: 90, flip: true },
+                "0010": { n: 4, rotation: 270, flip: false },
+                "0001": { n: 3, rotation: 270, flip: false },
+                "1010": { n: 6, rotation: 270, flip: false },
+                "1001": { n: 5, rotation: 270, flip: false },
+                "0011": { n: 5, rotation: 90, flip: true },
+                "1011": { n: 7, rotation: 270, flip: false }
+            },
+            "0010": {
+                "0000": { n: 2, rotation: 180, flip: false },
+                "1000": { n: 3, rotation: 180, flip: false },
+                "0100": { n: 4, rotation: 180, flip: true },
+                "0001": { n: 4, rotation: 180, flip: false },
+                "1100": { n: 5, rotation: 180, flip: false },
+                "1001": { n: 5, rotation: 180, flip: true },
+                "0101": { n: 6, rotation: 180, flip: false },
+                "1101": { n: 7, rotation: 180, flip: false }
+            },
+            "0001": {
+                "0000": { n: 2, rotation: 90, flip: false },
+                "1000": { n: 4, rotation: 90, flip: false },
+                "0100": { n: 3, rotation: 90, flip: false },
+                "0010": { n: 4, rotation: 270, flip: true },
+                "1100": { n: 5, rotation: 270, flip: true },
+                "1010": { n: 6, rotation: 90, flip: false },
+                "0110": { n: 5, rotation: 90, flip: false },
+                "1110": { n: 7, rotation: 90, flip: false }
+            },
+            "1100": { 
+                "0000": { n: 8, rotation: 0, flip: false }, 
+                "0010": { n: 10, rotation: 0, flip: true }, 
+                "0001": { n: 10, rotation: 270, flip: false }, 
+                "0011": { n: 13, rotation: 270, flip: false } 
+            },
+            "1010": { 
+                "0000": { n: 9, rotation: 0, flip: false }, 
+                "0100": { n: 11, rotation: 90, flip: false }, 
+                "0001": { n: 11, rotation: 270, flip: false }, 
+                "0101": { n: 12, rotation: 90, flip: true } 
+            },
+            "1001": { 
+                "0000": { n: 8, rotation: 90, flip: false }, 
+                "0100": { n: 10, rotation: 270, flip: true }, 
+                "0010": { n: 10, rotation: 0, flip: false }, 
+                "0110": { n: 13, rotation: 0, flip: false } 
+            },
+            "0110": { 
+                "0000": { n: 8, rotation: 270, flip: false }, 
+                "1000": { n: 10, rotation: 180, flip: false }, 
+                "0001": { n: 10, rotation: 90, flip: true }, 
+                "1001": { n: 13, rotation: 180, flip: false } 
+            },
+            "0101": { 
+                "0000": { n: 9, rotation: 90, flip: false }, 
+                "1000": { n: 11, rotation: 180, flip: false }, 
+                "0010": { n: 11, rotation: 0, flip: false }, 
+                "1010": { n: 12, rotation: 0, flip: false } 
+            },
+            "0011": { 
+                "0000": { n: 8, rotation: 180, flip: false }, 
+                "1000": { n: 10, rotation: 180, flip: true }, 
+                "0100": { n: 10, rotation: 90, flip: false }, 
+                "1100": { n: 13, rotation: 90, flip: false } 
+            },
+            "1110": { 
+                "0000": { n: 15, rotation: 270, flip: false }, 
+                "0001": { n: 14, rotation: 270, flip: false } 
+            },
+            "1101": { 
+                "0000": { n: 15, rotation: 0, flip: false }, 
+                "0010": { n: 14, rotation: 0, flip: false } 
+            },
+            "1011": { 
+                "0000": { n: 15, rotation: 90, flip: false }, 
+                "0100": { n: 14, rotation: 90, flip: false } 
+            },
+            "0111": { 
+                "0000": { n: 15, rotation: 180, flip: false }, 
+                "1000": { n: 14, rotation: 180, flip: false } 
+            },
+            "1111": { 
+                "0000": { n: 16, rotation: 0, flip: false } 
+            }
+        };
     };
     
     /**
-     * Display the map UI
-     * @param {jQuery} container - Container to display the map in
+     * Display the MapUi in the specified container
+     * @param {Object} container - Container element
      */
     MapUi.prototype.display = function(container) {
         if (this.canvas) {
             container.empty();
+            
+            // Get container dimensions and calculated map dimensions
+            var containerWidth = container.width();
+            var containerHeight = container.height();
+            var mapWidth = this.factory.getMeta().tilesX * this.tileSize;
+            var mapHeight = this.factory.getMeta().tilesY * this.tileSize;
+            
+            // Create overlay div (constrains the view) - MATCHES ORIGINAL APP
+            this.overlay = $("<div />")
+                .css("overflow", "hidden")
+                .css("margin", "0 0 0 0")
+                .css("width", Math.min(containerWidth, mapWidth))
+                .css("height", Math.min(containerHeight, mapHeight));
+            
+            // Create element div (holds the actual map) - MATCHES ORIGINAL APP
+            this.element = $("<div />")
+                .css("position", "relative")
+                .css("width", mapWidth + "px")
+                .css("height", mapHeight + "px");
+            
+            // Nest the element inside the overlay
+            this.overlay.html(this.element);
+            
+            // Add the canvas to the element (not directly to container)
+            this.element.append(this.canvas);
+            if (this.overlayCanvas) {
+                this.element.append(this.overlayCanvas);
+            }
+            
+            // Add the overlay to the container
+            container.html(this.overlay);
+            
             // Ensure container is positioned relative so overlay can be absolutely positioned
             if (container.length && getComputedStyle(container.get(0)).position === 'static') {
                 container.get(0).style.position = 'relative';
             }
-            container.append(this.canvas);
-            if (this.overlayCanvas) {
-                container.append(this.overlayCanvas);
-            }
+            
             // Cache viewport element for clamping (prefer the provided container)
             //this.viewportEl = container && container.length ? container.get(0) : this.canvas.parentElement;
             
@@ -497,6 +1018,8 @@ define("ui/factory/MapUi", [
             
             // Set up event listener for component selection
             this._setupComponentSelectionListener();
+            
+            console.log("MapUi: Created overlay structure - overlay:", this.overlay.width(), "x", this.overlay.height(), "element:", this.element.width(), "x", this.element.height());
         }
     };
     
@@ -1359,6 +1882,354 @@ define("ui/factory/MapUi", [
             document.removeEventListener('mouseup', this._docMouseUp);
             this._docMouseUp = null;
         }
+    };
+    
+    // Get component at specific tile coordinates
+    MapUi.prototype._getComponentAt = function(tileX, tileY) {
+        // Check factory components first
+            console.log("MapUi: Factory components:", this.factory);
+        if (this.factory.components) {
+            console.log("MapUi: Factory components:", this.factory.components);
+            for (var i = 0; i < this.factory.components.length; i++) {
+                var comp = this.factory.components[i];
+                if (comp.x === tileX && comp.y === tileY) {
+                    console.log(comp);
+                    return comp;
+                }
+            }
+        }
+        
+        // Fallback to meta components
+        var meta = this.factory.getMeta();
+        var components = meta.components || [];
+        
+        for (var i = 0; i < components.length; i++) {
+            var comp = components[i];
+            if (comp.x === tileX && comp.y === tileY) {
+                return comp;
+            }
+        }
+        return null;
+    };
+
+    // Update transport line connections based on placed components
+    MapUi.prototype._updateTransportLineConnections = function() {
+        // Update existing tracks to connect to newly placed tracks
+        if (this.factory.components) {
+            for (var i = 0; i < this.factory.components.length; i++) {
+                var comp = this.factory.components[i];
+                if (comp.meta && comp.meta.drawStrategy === 'track') {
+                    this._updateExistingTrackConnections(comp);
+                }
+            }
+        }
+        
+        // Also update meta components
+        var meta = this.factory.getMeta();
+        if (meta.components) {
+            for (var i = 0; i < meta.components.length; i++) {
+                var comp = meta.components[i];
+                if (comp.meta && comp.meta.drawStrategy === 'track') {
+                    this._updateExistingTrackConnections(comp);
+                }
+            }
+        }
+        
+        // Redraw to show the new connections
+        this._renderDynamicElements();
+    };
+
+    // Update existing track connections to connect to neighbors
+    MapUi.prototype._updateExistingTrackConnections = function(trackComponent) {
+        var x = trackComponent.x;
+        var y = trackComponent.y;
+        var inputs = trackComponent._inputOutputManager._inputs;
+        var outputs = trackComponent._inputOutputManager._outputs;
+        
+        // Check for neighboring tracks
+        var neighbors = this._getNeighboringTracks(x, y);
+        
+        // Ensure inputs remain "0000" (no inputs) as per original app
+        inputs.top = inputs.right = inputs.bottom = inputs.left = false;
+        
+        // Reset outputs and set them based on actual neighboring tracks
+        outputs.top = outputs.right = outputs.bottom = outputs.left = false;
+        
+        // Set outputs to show connections to neighboring tracks
+        if (neighbors.top) outputs.top = true;
+        if (neighbors.right) outputs.right = true;
+        if (neighbors.bottom) outputs.bottom = true;
+        if (neighbors.left) outputs.left = true;
+    };
+
+    // Begin component removal mode
+    MapUi.prototype._beginComponentRemoval = function(e) {
+        var rect = this.canvas.getBoundingClientRect();
+        var mouseX = e.clientX - rect.left;
+        var mouseY = e.clientY - rect.top;
+        var tileX = Math.floor(mouseX / this.tileSize);
+        var tileY = Math.floor(mouseY / this.tileSize);
+        
+        this._isRemovingComponents = true;
+        this._lastRemovedTileX = tileX;
+        this._lastRemovedTileY = tileY;
+        
+        // Remove component at initial position
+        this._removeComponentAtTile(tileX, tileY);
+        
+        // Attach document listeners to continue removing while dragging outside
+        if (!this._docPlaceMove) {
+            this._docPlaceMove = this._onMouseMove.bind(this);
+            document.addEventListener('mousemove', this._docPlaceMove);
+        }
+        if (!this._docPlaceUp) {
+            this._docPlaceUp = this._onMouseUp.bind(this);
+            document.addEventListener('mouseup', this._docPlaceUp);
+        }
+        
+        e.preventDefault();
+    };
+
+    // End component removal mode
+    MapUi.prototype._endComponentRemoval = function() {
+        this._isRemovingComponents = false;
+        this._lastRemovedTileX = null;
+        this._lastRemovedTileY = null;
+        
+        // Detach document listeners
+        if (this._docPlaceMove) {
+            document.removeEventListener('mousemove', this._docPlaceMove);
+            this._docPlaceMove = null;
+        }
+        if (this._docPlaceUp) {
+            document.removeEventListener('mouseup', this._docPlaceUp);
+            this._docPlaceUp = null;
+        }
+    };
+
+    // Remove component at specific tile coordinates
+    MapUi.prototype._removeComponentAtTile = function(tileX, tileY) {
+        console.log("MapUi: Removing component at", tileX, tileY);
+        
+        // Find component that covers this tile (considering component dimensions)
+        var component = this._getComponentAtFootprint(tileX, tileY);
+        console.log("MapUi: Component found:", component);
+        
+        if (component) {
+            // Store component dimensions before removal
+            var componentWidth = component.meta ? (component.meta.width || 1) : 1;
+            var componentHeight = component.meta ? (component.meta.height || 1) : 1;
+            var componentX = component.x;
+            var componentY = component.y;
+            
+            // Remove from factory components
+            if (this.factory.components) {
+                var index = this.factory.components.indexOf(component);
+                if (index > -1) {
+                    this.factory.components.splice(index, 1);
+                }
+            }
+            
+            // Also check if this is a meta component (startComponents) and remove it
+            var meta = this.factory.getMeta();
+            if (meta.startComponents) {
+                for (var i = meta.startComponents.length - 1; i >= 0; i--) {
+                    var startComp = meta.startComponents[i];
+                    if (startComp.x === componentX && startComp.y === componentY && 
+                        startComp.id === (component.id || component.meta?.id)) {
+                        meta.startComponents.splice(i, 1);
+                        break;
+                    }
+                }
+            }
+            
+            // Update transport line connections if this was a track
+            if (component.meta && component.meta.drawStrategy === 'track') {
+                this._updateTransportLineConnections();
+            }
+            
+            // Redraw floor terrain over the removed component area
+            this._redrawFloorOverComponent(componentX, componentY, componentWidth, componentHeight);
+            
+            // Redraw to show the removal
+            this._renderDynamicElements();
+            
+            console.log("MapUi: Removed component at", componentX, componentY, "with dimensions", componentWidth, "x", componentHeight);
+        }
+    };
+    
+    // Get component that covers a specific tile (considering component dimensions)
+    MapUi.prototype._getComponentAtFootprint = function(tileX, tileY) {
+        // Check factory components first
+        if (this.factory.components) {
+            for (var i = 0; i < this.factory.components.length; i++) {
+                var comp = this.factory.components[i];
+                var compWidth = comp.meta ? (comp.meta.width || 1) : 1;
+                var compHeight = comp.meta ? (comp.meta.height || 1) : 1;
+                
+                // Check if the tile is within this component's footprint
+                if (tileX >= comp.x && tileX < comp.x + compWidth &&
+                    tileY >= comp.y && tileY < comp.y + compHeight) {
+                    return comp;
+                }
+            }
+        }
+        
+        // Fallback to meta components
+        var meta = this.factory.getMeta();
+        if (meta.components) {
+            for (var i = 0; i < meta.components.length; i++) {
+                var comp = meta.components[i];
+                var compWidth = comp.meta ? (comp.meta.width || 1) : 1;
+                var compHeight = comp.meta ? (comp.meta.height || 1) : 1;
+                
+                // Check if the tile is within this component's footprint
+                if (tileX >= comp.x && tileX < comp.x + compWidth &&
+                    tileY >= comp.y && tileY < comp.y + compHeight) {
+                    return comp;
+                }
+            }
+        }
+        
+        return null;
+    };
+    
+    // Redraw floor terrain over a removed component area
+    MapUi.prototype._redrawFloorOverComponent = function(componentX, componentY, componentWidth, componentHeight) {
+        if (!this.terrainsImage || !this.ctx) return;
+        
+        var meta = this.factory.getMeta();
+        var terrainMap = meta.terrainMap;
+        var terrains = meta.terrains;
+        
+        if (!terrainMap || !terrains) return;
+        
+        // Redraw floor tiles over the component area
+        for (var y = componentY; y < componentY + componentHeight; y++) {
+            for (var x = componentX; x < componentX + componentWidth; x++) {
+                // Check bounds
+                if (x < 0 || x >= meta.tilesX || y < 0 || y >= meta.tilesY) continue;
+                
+                var index = y * meta.tilesX + x;
+                var terrainCode = terrainMap[index];
+                var terrainName = terrains[terrainCode];
+                
+                // Only redraw floor tiles (dash character in buildMap)
+                if (terrainName === "floor") {
+                    var drawX = x * this.tileSize;
+                    var drawY = y * this.tileSize;
+                    
+                    // Use floor terrain mapping (row 1, 6 variants)
+                    var variantX = Math.floor(6 * Math.random()) * (this.tileSize + 1);
+                    var variantY = 1 * (this.tileSize + 1);
+                    
+                    this.ctx.drawImage(
+                        this.terrainsImage,
+                        variantX, variantY,
+                        this.tileSize, this.tileSize,
+                        drawX, drawY,
+                        this.tileSize, this.tileSize
+                    );
+                }
+            }
+        }
+        
+        // Also redraw terrain borders for the affected area
+        this._redrawTerrainBordersInArea(componentX, componentY, componentWidth, componentHeight);
+    };
+    
+    // Redraw terrain borders in a specific area
+    MapUi.prototype._redrawTerrainBordersInArea = function(startX, startY, width, height) {
+        if (!this.terrainsImage || !this.ctx) return;
+        
+        var meta = this.factory.getMeta();
+        var terrainMap = meta.terrainMap;
+        var terrains = meta.terrains;
+        
+        if (!terrainMap || !terrains) return;
+        
+        // Redraw borders for the affected area and its neighbors
+        var borderX = Math.max(0, startX - 1);
+        var borderY = Math.max(0, startY - 1);
+        var borderWidth = Math.min(meta.tilesX - borderX, width + 2);
+        var borderHeight = Math.min(meta.tilesY - borderY, height + 2);
+        
+        for (var y = borderY; y < borderY + borderHeight; y++) {
+            for (var x = borderX; x < borderX + borderWidth; x++) {
+                var index = y * meta.tilesX + x;
+                var terrainCode = terrainMap[index];
+                var terrainName = terrains[terrainCode];
+                
+                if (terrainName === "floor") {
+                    // Redraw floor borders
+                    this._drawTerrainBordersForTile(x, y, 7, 1, { grass: true, road: true });
+                } else if (terrainName === "wall") {
+                    // Redraw wall borders
+                    this._drawTerrainBordersForTile(x, y, 7, 1, { floor: false, grass: true, road: true });
+                    this._drawTerrainBordersForTile(x, y, 10, 1, { floor: true, grass: true, road: true });
+                }
+            }
+        }
+    };
+    
+    // Draw terrain borders for a specific tile
+    MapUi.prototype._drawTerrainBordersForTile = function(tileX, tileY, borderRow, variants, allowedTerrains) {
+        if (!this.terrainsImage || !this.ctx) return;
+        
+        var tileSize = this.tileSize;
+        var g = tileSize + 1;
+        var x = tileX * tileSize;
+        var y = tileY * tileSize;
+        
+        // Get neighboring tiles
+        var top = this._getTerrainAt(tileX, tileY - 1, this.factory.getMeta().terrainMap, this.factory.getMeta());
+        var right = this._getTerrainAt(tileX + 1, tileY, this.factory.getMeta().terrainMap, this.factory.getMeta());
+        var bottom = this._getTerrainAt(tileX, tileY + 1, this.factory.getMeta().terrainMap, this.factory.getMeta());
+        var left = this._getTerrainAt(tileX - 1, tileY, this.factory.getMeta().terrainMap, this.factory.getMeta());
+        var topRight = this._getTerrainAt(tileX + 1, tileY - 1, this.factory.getMeta().terrainMap, this.factory.getMeta());
+        var topLeft = this._getTerrainAt(tileX - 1, tileY - 1, this.factory.getMeta().terrainMap, this.factory.getMeta());
+        var bottomRight = this._getTerrainAt(tileX + 1, tileY + 1, this.factory.getMeta().terrainMap, this.factory.getMeta());
+        var bottomLeft = this._getTerrainAt(tileX - 1, tileY + 1, this.factory.getMeta().terrainMap, this.factory.getMeta());
+        
+        // Check if neighbors are allowed terrain types
+        var o = !top || allowedTerrains[this._getTerrainName(top)];
+        var s = !right || allowedTerrains[this._getTerrainName(right)];
+        var a = !bottom || allowedTerrains[this._getTerrainName(bottom)];
+        var u = !left || allowedTerrains[this._getTerrainName(left)];
+        var c = !topRight || allowedTerrains[this._getTerrainName(topRight)];
+        var l = !topLeft || allowedTerrains[this._getTerrainName(topLeft)];
+        var h = !bottomRight || allowedTerrains[this._getTerrainName(bottomRight)];
+        var p = !bottomLeft || allowedTerrains[this._getTerrainName(bottomLeft)];
+        
+        // Calculate border positions
+        var X = borderRow * g;
+        var y_pos = (borderRow + 1) * g;
+        var v = (borderRow + 2) * g;
+        var variant = Math.floor(variants * Math.random()) * g;
+        
+        // Draw corner borders
+        if (o && s) this.ctx.drawImage(this.terrainsImage, 3 * g + 10, v + 0, 11, 11, x + 10, y + 0, 11, 11);
+        if (o && u) this.ctx.drawImage(this.terrainsImage, 3 * g + 0, v + 0, 11, 11, x + 0, y + 0, 11, 11);
+        if (a && s) this.ctx.drawImage(this.terrainsImage, 3 * g + 10, v + 10, 11, 11, x + 10, y + 10, 11, 11);
+        if (a && u) this.ctx.drawImage(this.terrainsImage, 3 * g + 0, v + 10, 11, 11, x + 0, y + 10, 11, 11);
+        
+        // Draw edge lines
+        var b = u ? 10 : 0;
+        var S = s ? 10 : 0;
+        var G = o ? 10 : 0;
+        var T = a ? 10 : 0;
+        
+        if (o) this.ctx.drawImage(this.terrainsImage, variant + 0 + b, X + 0 + 0, tileSize - b - S, 11, x + 0 + b, y + 0, tileSize - b - S, 11);
+        if (a) this.ctx.drawImage(this.terrainsImage, variant + 0 + b, X + 0 + 10, tileSize - b - S, 11, x + 0 + b, y + 10, tileSize - b - S, 11);
+        if (s) this.ctx.drawImage(this.terrainsImage, variant + 10, y_pos + 0 + G, 11, tileSize - G - T, x + 10, y + 0 + G, 11, tileSize - G - T);
+        if (u) this.ctx.drawImage(this.terrainsImage, variant + 0, y_pos + 0 + G, 11, tileSize - G - T, x + 0, y + 0 + G, 11, tileSize - G - T);
+    };
+    
+    // Helper function to get terrain name from terrain code
+    MapUi.prototype._getTerrainName = function(terrainCode) {
+        if (!terrainCode) return null;
+        var meta = this.factory.getMeta();
+        return meta.terrains ? meta.terrains[terrainCode] : null;
     };
     
     return MapUi;

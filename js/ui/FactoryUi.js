@@ -56,15 +56,8 @@ define("ui/FactoryUi", [
         // Create the factory layout with proper containers
         this._createFactoryLayout();
         
-        // Handle premium fullscreen mode
-        if (this.game.getIsPremium()) {
-            $(".main").addClass("fullScreen");
-            var mapContainer = this.container.find(".mapContainer");
-            if (mapContainer.length > 0) {
-                mapContainer.css("width", $(window).width() - 250);
-                mapContainer.css("height", $(window).height() - 150);
-            }
-        }
+        // Remove the old premium handling code - it's now handled by _applyPremiumMapDimensions()
+        // The new system properly handles both premium and non-premium layouts
         
         // Display UI components in their proper containers
         this.menuUi.display(this.container.find(".menuContainer"));
@@ -90,45 +83,199 @@ define("ui/FactoryUi", [
      * @private
      */
     FactoryUi.prototype._createFactoryLayout = function() {
+        // Add this right after this.container.html(html); in _createFactoryLayout
+// Temporary global access for testing
+//DJPP Remove
+window.factoryUi = this;
+console.log("FactoryUi now accessible globally as window.factoryUi");
         if (this.container && this.container.length > 0) {
-            var html = '<div class="factory-ui-container" style="font-family: Arial, sans-serif; height: 100%; display: flex; flex-direction: column;">';
+            var html = '';
             
-            // Factory header
-            html += '<div class="factory-header" style="padding: 15px; background: #f8f9fa; border-bottom: 1px solid #dee2e6;">';
-            html += '<h2 style="color: #4CAF50; margin: 0;">🏭 Factory: ' + this.factory.getMeta().name + '</h2>';
-            html += '<p style="margin: 5px 0 0 0; color: #666;">Status: ' + (this.factory.getIsPaused() ? '⏸️ Paused' : '▶️ Running') + ' | Size: ' + this.factory.getMeta().width + ' x ' + this.factory.getMeta().height + '</p>';
-            html += '</div>';
+            // Use exact same table structure as original app
+            html += '<table class="factoryBox" width="100%" cellspacing="0" cellpadding="0" border="0">';
             
-            // Main factory layout
-            html += '<div style="flex: 1; display: flex; overflow: hidden;">';
+            // Top row: Overview + Top controls
+            html += '    <tr>';
+            html += '        <td class="overviewArea" valign="top">';
+            html += '            <div class="overviewContainer"></div>';
+            html += '        </td>';
+            html += '        <td class="topArea" valign="top">';
+            html += '            <div class="topContainer">';
+            html += '                <div class="menuContainer"></div>';
+            html += '                <div class="infoContainer"></div>';
+            html += '                <div class="controlsContainer"></div>';
+            html += '            </div>';
+            html += '        </td>';
+            html += '    </tr>';
             
-            // Left sidebar - Menu and Components
-            html += '<div style="z-index:20;width: 250px; background: #f8f9fa; border-right: 1px solid #dee2e6; display: flex; flex-direction: column;">';
-            
-            // Menu container
-            html += '<div class="menuContainer menu-container" style="flex: 1; padding: 15px; border-bottom: 1px solid #dee2e6;"></div>';
-            
-            // Components container
-            html += '<div class="componentsContainer components-container" style="flex: 1; padding: 15px;"></div>';
-            
-            html += '</div>';
-            
-            // Main area - Map
-            html += '<div style="flex: 1; position: relative;">';
-            html += '<div class="mapContainer map-container" style="width: 100%; height: 100%; background: #e9ecef;"></div>';
-            html += '</div>';
-            
-            html += '</div>';
-            
-            // Status bar
-            html += '<div class="factory-status-bar" style="padding: 10px; background: #f8f9fa; border-top: 1px solid #dee2e6; font-size: 12px; color: #666;">';
-            html += '<span>🎉 <strong>FACTORY MAP IS NOW WORKING!</strong> You can see the factory and place components!</span>';
-            html += '</div>';
-            
-            html += '</div>';
+            // Bottom row: Components + Map
+            html += '    <tr>';
+            html += '        <td class="componentsArea" valign="top">';
+            html += '            <div class="componentsContainer"></div>';
+            html += '            <div class="mapToolsContainer"></div>';
+            html += '        </td>';
+            html += '        <td class="mapArea" valign="top">';
+            html += '            <div class="mapContainer"></div>';
+            html += '        </td>';
+            html += '    </tr>';
+            html += '</table>';
             
             this.container.html(html);
+            
+            // Set up container references
+            this.overviewContainer = this.container.find('.overviewContainer');
+            this.menuContainer = this.container.find('.menuContainer');
+            this.infoContainer = this.container.find('.infoContainer');
+            this.controlsContainer = this.container.find('.controlsContainer');
+            this.componentsContainer = this.container.find('.componentsContainer');
+            this.mapToolsContainer = this.container.find('.mapToolsContainer');
+            this.mapContainer = this.container.find('.mapContainer');
+            
+            // Apply premium user logic for mapArea dimensions
+            this._applyPremiumMapDimensions();
+            
+            // Listen for premium status changes
+            this._setupPremiumStatusListener();
         }
+    };
+    
+    /**
+     * Set up listener for premium status changes
+     * @private
+     */
+    FactoryUi.prototype._setupPremiumStatusListener = function() {
+        if (this.factory && this.factory.getGame()) {
+            var game = this.factory.getGame();
+            
+            // Listen for premium status changes
+            game.getEventManager().addListener(
+                "FactoryUi",
+                "PREMIUM_STATUS_CHANGED",
+                function(isPremium) {
+                    this.refreshPremiumDimensions();
+                }.bind(this)
+            );
+        }
+    };
+    
+    /**
+     * Check if current user is premium
+     * Based on original app's premium detection logic
+     * @returns {boolean} True if user is premium
+     * @private
+     */
+    FactoryUi.prototype._isPremiumUser = function() {
+        // Check if user has premium features enabled
+        // This should integrate with your game's premium system
+        
+        // For now, check if user has any premium achievements or purchases
+        if (this.factory && this.factory.getGame()) {
+            var game = this.factory.getGame();
+            
+            // Check for premium achievements (from original app logic)
+            if (game.getAchievementsManager) {
+                var achievementsManager = game.getAchievementsManager();
+                
+            }
+        }
+        
+        // Default to non-premium (like original app)
+        return false;
+    };
+    
+    /**
+     * Apply premium user logic for mapArea dimensions
+     * Based on original app's premium user handling
+     * @private
+     */
+    FactoryUi.prototype._applyPremiumMapDimensions = function() {
+        if (this.mapContainer && this.mapContainer.length > 0) {
+            var isPremium = this._isPremiumUser();
+            
+            console.log("FactoryUi: Applying premium dimensions, isPremium:", isPremium);
+            
+            // Apply the correct CSS class based on premium status
+            // This matches the original app's behavior
+            if (isPremium) {
+                // Premium users get full-screen layout (no ads)
+                $('.main').removeClass('mainWithAdd');
+                
+                console.log("FactoryUi: Applied premium (full-screen) layout - removed mainWithAdd class");
+            } else {
+                // Non-premium users get standard layout with ad space
+                $('.main').addClass('mainWithAdd');
+                
+                console.log("FactoryUi: Applied non-premium (standard) layout with mainWithAdd class");
+            }
+            
+            // Let CSS handle the dimensions - don't override with inline styles
+            console.log("FactoryUi: CSS classes applied, dimensions handled by CSS rules");
+        }
+    };
+    
+    /**
+     * Refresh premium map dimensions
+     * Call this when premium status changes
+     * @public
+     */
+    FactoryUi.prototype.refreshPremiumDimensions = function() {
+        this._applyPremiumMapDimensions();
+    };
+    
+    /**
+     * Set premium status and update dimensions
+     * @param {boolean} isPremium - Whether user is premium
+     * @public
+     */
+    FactoryUi.prototype.setPremiumStatus = function(isPremium) {
+        if (this.factory && this.factory.getGame()) {
+            var game = this.factory.getGame();
+            
+            // Update premium status in game if method exists
+            if (game.setIsPremium && typeof game.setIsPremium === 'function') {
+                game.setIsPremium(isPremium);
+            }
+            
+            // Refresh the UI dimensions
+            this.refreshPremiumDimensions();
+        }
+    };
+    
+    /**
+     * Get current premium status
+     * @returns {boolean} True if user is premium
+     * @public
+     */
+    FactoryUi.prototype.getPremiumStatus = function() {
+        return this._isPremiumUser();
+    };
+    
+    /**
+     * Toggle premium status for testing
+     * @public
+     */
+    FactoryUi.prototype.togglePremiumStatus = function() {
+        var currentStatus = this.getPremiumStatus();
+        this.setPremiumStatus(!currentStatus);
+        
+        console.log("Premium status toggled to:", !currentStatus);
+        return !currentStatus;
+    };
+    
+    /**
+     * Debug method to check current CSS class state
+     * @public
+     */
+    FactoryUi.prototype.debugLayoutState = function() {
+        console.log("=== Layout Debug Info ===");
+        console.log("Body classes:", $('body').attr('class'));
+        console.log("Main classes:", $('.main').attr('class'));
+        console.log("MapContainer dimensions:", this.mapContainer ? {
+            width: this.mapContainer.css('width'),
+            height: this.mapContainer.css('height')
+        } : "No mapContainer");
+        console.log("Current premium status:", this.getPremiumStatus());
+        console.log("mainWithAdd class present:", $('.main').hasClass('mainWithAdd'));
     };
     
     /**

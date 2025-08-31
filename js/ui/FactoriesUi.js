@@ -9,6 +9,60 @@ define("ui/FactoriesUi", [
     // "game/action/BuyFactoryAction"
 ], function() {
     
+    // Number formatting from original app
+    var names = {
+        6: " million",
+        9: " billion",
+        12: " trillion",
+        15: " quadrillion",
+        18: " quintillion",
+        21: " sextillion",
+        24: " septillion",
+        27: " octillion",
+        30: " nonillion",
+        33: " decillion",
+        36: " undecillion",
+        39: " duodecillion",
+        42: " tredecillion",
+        45: " quattuordecillion",
+        48: " quindecillion",
+        51: " sexdecillion",
+        54: " septendecillion",
+        57: " octodecillion",
+        60: " novemdecillion",
+        63: " vigintillion"
+    };
+    
+    var numberFormat = {
+        format: function(num) {
+            if (num === undefined || num === null) return "?";
+            if (Math.abs(num) < 10) return Math.round(100 * num) / 100;
+            if (Math.abs(num) < 1e3) return Math.round(10 * num) / 10;
+            if (Math.abs(num) < 1e6) {
+                return Number(num)
+                    .toFixed(0)
+                    .replace(/\d(?=(\d{3})+$)/g, "$& ");
+            }
+            
+            var parts = num.toString().split("e+", 2);
+            var mantissa = parts[0];
+            var decimalPlaces = mantissa < 0 ? 2 : 1;
+            var power = 3 * Math.floor((Number(mantissa).toFixed(0).length - decimalPlaces) / 3);
+            var totalPower = power + (parts[1] ? Number(parts[1]) : 0);
+            var remainder = totalPower % 3;
+            
+            mantissa *= Math.pow(10, remainder - power);
+            totalPower -= remainder;
+            
+            return Math.round(100 * mantissa) / 100 + (names[totalPower] ? names[totalPower] : "e" + totalPower);
+        }
+    };
+    
+    // Shortcut function like original app
+    var nf = function(num) {
+        return numberFormat.format(num);
+    };
+    
     /**
      * FactoriesUi constructor
      * @param {Object} globalUiEm - Global UI event manager
@@ -83,36 +137,70 @@ define("ui/FactoriesUi", [
      */
     FactoriesUi.prototype._showPlaceholderUi = function(factories) {
         if (this.container && this.container.length > 0) {
-            var html = '<div style="padding: 20px; font-family: Arial, sans-serif;">';
-            html += '<h2 style="color: #2196F3;">🏭 Factories List</h2>';
-            html += '<div style="padding: 15px; border-radius: 5px; margin: 10px 0;">';
-            html += '<h3>Game Statistics:</h3>';
-            html += '<p><strong>Money:</strong> <span id="money">$0</span></p>';
-            html += '<p><strong>Research Points:</strong> <span id="researchPoints">0</span></p>';
-            html += '<p><strong>Income:</strong> <span id="income">$0</span></p>';
-            html += '<p><strong>Research Income:</strong> <span id="researchIncome">0</span></p>';
-            html += '<p><strong>Ticks:</strong> <span id="ticks">0</span></p>';
+            var html = '';
+            
+            // Header section - exactly like original app
+            html += '<div class="headerXX">';
+            html += '    You have <span class="money">$<b id="money"></b></span> to spend. Isn\'t that nice.';
+            html += '    Average total income <span class="money">$<b id="income"></b></span>.<br />';
+            html += '    <span class="research"><b id="researchPoints"></b></span> research points.';
+            html += '    Avg production <span class="research"><b id="researchIncome"></b></span>';
             html += '</div>';
             
-            html += '<div style="margin: 20px 0;">';
-            html += '<h3>Available Factories:</h3>';
+            // Help section - exactly like original app
+            html += '<div class="helpXX">';
+            html += '    <div style="float:right"><span id="ticks"></span> ticks/sec</div>';
+            html += '    Buy more land to create even bigger empire. Go ahead, buy some!';
+            html += '</div>';
+            
+            // Factory selection - exactly like original app
+            html += '<div id="factorySelection" class="factories">';
             
             for (var i = 0; i < factories.length; i++) {
                 var factory = factories[i];
-                html += '<div class="factoryButton" data-id="' + factory.id + '" style="border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 5px;">';
-                html += '<h4>' + factory.name + '</h4>';
-                html += '<p><strong>Price:</strong> ' + factory.price + '</p>';
-                html += '<p><strong>Status:</strong> ' + (factory.isBought ? 'Owned' : 'Available') + '</p>';
-                if (factory.isBought) {
-                    html += '<p><strong>Paused:</strong> ' + (factory.isPaused ? 'Yes' : 'No') + '</p>';
-                    html += '<button class="selectButton" data-id="' + factory.id + '" style="background: #4CAF50; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer;">SELECT</button>';
+                
+                html += '<div class="factoryButton" data-id="' + factory.id + '">';
+                html += '    <div class="name">';
+                html += '        ' + factory.name;
+                html += '    </div>';
+                html += '    <span class="paused">';
+                if (factory.isPaused) {
+                    html += '&lt;&lt; Paused &gt;&gt;';
                 } else {
-                    html += '<button class="buyButton" data-id="' + factory.id + '" style="background: #2196F3; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer;">BUY</button>';
+                    html += '&nbsp;';
                 }
+                html += '</span>';
+                
+                if (factory.isBought) {
+                    html += '';
+                    html += '    <div class="productionTitle">Income</div>';
+                    html += '    <div class="textLine money" data-id="' + factory.id + '" data-key="income">-</div>';
+                    html += '    <div class="productionTitle">Research</div>';
+                    html += '    <div class="textLine research" data-id="' + factory.id + '" data-key="researchProduction">-</div>';
+                    html += '    <div class="button selectButton" data-id="' + factory.id + '">SELECT</div>';
+                    html += '';
+                } else {
+                    html += '';
+                    html += '    <div class="productionTitle price">Price</div>';
+                    html += '    <div class="textLine money">$' + factory.price + '</div>';
+                    html += '    <div class="button buyButton" data-id="' + factory.id + '">BUY</div>';
+                    html += '';
+                }
+                
                 html += '</div>';
             }
             
-            html += '</div>';
+            // Missions button - exactly like original app
+            html += '    <div class="missionsButton" id="missionsButton">';
+            html += '        <div class="name">';
+            html += '            Challenges';
+            html += '        </div>';
+            html += '        <div class="description">';
+            html += '            Test your knowledge with these custom scenarios. May cause brain injury!';
+            html += '        </div>';
+            html += '        <div class="button">PLAY</div>';
+            html += '    </div>';
+            
             html += '</div>';
             
             this.container.html(html);
@@ -209,9 +297,7 @@ define("ui/FactoriesUi", [
      * @private
      */
     FactoriesUi.prototype._formatNumber = function(num) {
-        // TODO: Use proper number formatting when available
-        // return nf(num);
-        return num ? num.toString() : "0";
+        return numberFormat.format(num);
     };
     
     /**

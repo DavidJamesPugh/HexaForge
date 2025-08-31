@@ -47,34 +47,36 @@ define("ui/factory/MenuUi", [
     };
     
     MenuUi.prototype._createMenuHtml = function(data) {
-        var html = '<div class="factoryMenu">';
+        // Use exact same structure as original app's factory/menu.html
+        var html = '<div class="menuBox">';
         
-        if (data.hasResearch) {
-            html += '<button id="researchButton" class="menuButton">Research</button>';
-        }
-        
-        if (data.hasUpgrades) {
-            html += '<button id="upgradesButton" class="menuButton">Upgrades</button>';
-        }
-        
-        if (data.hasAchievements) {
-            html += '<button id="achievementsButton" class="menuButton">Achievements</button>';
+        if (data.isMission) {
+            html += '<a href="javascript:void(0);" id="missionsButton">Challenges</a>';
+            html += '<a href="javascript:void(0);" id="mainGameButton">Factories</a>';
+        } else {
+            html += '<a href="javascript:void(0);" id="factoriesButton">Factories</a>';
         }
         
         if (data.hasStatistics) {
-            html += '<button id="statisticsButton" class="menuButton">Statistics</button>';
+            html += '<a href="javascript:void(0);" id="statisticsButton">Statistics</a>';
         }
         
-        html += '<button id="mainGameButton" class="menuButton">Main Game</button>';
-        html += '<button id="factoriesButton" class="menuButton">Factories</button>';
-        html += '<button id="helpButton" class="menuButton">Help</button>';
-        html += '<button id="extraButton" class="menuButton">Purchases</button>';
-        html += '<button id="settingsButton" class="menuButton">Settings</button>';
-        html += '<button id="timeTravelButton" class="menuButton">Time Travel</button>';
-        
-        if (data.isMission) {
-            html += '<button id="missionsButton" class="menuButton">Missions</button>';
+        if (data.hasResearch) {
+            html += '<a href="javascript:void(0);" id="researchButton">Research</a>';
         }
+        
+        if (data.hasUpgrades) {
+            html += '<a href="javascript:void(0);" id="upgradesButton">Upgrades</a>';
+        }
+        
+        if (data.hasAchievements) {
+            html += '<a href="javascript:void(0);" id="achievementsButton">Achievements</a>';
+        }
+        
+        html += '<a href="javascript:void(0);" id="extraButton">Extra</a>';
+        html += '<a href="javascript:void(0);" id="timeTravelButton">Time travel</a>';
+        html += '<a href="javascript:void(0);" id="settingsButton">Settings</a>';
+        html += '<a href="javascript:void(0);" id="helpButton">Help</a>';
         
         html += '</div>';
         return html;
@@ -83,6 +85,7 @@ define("ui/factory/MenuUi", [
     MenuUi.prototype._setupEventListeners = function() {
         var self = this;
         
+        // All event listeners now work with <a> tags instead of buttons
         this.container.find("#missionsButton").click(function() {
             self.globalUiEm.invokeEvent(GlobalUiEvent.SHOW_MISSIONS);
         });
@@ -108,7 +111,7 @@ define("ui/factory/MenuUi", [
         });
         
         this.container.find("#helpButton").click(function() {
-            self.gameUiEm.invokeEvent(GameUiEvent.SHOW_HELP);
+            self.globalUiEm.invokeEvent(GlobalUiEvent.SHOW_HELP);
         });
         
         this.container.find("#statisticsButton").click(function() {
@@ -116,15 +119,15 @@ define("ui/factory/MenuUi", [
         });
         
         this.container.find("#extraButton").click(function() {
-            self.gameUiEm.invokeEvent(GameUiEvent.SHOW_PURCHASES);
+            self.globalUiEm.invokeEvent(GlobalUiEvent.SHOW_PURCHASES);
         });
         
         this.container.find("#settingsButton").click(function() {
-            self.gameUiEm.invokeEvent(GameUiEvent.SHOW_SETTINGS);
+            self.globalUiEm.invokeEvent(GlobalUiEvent.SHOW_SETTINGS);
         });
         
         this.container.find("#timeTravelButton").click(function() {
-            self.gameUiEm.invokeEvent(GameUiEvent.SHOW_TIME_TRAVEL);
+            self.globalUiEm.invokeEvent(GlobalUiEvent.SHOW_TIME_TRAVEL);
         });
     };
     
