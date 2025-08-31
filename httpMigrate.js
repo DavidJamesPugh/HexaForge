@@ -9,6 +9,10 @@ function httpMigration() {
     return {
         inIndexFile: () => {
             setTimeout(() => {
+                // Skip migration for localhost development
+                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                    return;
+                }
                 if (window.location.protocol === http) {
                     if (!window.localStorage[localstorageExistenceCheckKey]) {
                         document.location = NEW

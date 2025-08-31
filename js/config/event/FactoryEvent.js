@@ -1,5 +1,24 @@
-// TODO: Implement FactoryEvent constants module
-define("config/event/GameEvent", [], function() {
-    // Placeholder - implement when ready
-    return {};
+/**
+ * FactoryEvent constants - defines all factory-related event types
+ * Extracted from original_app.js
+ */
+define("config/event/FactoryEvent", [], function() {
+    return {
+        FACTORY_COMPONENTS_CHANGED: "FACTORY_COMPONENTS_CHANGED",
+        TILE_TYPE_CHANGED: "TILE_TYPE_CHANGED",
+        FACTORY_TICK: "FACTORY_TICK",
+        FACTORY_MOUSE_OUT: "FACTORY_MOUSE_OUT",
+        FACTORY_MOUSE_MOVE: "FACTORY_MOUSE_MOVE",
+        FACTORY_MOUSE_DOWN: "FACTORY_MOUSE_DOWN",
+        FACTORY_MOUSE_UP: "FACTORY_MOUSE_UP",
+        FACTORY_SCROLL_START: "FACTORY_SCROLL_START",
+        FACTORY_SCROLL_END: "FACTORY_SCROLL_END",
+        COMPONENT_META_SELECTED: "COMPONENT_META_SELECTED",
+        HOVER_COMPONENT_META: "HOVER_COMPONENT_META",
+        MAP_TOOL_SELECTED: "MAP_TOOL_SELECTED",
+        COMPONENT_SELECTED: "COMPONENT_SELECTED",
+        REFRESH_COMPONENT_INFO: "REFRESH_COMPONENT_INFO",
+        UPGRADE_BOUGHT: "UPGRADE_BOUGHT",
+        OPEN_SCREENSHOT_VIEW: "SHOW_SCREENSHOT_VIEW"
+    };
 });
