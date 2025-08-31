@@ -24,4 +24,4 @@ dist-ssr
 *.env
 /.github/
 /public/
-Todo.txt
+original_app.js

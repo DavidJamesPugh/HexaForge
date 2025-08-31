@@ -6,6 +6,16 @@ const calculatePrice = (base, multiplier) => {
   return base * Math.pow(1000, multiplier);
 };
 
+// Helper function to calculate max values (20x the base amount) like the original app
+const calculateMax = (amount) => {
+  return 20 * amount;
+};
+
+// Helper function to calculate sell prices based on production costs
+const calculateSellPrice = (basePrice, margin = 0) => {
+  return Math.ceil(basePrice * (1 + margin));
+};
+
 const components = {
   // Component selection layout for the UI
   selection: [
@@ -68,7 +78,10 @@ const components = {
       runningCostPerTick: 0,
       price: 10,
       priceRefund: 1,
-      strategy: { type: "transport", queueSize: 2 },
+      strategy: { 
+        type: "transport", 
+        queueSize: 2 
+      },
     },
     {
       id: "garbageCollector",
@@ -85,7 +98,12 @@ const components = {
       requiresResearch: "metalsLab",
       price: 2500,
       priceRefund: 0.5,
-      strategy: { type: "garbage", max: 15, removeAmount: 5, interval: 10 },
+      strategy: { 
+        type: "garbage", 
+        max: 15, 
+        removeAmount: 5, 
+        interval: 10 
+      },
     },
     {
       id: "sorterVertical",
@@ -103,7 +121,10 @@ const components = {
       priceRefund: 1,
       allowedInputs: { "0:1:left": true, "0:1:right": true },
       allowedOutputs: { "0:0": true, "0:1": true, "0:2": true },
-      strategy: { type: "sorter", interval: 1 },
+      strategy: { 
+        type: "sorter", 
+        interval: 1 
+      },
     },
     {
       id: "sorterHorizontal",
@@ -121,7 +142,10 @@ const components = {
       priceRefund: 1,
       allowedInputs: { "1:0:top": true, "1:0:bottom": true },
       allowedOutputs: { "0:0": true, "1:0": true, "2:0": true },
-      strategy: { type: "sorter", interval: 1 },
+      strategy: { 
+        type: "sorter", 
+        interval: 1 
+      },
     },
     {
       id: "ironBuyer",
@@ -138,7 +162,13 @@ const components = {
       priceRefund: 1,
       strategy: { 
         type: "buyer", 
-        purchaseResources: { ironOre: { price: 0, amount: 1 } }, 
+        purchaseResources: { 
+          ironOre: { 
+            price: 0, 
+            amount: 1,
+            max: calculateMax(1) // 20x the base amount
+          } 
+        }, 
         outputResourcesOrder: ["ironOre"], 
         interval: 10 
       },
@@ -159,8 +189,18 @@ const components = {
       requiresResearch: null,
       strategy: { 
         type: "converter", 
-        inputResources: { ironOre: { perOutputResource: 2 } }, 
-        production: { iron: { amount: 1 } }, 
+        inputResources: { 
+          ironOre: { 
+            perOutputResource: 2,
+            max: calculateMax(2) // 20x the base amount
+          } 
+        }, 
+        production: { 
+          iron: { 
+            amount: 1,
+            max: calculateMax(1) // 20x the base amount
+          } 
+        }, 
         outputResourcesOrder: ["iron"], 
         interval: 10 
       },
@@ -181,7 +221,14 @@ const components = {
       requiresResearch: null,
       strategy: { 
         type: "seller", 
-        resources: { iron: { amount: 2, sellPrice: 2.5, sellMargin: 0 } }, 
+        resources: { 
+          iron: { 
+            amount: 2, 
+            sellPrice: 2.5, 
+            sellMargin: 0,
+            max: calculateMax(2) // 20x the base amount
+          } 
+        }, 
         interval: 10 
       },
     },
@@ -201,7 +248,13 @@ const components = {
       requiresResearch: "steelComponents",
       strategy: { 
         type: "buyer", 
-        purchaseResources: { coal: { price: 5, amount: 2 } }, 
+        purchaseResources: { 
+          coal: { 
+            price: 5, 
+            amount: 2,
+            max: calculateMax(2) // 20x the base amount
+          } 
+        }, 
         outputResourcesOrder: ["coal"], 
         interval: 10 
       },
@@ -222,8 +275,22 @@ const components = {
       requiresResearch: "steelComponents",
       strategy: { 
         type: "converter", 
-        inputResources: { iron: { perOutputResource: 4 }, coal: { perOutputResource: 4 } }, 
-        production: { steel: { amount: 1 } }, 
+        inputResources: { 
+          iron: { 
+            perOutputResource: 4,
+            max: calculateMax(4) // 20x the base amount
+          }, 
+          coal: { 
+            perOutputResource: 4,
+            max: calculateMax(4) // 20x the base amount
+          } 
+        }, 
+        production: { 
+          steel: { 
+            amount: 1,
+            max: calculateMax(1) // 20x the base amount
+          } 
+        }, 
         outputResourcesOrder: ["steel"], 
         interval: 10 
       },
@@ -244,7 +311,14 @@ const components = {
       requiresResearch: "steelComponents",
       strategy: { 
         type: "seller", 
-        resources: { steel: { amount: 2, sellPrice: 0, sellMargin: 0.6 } }, 
+        resources: { 
+          steel: { 
+            amount: 2, 
+            sellPrice: 0, 
+            sellMargin: 0.6,
+            max: calculateMax(2) // 20x the base amount
+          } 
+        }, 
         interval: 10 
       },
     },
@@ -264,7 +338,13 @@ const components = {
       requiresResearch: "plasticComponents",
       strategy: { 
         type: "buyer", 
-        purchaseResources: { oil: { price: 200, amount: 1 } }, 
+        purchaseResources: { 
+          oil: { 
+            price: 200, 
+            amount: 1,
+            max: calculateMax(1) // 20x the base amount
+          } 
+        }, 
         outputResourcesOrder: ["oil"], 
         interval: 10 
       },
@@ -285,7 +365,13 @@ const components = {
       requiresResearch: "plasticComponents",
       strategy: { 
         type: "buyer", 
-        purchaseResources: { gas: { price: 80, amount: 1 } }, 
+        purchaseResources: { 
+          gas: { 
+            price: 80, 
+            amount: 1,
+            max: calculateMax(1) // 20x the base amount
+          } 
+        }, 
         outputResourcesOrder: ["gas"], 
         interval: 10 
       },
@@ -307,11 +393,29 @@ const components = {
       strategy: {
         type: "converter",
         inputResources: { 
-          oil: { perOutputResource: 4 }, 
-          coal: { perOutputResource: 4 }, 
-          gas: { perOutputResource: 2 } 
+          oil: { 
+            perOutputResource: 4,
+            max: calculateMax(4) // 20x the base amount
+          }, 
+          coal: { 
+            perOutputResource: 4,
+            max: calculateMax(4) // 20x the base amount
+          }, 
+          gas: { 
+            perOutputResource: 2,
+            max: calculateMax(2) // 20x the base amount
+          } 
         },
-        production: { plastic: { amount: 1 }, waste: { amount: 1 } },
+        production: { 
+          plastic: { 
+            amount: 1,
+            max: calculateMax(1) // 20x the base amount
+          }, 
+          waste: { 
+            amount: 1,
+            max: calculateMax(1) // 20x the base amount
+          } 
+        },
         productionRemoveResearch: { waste: "cleanPlastic" },
         outputResourcesOrder: ["plastic", "waste"],
         interval: 10,
@@ -333,7 +437,14 @@ const components = {
       requiresResearch: "plasticComponents",
       strategy: { 
         type: "seller", 
-        resources: { plastic: { amount: 1, sellPrice: 0, sellMargin: 0.6 } }, 
+        resources: { 
+          plastic: { 
+            amount: 1, 
+            sellPrice: 0, 
+            sellMargin: 0.6,
+            max: calculateMax(1) // 20x the base amount
+          } 
+        }, 
         interval: 10 
       },
     },
@@ -353,7 +464,13 @@ const components = {
       requiresResearch: "electronicsComponents",
       strategy: { 
         type: "buyer", 
-        purchaseResources: { silicon: { price: 400, amount: 1 } }, 
+        purchaseResources: { 
+          silicon: { 
+            price: 400, 
+            amount: 1,
+            max: calculateMax(1) // 20x the base amount
+          } 
+        }, 
         outputResourcesOrder: ["silicon"], 
         interval: 10 
       },
@@ -374,8 +491,26 @@ const components = {
       requiresResearch: "electronicsComponents",
       strategy: {
         type: "converter",
-        inputResources: { silicon: { perOutputResource: 2 }, plastic: { perOutputResource: 4 } },
-        production: { electronics: { amount: 1 }, waste: { amount: 1 } },
+        inputResources: { 
+          silicon: { 
+            perOutputResource: 2,
+            max: calculateMax(2) // 20x the base amount
+          }, 
+          plastic: { 
+            perOutputResource: 4,
+            max: calculateMax(4) // 20x the base amount
+          } 
+        },
+        production: { 
+          electronics: { 
+            amount: 1,
+            max: calculateMax(1) // 20x the base amount
+          }, 
+          waste: { 
+            amount: 1,
+            max: calculateMax(1) // 20x the base amount
+          } 
+        },
         productionRemoveResearch: { waste: "cleanElectronics" },
         outputResourcesOrder: ["electronics", "waste"],
         interval: 10,
@@ -397,7 +532,14 @@ const components = {
       requiresResearch: "electronicsComponents",
       strategy: { 
         type: "seller", 
-        resources: { electronics: { amount: 1, sellPrice: 0, sellMargin: 2.1 } }, 
+        resources: { 
+          electronics: { 
+            amount: 1, 
+            sellPrice: 0, 
+            sellMargin: 2.1,
+            max: calculateMax(1) // 20x the base amount
+          } 
+        }, 
         interval: 10 
       },
     },
@@ -1094,6 +1236,60 @@ export function getLabComponents() {
 
 export function getResearchCenterComponents() {
   return getComponentsByType('researchCenter');
+}
+
+// Process components to add missing max values and calculate sell prices (like original app)
+export function processComponents() {
+  const processedComponents = components.components.map(component => {
+    const processed = { ...component };
+    
+    // Add max values for buyer components (20x the base amount)
+    if (processed.strategy.type === 'buyer' && processed.strategy.purchaseResources) {
+      for (const resourceId in processed.strategy.purchaseResources) {
+        const resource = processed.strategy.purchaseResources[resourceId];
+        if (!resource.max) {
+          resource.max = calculateMax(resource.amount);
+        }
+      }
+    }
+    
+    // Add max values for converter components (20x the base amount)
+    if (processed.strategy.type === 'converter') {
+      if (processed.strategy.inputResources) {
+        for (const resourceId in processed.strategy.inputResources) {
+          const resource = processed.strategy.inputResources[resourceId];
+          if (!resource.max) {
+            resource.max = calculateMax(resource.perOutputResource);
+          }
+        }
+      }
+      if (processed.strategy.production) {
+        for (const resourceId in processed.strategy.production) {
+          const resource = processed.strategy.production[resourceId];
+          if (!resource.max) {
+            resource.max = calculateMax(resource.amount);
+          }
+        }
+      }
+    }
+    
+    // Add max values for seller components (20x the base amount)
+    if (processed.strategy.type === 'seller' && processed.strategy.resources) {
+      for (const resourceId in processed.strategy.resources) {
+        const resource = processed.strategy.resources[resourceId];
+        if (!resource.max) {
+          resource.max = calculateMax(resource.amount);
+        }
+      }
+    }
+    
+    return processed;
+  });
+  
+  return {
+    ...components,
+    components: processedComponents
+  };
 }
 
 export default components;

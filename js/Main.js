@@ -76,16 +76,16 @@ define("Main", [
      */
     Main.prototype._createImageMap = function() {
         return new ImageMap(gameConfig.imageMap.path).addImages({
-            yellowSelection: "img/mouse/yellow.png",
-            greenSelection: "img/mouse/green.png", 
-            redSelection: "img/mouse/red.png",
-            blueSelection: "img/mouse/selected.png",
-            cantPlace: "img/mouse/cantPlace.png",
-            terrains: "img/terrains.png",
-            components: "img/components.png",
-            componentIcons: "img/componentIcons.png",
-            transportLine: "img/transportLine.png",
-            resources: "img/resources.png"
+            yellowSelection: "mouse/yellow.png",
+            greenSelection: "mouse/green.png", 
+            redSelection: "mouse/red.png",
+            blueSelection: "mouse/selected.png",
+            cantPlace: "mouse/cantPlace.png",
+            terrains: "terrains.png",
+            components: "components.png",
+            componentIcons: "componentIcons.png",
+            transportLine: "transportLine.png",
+            resources: "resources.png"
         });
     };
 
