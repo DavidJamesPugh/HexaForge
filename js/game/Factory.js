@@ -6,11 +6,12 @@ define("game/Factory", [
     "base/EventManager",
     "config/event/FactoryEvent",
     "game/Tile",
+    "game/Component"
     // TODO: These dependencies will need to be implemented as we extract more modules
     // "game/UpgradesManager",
     // "game/AreasManager",
     // "game/FactorySetup"
-], function(EventManager, FactoryEvent, Tile) {
+], function(EventManager, FactoryEvent, Tile, Component) {
     
     /**
      * Factory constructor
@@ -148,6 +149,40 @@ define("game/Factory", [
     Factory.prototype.setIsPaused = function(isPaused) {
         this.isPaused = isPaused;
     };
+    
+    /**
+     * Set factory pause state (alias for setIsPaused)
+     * @param {boolean} isPaused - Whether to pause the factory
+     */
+    Factory.prototype.setPaused = function(isPaused) {
+        this.isPaused = isPaused;
+    };
+    
+    /**
+     * Set whether the factory is bought
+     * @param {boolean} isBought - Whether the factory is purchased
+     */
+    Factory.prototype.setIsBought = function(isBought) {
+        this.isBought = isBought;
+    };
+    
+    /**
+     * Set whether the factory is bought (alias for setIsBought)
+     * @param {boolean} isBought - Whether the factory is purchased
+     */
+    Factory.prototype.setBought = function(isBought) {
+        this.isBought = isBought;
+    };
+    
+    /**
+     * Get a specific tile by coordinates (alias for getTile)
+     * @param {number} x - X coordinate
+     * @param {number} y - Y coordinate
+     * @returns {Object|null} Tile object or null if out of bounds
+     */
+    Factory.prototype.getTileAt = function(x, y) {
+        return this.getTile(x, y);
+    };
 
     /**
      * Check if coordinates are within map bounds
@@ -214,6 +249,74 @@ define("game/Factory", [
         
         // TODO: Trigger components changed event when import is complete
         // this.em.invokeEvent(FactoryEvent.FACTORY_COMPONENTS_CHANGED);
+    };
+    
+    /**
+     * Import factory state from JSON data
+     * @param {Object} factoryData - JSON factory data
+     */
+    Factory.prototype.importFromJson = function(factoryData) {
+        if (!factoryData) return;
+        
+        console.log("Factory.importFromJson called with:", factoryData);
+        
+        // Import factory state
+        if (factoryData.isPaused !== undefined) {
+            this.setPaused(factoryData.isPaused);
+        }
+        if (factoryData.isBought !== undefined) {
+            this.setBought(factoryData.isBought);
+        }
+        
+        // Import component positions
+        if (factoryData.tiles) {
+            this._importTilesFromJson(factoryData.tiles);
+        }
+        
+        // Trigger components changed event like the original app
+        if (this.em && this.em.invokeEvent) {
+            this.em.invokeEvent("FACTORY_COMPONENTS_CHANGED");
+        }
+    };
+    
+    /**
+     * Import tiles and component positions from JSON data
+     * @param {Object} tilesData - JSON tiles data
+     * @private
+     */
+    Factory.prototype._importTilesFromJson = function(tilesData) {
+        if (!tilesData || !this.tiles) return;
+        
+        // Clear existing components first
+        for (var i = 0; i < this.tiles.length; i++) {
+            if (this.tiles[i] && this.tiles[i].setComponent) {
+                this.tiles[i].setComponent(null);
+            }
+        }
+        
+        // Import component positions
+        for (var tileKey in tilesData) {
+            var tileData = tilesData[tileKey];
+            if (tileData && tileData.x !== undefined && tileData.y !== undefined && tileData.componentId) {
+                var tile = this.getTileAt(tileData.x, tileData.y);
+                if (tile) {
+                    // Get component meta from the game
+                    var componentMeta = this.game.getComponentMeta ? this.game.getComponentMeta(tileData.componentId) : null;
+                    if (componentMeta) {
+                        // Create component using the Component class
+                        if (typeof Component !== 'undefined') {
+                            var component = new Component(this, tileData.x, tileData.y, componentMeta);
+                            tile.setComponent(component);
+                            console.log("Placed component:", tileData.componentId, "at position:", tileData.x, tileData.y);
+                        } else {
+                            console.warn("Component class not available for:", tileData.componentId);
+                        }
+                    } else {
+                        console.warn("Component meta not found for:", tileData.componentId);
+                    }
+                }
+            }
+        }
     };
 
     return Factory;

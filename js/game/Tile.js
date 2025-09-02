@@ -206,28 +206,37 @@ define("game/Tile", [
     
     /**
      * Set a component on this tile
-     * @param {Object} componentMeta - Component metadata
+     * @param {Object} component - Component instance or null
      */
-    Tile.prototype.setComponent = function(componentMeta) {
-        if (componentMeta) {
-            // TODO: Create Component when Component class is available
-            // var component = new Component(this.factory, this.x, this.y, componentMeta);
+    Tile.prototype.setComponent = function(component) {
+        if (component) {
+            // Store the component reference
+            this.component = component;
             
-            // TODO: Set component on all tiles it occupies
-            // for (var dx = 0; dx < componentMeta.width; dx++) {
-            //     for (var dy = 0; dy < componentMeta.height; dy++) {
-            //         var tile = this.factory.getTile(this.x + dx, this.y + dy);
-            //         tile.component = component;
+            // TODO: Set component on all tiles it occupies when Component class is available
+            // if (component.getWidth && component.getHeight) {
+            //     for (var dx = 0; dx < component.getWidth(); dx++) {
+            //         for (var dy = 0; dy < component.getHeight(); dy++) {
+            //             var tile = this.factory.getTile(this.x + dx, this.y + dy);
+            //             if (tile && tile !== this) {
+            //                 tile.component = component;
+            //             }
+            //         }
             //     }
             // }
+            
+            // Reset input/output manager when component is placed
+            if (this.inputOutputManager && typeof this.inputOutputManager.reset === 'function') {
+                this.inputOutputManager.reset();
+            }
         } else {
             this.component = null;
+            
+            // Reset input/output manager when component is removed
+            if (this.inputOutputManager && typeof this.inputOutputManager.reset === 'function') {
+                this.inputOutputManager.reset();
+            }
         }
-        
-        // TODO: Reset input/output manager when available
-        // if (this.inputOutputManager) {
-        //     this.inputOutputManager.reset();
-        // }
     };
     
     /**

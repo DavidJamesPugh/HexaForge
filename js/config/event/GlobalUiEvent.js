@@ -9,6 +9,7 @@ define("config/event/GlobalUiEvent", [], function() {
         BLUR: "BLUR",
         SHOW_MAIN_GAME: "SHOW_MAIN_GAME",
         SHOW_MISSIONS: "SHOW_MISSIONS",
-        SHOW_MISSION: "SHOW_MISSION"
+        SHOW_MISSION: "SHOW_MISSION",
+        SHOW_SETTINGS: "SHOW_SETTINGS"
     };
 });

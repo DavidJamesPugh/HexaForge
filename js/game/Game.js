@@ -3,16 +3,14 @@
  * Extracted from original_app.js
  */
 define("game/Game", [
-    "base/EventManager",
-    "config/event/GameEvent",
-    "game/Factory",
-    // TODO: These dependencies will need to be implemented as we extract more modules
-    // "game/ResearchManager", 
-    // "game/AchievementsManager",
-    // "game/calculator/Calculator",
-    // "game/statistics/Statistics",
-    // "game/Ticker"
-], function(EventManager, GameEvent, Factory) {
+    "game/Factory", 
+    "base/EventManager", 
+    "game/ResearchManager", 
+    "game/AchievementsManager", 
+    "game/calculator/Calculator", 
+    "game/statistics/Statistics", 
+    "game/Ticker"
+], function(Factory, EventManager, ResearchManager, AchievementsManager, Calculator, Statistics, Ticker) {
     
     /**
      * Main Game class constructor
@@ -20,27 +18,42 @@ define("game/Game", [
      * @param {Object} confirmedTimestamp - Confirmed timestamp object
      */
     var Game = function(meta, confirmedTimestamp) {
-        this.meta = meta;
-        this.confirmedTimestamp = confirmedTimestamp;
-        this.money = meta.startingMoney;
-        this.researchPoints = meta.startingResearchPoints;
+        this.meta = meta || {};
+        this.confirmedTimestamp = confirmedTimestamp || { timestamp: Date.now() };
+        this.money = (meta && meta.startingMoney !== undefined) ? meta.startingMoney : 1000;
+        this.researchPoints = (meta && meta.startingResearchPoints !== undefined) ? meta.startingResearchPoints : 100;
         
         // Create event manager for game events
-        this.em = new EventManager(GameEvent, "Game");
+        try {
+            this.em = new EventManager(GameEvent, "Game");
+        } catch (error) {
+            console.warn("Failed to create EventManager:", error);
+            this.em = null;
+        }
         
         // Initialize factories
         this.factories = {};
-        for (var factoryId in meta.factories) {
-            var factoryMeta = meta.factories[factoryId];
-            this.factories[factoryMeta.id] = new Factory(factoryMeta, this);
+        if (meta && meta.factories && Array.isArray(meta.factories)) {
+            for (var i = 0; i < meta.factories.length; i++) {
+                try {
+                    var factoryMeta = meta.factories[i];
+                    this.factories[factoryMeta.id] = new Factory(factoryMeta, this);
+                } catch (error) {
+                    console.warn("Failed to create factory:", factoryMeta, error);
+                }
+            }
         }
         
-        // TODO: Initialize these managers when their modules are extracted
-        // this.researchManager = new ResearchManager(this);
-        // this.achievementsManager = new AchievementsManager(this);
-        // this.calculator = new Calculator(this);
-        // this.statistics = new Statistics(this);
-        // this.ticker = new Ticker(this, this.confirmedTimestamp);
+        // Initialize these managers when their modules are extracted
+        try {
+            this.researchManager = new ResearchManager(this);
+            this.achievementsManager = new AchievementsManager(this);
+            this.calculator = new Calculator(this);
+            this.statistics = new Statistics(this);
+            this.ticker = new Ticker(this, this.confirmedTimestamp);
+        } catch (error) {
+            console.warn("Failed to create managers:", error);
+        }
         
         this.profitMultiplier = 1;
         this.researchProductionMultiplier = 1;
@@ -62,7 +75,8 @@ define("game/Game", [
             var hasCollectingCash2 = this.achievementsManager.getAchievement("collectingCash2");
             
             // Premium users typically have access to extra features
-            if (hasCollectingCash && hasCollectingCash2) {
+            if (hasCollectingCash && hasCollectingCash.isUnlocked && 
+                hasCollectingCash2 && hasCollectingCash2.isUnlocked) {
                 this.isPremium = true;
             }
         }
@@ -76,10 +90,19 @@ define("game/Game", [
      * @returns {Game} This game instance for chaining
      */
     Game.prototype.init = function() {
-        // TODO: Initialize managers when available
-        // this.calculator.init();
-        // this.statistics.init();
-        // this.ticker.init();
+        try {
+            if (this.calculator && this.calculator.init) {
+                this.calculator.init();
+            }
+            if (this.statistics && this.statistics.init) {
+                this.statistics.init();
+            }
+            if (this.ticker && this.ticker.init) {
+                this.ticker.init();
+            }
+        } catch (error) {
+            console.warn("Error during game initialization:", error);
+        }
         return this;
     };
 
@@ -87,111 +110,161 @@ define("game/Game", [
      * Clean up game resources
      */
     Game.prototype.destroy = function() {
-        // TODO: Destroy managers when available
-        // this.calculator.destroy();
-        // this.statistics.destroy();
-        // this.ticker.destroy();
+        try {
+            if (this.calculator && this.calculator.destroy) {
+                this.calculator.destroy();
+            }
+            if (this.statistics && this.statistics.destroy) {
+                this.statistics.destroy();
+            }
+            if (this.ticker && this.ticker.destroy) {
+                this.ticker.destroy();
+            }
+        } catch (error) {
+            console.warn("Error during game destruction:", error);
+        }
     };
 
     /**
      * Get the game meta configuration
-     * @returns {Object} Meta configuration
+     * @returns {Object} Meta configuration object
      */
     Game.prototype.getMeta = function() {
         return this.meta;
     };
-
+    
     /**
      * Get the game event manager
-     * @returns {EventManager} Event manager instance
+     * @returns {Object} EventManager instance
      */
     Game.prototype.getEventManager = function() {
         return this.em;
     };
-
+    
     /**
-     * Get a factory by ID
-     * @param {string} factoryId - Factory identifier
-     * @returns {Object|null} Factory instance or null if not found
+     * Get the research manager
+     * @returns {Object} ResearchManager instance
      */
-    Game.prototype.getFactory = function(factoryId) {
-        return this.factories[factoryId] || null;
+    Game.prototype.getResearchManager = function() {
+        return this.researchManager;
     };
-
+    
     /**
-     * Set the profit multiplier
-     * @param {number} multiplier - Profit multiplier value
+     * Get the achievements manager
+     * @returns {Object} AchievementsManager instance
      */
-    Game.prototype.setProfitMultiplier = function(multiplier) {
-        this.profitMultiplier = multiplier;
+    Game.prototype.getAchievementsManager = function() {
+        return this.achievementsManager;
     };
-
+    
     /**
-     * Get the current profit multiplier
-     * @returns {number} Profit multiplier value
+     * Get the calculator
+     * @returns {Object} Calculator instance
      */
-    Game.prototype.getProfitMultiplier = function() {
-        return this.profitMultiplier;
+    Game.prototype.getCalculator = function() {
+        return this.calculator;
     };
-
+    
     /**
-     * Set the research production multiplier
-     * @param {number} multiplier - Research production multiplier value
+     * Get the statistics
+     * @returns {Object} Statistics instance
      */
-    Game.prototype.setResearchProductionMultiplier = function(multiplier) {
-        this.researchProductionMultiplier = multiplier;
+    Game.prototype.getStatistics = function() {
+        return this.statistics;
     };
-
+    
     /**
-     * Get the current research production multiplier
-     * @returns {number} Research production multiplier value
+     * Get all factories
+     * @returns {Object} Factories object
      */
-    Game.prototype.getResearchProductionMultiplier = function() {
-        return this.researchProductionMultiplier;
+    Game.prototype.getFactories = function() {
+        return this.factories;
     };
-
+    
     /**
-     * Set premium status
-     * @param {boolean} isPremium - Whether the user has premium status
-     */
-    Game.prototype.setIsPremium = function(isPremium) {
-        this.isPremium = isPremium;
-    };
-
-    /**
-     * Check if user has premium status
-     * @returns {boolean} True if premium
-     */
-    Game.prototype.getIsPremium = function() {
-        return this.isPremium;
-    };
-
-    /**
-     * Get current money
+     * Get the current money
      * @returns {number} Current money amount
      */
     Game.prototype.getMoney = function() {
-        return this.money;
+        return this.money || 0;
     };
-
+    
     /**
-     * Set money amount
-     * @param {number} amount - New money amount
+     * Set the current money
+     * @param {number} amount - Money amount to set
      */
     Game.prototype.setMoney = function(amount) {
         if (isNaN(Number(amount))) {
             amount = 0;
         }
         
-        if (amount < this.meta.minNegativeMoney) {
+        if (this.meta && this.meta.minNegativeMoney !== undefined && amount < this.meta.minNegativeMoney) {
             amount = this.meta.minNegativeMoney;
         }
         
         this.money = amount;
         
-        this.em.invokeEvent(GameEvent.MONEY_UPDATED, this.money);
+        if (this.em && this.em.invokeEvent) {
+            try {
+                this.em.invokeEvent("MONEY_UPDATED", this.money);
+            } catch (error) {
+                console.warn("Error invoking MONEY_UPDATED event:", error);
+            }
+        }
     };
-
+    
+    /**
+     * Get the current research points
+     * @returns {number} Current research points
+     */
+    Game.prototype.getResearchPoints = function() {
+        return this.researchPoints || 0;
+    };
+    
+    /**
+     * Set the current research points
+     * @param {number} amount - Research points to set
+     */
+    Game.prototype.setResearchPoints = function(amount) {
+        if (isNaN(Number(amount))) {
+            amount = 0;
+        }
+        
+        this.researchPoints = amount;
+        
+        if (this.em && this.em.invokeEvent) {
+            try {
+                this.em.invokeEvent("RESEARCH_POINTS_UPDATED", this.researchPoints);
+            } catch (error) {
+                console.warn("Error invoking RESEARCH_POINTS_UPDATED event:", error);
+            }
+        }
+    };
+    
+    /**
+     * Get a specific factory by ID
+     * @param {string} factoryId - Factory identifier
+     * @returns {Object|null} Factory instance or null if not found
+     */
+    Game.prototype.getFactory = function(factoryId) {
+        if (!factoryId || !this.factories) {
+            return null;
+        }
+        return this.factories[factoryId] || null;
+    };
+    
+    /**
+     * Get component metadata by component ID
+     * @param {string} componentId - Component identifier
+     * @returns {Object|null} Component metadata or null if not found
+     */
+    Game.prototype.getComponentMeta = function(componentId) {
+        if (!this.meta || !this.meta.componentsById) {
+            return null;
+        }
+        return this.meta.componentsById[componentId] || null;
+    };
+    
     /**
      * Add money to current amount
      * @param {number} amount - Amount to add
@@ -200,31 +273,9 @@ define("game/Game", [
         if (isNaN(Number(amount))) {
             amount = 0;
         }
-        this.setMoney(this.money + amount);
+        this.setMoney((this.money || 0) + amount);
     };
-
-    /**
-     * Get current research points
-     * @returns {number} Current research points
-     */
-    Game.prototype.getResearchPoints = function() {
-        return this.researchPoints;
-    };
-
-    /**
-     * Set research points amount
-     * @param {number} amount - New research points amount
-     */
-    Game.prototype.setResearchPoints = function(amount) {
-        if (isNaN(Number(amount))) {
-            amount = 0;
-        }
-        
-        this.researchPoints = isNaN(amount) ? 0 : amount;
-        
-        this.em.invokeEvent(GameEvent.RESEARCH_POINTS_UPDATED, this.researchPoints);
-    };
-
+    
     /**
      * Add research points to current amount
      * @param {number} amount - Amount to add
@@ -233,53 +284,41 @@ define("game/Game", [
         if (isNaN(Number(amount))) {
             amount = 0;
         }
-        this.setResearchPoints(this.researchPoints + amount);
+        this.setResearchPoints((this.researchPoints || 0) + amount);
     };
-
+    
     /**
-     * Get statistics manager (placeholder until Statistics module is extracted)
-     * @returns {Object} Placeholder statistics object
+     * Get the current profit multiplier
+     * @returns {number} Profit multiplier value
      */
-    Game.prototype.getStatistics = function() {
-        // TODO: Return actual Statistics instance when available
-        // return this.statistics;
-        
-        // Return placeholder statistics object for now
-        return {
-            getAvgProfit: function() {
-                return 0; // Placeholder
-            },
-            getAvgResearchPointsProduction: function() {
-                return 0; // Placeholder
-            },
-            getFactoryAvgProfit: function(factoryId) {
-                return 0; // Placeholder
-            },
-            getFactoryAvgResearchPointsProduction: function(factoryId) {
-                return 0; // Placeholder
-            }
-        };
+    Game.prototype.getProfitMultiplier = function() {
+        return this.profitMultiplier || 1;
     };
-
+    
     /**
-     * Get ticker (placeholder until Ticker module is extracted)
-     * @returns {Object} Placeholder ticker object
+     * Get the current research production multiplier
+     * @returns {number} Research production multiplier value
+     */
+    Game.prototype.getResearchProductionMultiplier = function() {
+        return this.researchProductionMultiplier || 1;
+    };
+    
+    /**
+     * Check if user has premium status
+     * @returns {boolean} True if premium
+     */
+    Game.prototype.getIsPremium = function() {
+        return !!this.isPremium;
+    };
+    
+    /**
+     * Get the game ticker instance
+     * @returns {Object} Ticker instance
      */
     Game.prototype.getTicker = function() {
-        // TODO: Return actual Ticker instance when available
-        // return this.ticker;
-        
-        // Return placeholder ticker object for now
-        return {
-            getActualTicksPerSec: function() {
-                return 0; // Placeholder
-            },
-            getNoOfTicks: function() {
-                return 0; // Placeholder
-            }
-        };
+        return this.ticker;
     };
-
+    
     /**
      * Export game state to writer
      * @returns {Object} BinaryArrayWriter with game data
@@ -289,45 +328,50 @@ define("game/Game", [
         console.log("Game.exportToWriter - TODO: Implement BinaryArrayWriter");
         return null;
     };
-
+    
     /**
-     * Import game state from reader
+     * Import game data from a binary reader
      * @param {Object} reader - BinaryArrayReader with game data
      */
     Game.prototype.importFromReader = function(reader) {
         // TODO: Implement BinaryArrayReader when available
         console.log("Game.importFromReader - TODO: Implement BinaryArrayReader");
     };
-
-    /**
-     * Get achievements manager (placeholder until AchievementsManager module is extracted)
-     * @returns {Object} Placeholder achievements manager object
-     */
-    Game.prototype.getAchievementsManager = function() {
-        // TODO: Return actual AchievementsManager instance when available
-        // return this.achievementsManager;
-        
-        // Return placeholder achievements manager object for now
-        return {
-            getAchievement: function(achievementId) {
-                // Return placeholder achievement data
-                return {
-                    id: achievementId,
-                    name: "Placeholder Achievement",
-                    description: "This achievement is not yet implemented",
-                    isUnlocked: false
-                };
-            }
-        };
-    };
     
     /**
-     * Check if user is premium
-     * Based on original app's premium detection logic
-     * @returns {boolean} True if user is premium
+     * Import game data from JSON save data
+     * @param {Object} saveData - JSON save data
      */
-    Game.prototype.getIsPremium = function() {
-        return this.isPremium;
+    Game.prototype.importFromJson = function(saveData) {
+        if (!saveData) return;
+        
+        console.log("Game.importFromJson called with:", saveData);
+        
+        // Import basic game state
+        if (saveData.game) {
+            if (saveData.game.money !== undefined) {
+                this.setMoney(saveData.game.money);
+            }
+            if (saveData.game.researchPoints !== undefined) {
+                this.setResearchPoints(saveData.game.researchPoints);
+            }
+        }
+        
+        // Import factories
+        if (saveData.factories) {
+            for (var factoryId in saveData.factories) {
+                var factoryData = saveData.factories[factoryId];
+                var factory = this.getFactory(factoryId);
+                if (factory && factory.importFromJson) {
+                    factory.importFromJson(factoryData);
+                }
+            }
+        }
+        
+        // Reset statistics like the original app
+        if (this.statistics && this.statistics.reset) {
+            this.statistics.reset();
+        }
     };
     
     /**
@@ -336,9 +380,28 @@ define("game/Game", [
      */
     Game.prototype.setIsPremium = function(isPremium) {
         this.isPremium = !!isPremium;
-        
-        // Emit premium status change event
-        this.em.invokeEvent(GameEvent.PREMIUM_STATUS_CHANGED, this.isPremium);
+    };
+    
+    /**
+     * Set the profit multiplier
+     * @param {number} multiplier - Profit multiplier value
+     */
+    Game.prototype.setProfitMultiplier = function(multiplier) {
+        if (isNaN(Number(multiplier))) {
+            multiplier = 1;
+        }
+        this.profitMultiplier = multiplier;
+    };
+    
+    /**
+     * Set the research production multiplier
+     * @param {number} multiplier - Research production multiplier value
+     */
+    Game.prototype.setResearchProductionMultiplier = function(multiplier) {
+        if (isNaN(Number(multiplier))) {
+            multiplier = 1;
+        }
+        this.researchProductionMultiplier = multiplier;
     };
     
     /**
@@ -347,7 +410,7 @@ define("game/Game", [
      * @returns {boolean} True if user has access to the feature
      */
     Game.prototype.hasPremiumFeature = function(feature) {
-        if (!this.isPremium) {
+        if (!feature || !this.isPremium) {
             return false;
         }
         

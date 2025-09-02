@@ -5,6 +5,13 @@ define("config/config", [], function() {
     return {
         imageMap: {
             path: "img/" // Basic path for images
+        },
+        saveManager: {
+            cloudSaveIntervalMs: 900000,  // 15 minutes
+            localSaveIntervalMs: 5000     // 5 seconds
+        },
+        userHash: {
+            key: "HexaForgeUserHash"
         }
     };
 });
