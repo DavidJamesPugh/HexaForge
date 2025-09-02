@@ -13,6 +13,7 @@ define("Main", [
     "config/event/ApiEvent",
     "play/Play",
     "base/ImageMap",
+    "base/BinaryArrayWriter",
     "ui/MainUi"
 ], function (
     metaConfig, 
@@ -24,6 +25,7 @@ define("Main", [
     apiEvent, 
     Play, 
     ImageMap, 
+    BinaryArrayWriter,
     MainUi
 ) {
     // Set global event constants for easy access

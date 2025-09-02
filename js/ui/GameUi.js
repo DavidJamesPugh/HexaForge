@@ -9,14 +9,14 @@ define("ui/GameUi", [
     "ui/ResearchUi",
     "ui/UpgradesUi",
     "ui/AchievementsUi",
+    "ui/SettingsUi"
     // TODO: These dependencies will need to be implemented as we extract more modules
     // "ui/AchievementPopupUi",
     // "ui/HelpUi",
     // "ui/StatisticsUi",
     // "ui/PurchasesUi",
-    // "ui/SettingsUi",
     // "ui/TimeTravelUi"
-], function(EventManager, FactoriesUi, FactoryUi, ResearchUi, UpgradesUi, AchievementsUi) {
+], function(EventManager, FactoriesUi, FactoryUi, ResearchUi, UpgradesUi, AchievementsUi, SettingsUi) {
     
     /**
      * GameUi constructor
@@ -36,7 +36,7 @@ define("ui/GameUi", [
         // TODO: Initialize UI components when their modules are extracted
         // this.helpUi = null;
         // this.purchasesUi = null;
-        // this.settingsUi = null;
+        this.settingsUi = null;
         // this.timeTravelUi = null;
         
         this.currentUi = null;
@@ -59,7 +59,7 @@ define("ui/GameUi", [
         // TODO: Initialize UI components when their modules are extracted
         // this.helpUi = new HelpUi(this.gameUiEm, this.game).init();
         // this.purchasesUi = new PurchasesUi(this.gameUiEm, this.play).init();
-        // this.settingsUi = new SettingsUi(this.gameUiEm, this.play, this.game, this.play.getUserHash(), this.play.getSaveManager()).init();
+        this.settingsUi = new SettingsUi(this.gameUiEm, this.play, this.game, this.play.getUserHash(), this.play.getSaveManager()).init();
         // this.timeTravelUi = new TimeTravelUi(this.gameUiEm, this.play).init();
         
         // Show factories UI by default

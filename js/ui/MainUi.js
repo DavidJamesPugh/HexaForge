@@ -5,8 +5,10 @@
 define("ui/MainUi", [
     "config/Meta",
     "config/config",
+    "config/event/GlobalUiEvent",
     "base/EventManager",
     "ui/GameUi",
+    "ui/SettingsUi"
     // Note: These dependencies will need to be implemented as we extract more modules
     // "game/Game", 
     // "ui/MissionsUi",
@@ -14,7 +16,7 @@ define("ui/MainUi", [
     // "ui/helper/AlertUi",
     // "ui/GoogleAddsUi",
     // "ui/IntroUi"
-], function(meta, config, EventManager, GameUi) {
+], function(meta, config, GlobalUiEvent, EventManager, GameUi, SettingsUi) {
     
     /**
      * Main UI controller class
@@ -105,6 +107,10 @@ define("ui/MainUi", [
             this._showUi("mission", missionData);
         }.bind(this));
         
+        this.globalUiEm.addListener("MainUi", GlobalUiEvent.SHOW_SETTINGS, function() {
+            this._showSettings();
+        }.bind(this));
+        
         // TODO: Implement when Game events are available
         // this.play.getGame().getEventManager().addListener("MainUi", GameEvent.GAME_TICK, function() {
         //     if (config.main.warnToStoreUserHashAfterTicks[this.play.getGame().getTicker().getNoOfTicks()]) {
@@ -160,6 +166,38 @@ define("ui/MainUi", [
         // if (this.currentUi) {
         //     this.currentUi.display(this.container);
         // }
+    };
+
+    /**
+     * Show the settings UI
+     * @private
+     */
+    MainUi.prototype._showSettings = function() {
+        console.log("MainUi._showSettings called");
+        
+        // Create and display the settings UI
+        if (this.play && this.play.getSaveManager) {
+            var saveManager = this.play.getSaveManager();
+            if (saveManager) {
+                console.log("SaveManager found, creating SettingsUi");
+                // Create SettingsUi instance
+                var settingsUi = new SettingsUi(
+                    this.globalUiEm, 
+                    this.play, 
+                    this.play.getGame(), 
+                    this.play.getUserHash(), 
+                    saveManager
+                );
+                settingsUi.init();
+                settingsUi.display();
+            } else {
+                console.log("SaveManager not available");
+                this._showPlaceholderUi("Settings (SaveManager not available)");
+            }
+        } else {
+            console.log("Play or getSaveManager not available");
+            this._showPlaceholderUi("Settings (Play not available)");
+        }
     };
 
     /**

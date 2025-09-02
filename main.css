@@ -2794,3 +2794,207 @@ td {
     min-width: 800px !important;
     min-height: 600px !important;
 }
+
+/* Settings Modal Styles
+#settingsBg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 10000;
+}
+
+#settings {
+    position: fixed;
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    background-color: #2a2a2a;
+    border: 2px solid #666;
+    border-radius: 10px;
+    padding: 20px;
+    color: white;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    z-index: 10001;
+}
+
+#settings .title {
+    color: #ffd700;
+    font-size: 1.2em;
+    margin-top: 20px;
+    display: block;
+}
+
+#settings .red {
+    color: #ff6b6b;
+}
+
+#settings input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    margin: 5px 0;
+    background-color: #444;
+    border: 1px solid #666;
+    border-radius: 4px;
+    color: white;
+}
+
+#settings input[type="button"] {
+    padding: 8px 16px;
+    margin: 5px;
+    background-color: #4a4a4a;
+    border: 1px solid #666;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+}
+
+#settings input[type="button"]:hover {
+    background-color: #5a5a5a;
+}
+
+#settings .userHash {
+    font-family: monospace;
+    background-color: #333;
+}
+
+#settings .saveSlot {
+    float: left;
+    width: 180px;
+    margin: 10px;
+    padding: 15px;
+    background-color: #3a3a3a;
+    border: 1px solid #555;
+    border-radius: 8px;
+    text-align: center;
+}
+
+#settings .saveSlot b {
+    color: #ffd700;
+}
+
+#settings .closeButton {
+    color: #ccc;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+#settings .closeButton:hover {
+    color: white;
+}
+
+.loadingBg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 9999;
+}
+
+.loading {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    height: 150px;
+    background-color: #2a2a2a;
+    border: 2px solid #666;
+    border-radius: 10px;
+    text-align: center;
+    padding: 20px;
+    z-index: 10000;
+}
+
+.loading .icon {
+    margin: 0 auto 5px auto;
+    width: 180px;
+    height: 40px;
+}
+
+.loading .message {
+    display: block;
+    font-size: 0.9em;
+    color: white;
+}
+
+.confirmBg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 9999;
+}
+
+.confirm {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    background-color: #2a2a2a;
+    border: 2px solid #666;
+    border-radius: 10px;
+    padding: 20px;
+    color: white;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    z-index: 10000;
+}
+
+.confirmTitle {
+    color: #ffd700;
+    font-size: 1.3em;
+    font-weight: bold;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.confirmMessage {
+    margin-bottom: 20px;
+    text-align: center;
+    line-height: 1.4;
+}
+
+.confirmButtons {
+    text-align: center;
+}
+
+.confirmButtons input[type="button"] {
+    padding: 10px 20px;
+    margin: 0 10px;
+    background-color: #4a4a4a;
+    border: 1px solid #666;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+.confirmButtons input[type="button"]:hover {
+    background-color: #5a5a5a;
+}
+
+.confirmButtons .confirmOk {
+    background-color: #4a7c59;
+}
+
+.confirmButtons .confirmOk:hover {
+    background-color: #5a8c69;
+}
+
+.confirmButtons .confirmCancel {
+    background-color: #7c4a4a;
+}
+
+.confirmButtons .confirmCancel:hover {
+    background-color: #8c5a5a;
+} */
