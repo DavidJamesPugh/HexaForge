@@ -7,8 +7,9 @@ define("ui/SettingsUi", [
     "ui/helper/LoadingUi", 
     "ui/helper/ConfirmUi",
     "templates/settings",
-    "lib/handlebars"
-], function(LoadingUi, ConfirmUi, settingsTemplate, Handlebars) {
+    "lib/handlebars",
+    "config/event/GameUiEvent"
+], function(LoadingUi, ConfirmUi, settingsTemplate, Handlebars, GameUiEvent) {
     
     var SettingsUi = function(gameUiEm, play, game, userHash, saveManager) {
         this.gameUiEm = gameUiEm;
@@ -20,7 +21,7 @@ define("ui/SettingsUi", [
     };
     
     SettingsUi.prototype.init = function() {
-        this.gameUiEm.addListener("settingsUi", "SHOW_SETTINGS", function() {
+        this.gameUiEm.addListener("settingsUi", GameUiEvent.SHOW_SETTINGS, function() {
             this.display();
         }.bind(this));
         
@@ -49,15 +50,13 @@ define("ui/SettingsUi", [
     };
     
     SettingsUi.prototype._display = function(savesInfo) {
-        console.log("SettingsUi._display called with savesInfo:", savesInfo);
-        console.log("saveManager:", this.saveManager);
-        
+
         // Check if saveManager has required methods
         if (!this.saveManager.getCloudSaveInterval || !this.saveManager.getLocalSaveInterval) {
             console.error("SaveManager missing required methods:", this.saveManager);
             return;
         }
-        
+
         var saveSlots = [];
         for (var i = 1; i <= 3; i++) {
             var slotName = "slot" + i;
@@ -78,7 +77,7 @@ define("ui/SettingsUi", [
             saveSlots: saveSlots,
             devMode: this.play.isDevMode()
         };
-        
+
         // Use Handlebars to compile the template with data
         var html = Handlebars.compile(settingsTemplate)(templateData);
         $("body").append(html);
@@ -142,7 +141,7 @@ define("ui/SettingsUi", [
                 .setCancelCallback(function() {
                     self.saveManager.loadManual(slotId, function() {
                         self.hide();
-                        self.gameUiEm.invokeEvent("SHOW_FACTORIES");
+                        self.gameUiEm.invokeEvent(GameUiEvent.SHOW_FACTORIES);
                     });
                 })
                 .display();
@@ -153,7 +152,7 @@ define("ui/SettingsUi", [
             var data = settingsElement.find("#loadData").val();
             self.saveManager.updateGameFromSaveData({ data: data });
             self.hide();
-            self.gameUiEm.invokeEvent("SHOW_FACTORIES");
+            self.gameUiEm.invokeEvent(GameUiEvent.SHOW_FACTORIES);
         });
         
         // Reset game
@@ -162,8 +161,18 @@ define("ui/SettingsUi", [
                 .setCancelTitle("Yes, RESET GAME")
                 .setOkTitle("Nooooo!!!")
                 .setCancelCallback(function() {
-                    // TODO: Implement game reset
-                    console.log("Game reset requested");
+                    // Reset the game by destroying and reinitializing MainInstance
+                    if (typeof MainInstance !== 'undefined' && MainInstance) {
+                        console.log("Resetting game...");
+                        MainInstance.destroy();
+                        MainInstance.init(true, function() {
+                            console.log("Game reset completed");
+                        });
+                    } else {
+                        console.log("MainInstance not available for reset");
+                        // Fallback: reload the page
+                        document.location = document.location;
+                    }
                     self.hide();
                 })
                 .display();

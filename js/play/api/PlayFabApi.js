@@ -135,36 +135,49 @@ define("play/api/PlayFabApi", [], function() {
     PlayFabApi.prototype.getSavesInfo = function(slotNames, callback) {
         if (typeof PlayFab === 'undefined') {
             console.error("PlayFabApi: PlayFab SDK not loaded");
-            callback({});
+            // Return empty slots for all requested slots
+            var emptySaves = {};
+            for (var i = 0; i < slotNames.length; i++) {
+                emptySaves[slotNames[i]] = null;
+            }
+            callback(emptySaves);
             return;
         }
-        
+
         var metaKeys = [];
-        for (var slotName in slotNames) {
-            metaKeys.push(this._getMetaVarName(slotNames[slotName]));
+        for (var i = 0; i < slotNames.length; i++) {
+            metaKeys.push(this._getMetaVarName(slotNames[i]));
         }
-        
+
         var request = { Keys: metaKeys };
-        
+
         PlayFab.ClientApi.GetUserData(request, function(result, error) {
             if (result && result.code === 200) {
-                console.log("PlayFabApi: getSavesInfo loaded!", [result, error]);
-                
                 var savesInfo = {};
-                for (var slotName in slotNames) {
-                    var metaKey = this._getMetaVarName(slotNames[slotName]);
+                for (var i = 0; i < slotNames.length; i++) {
+                    var slotName = slotNames[i];
+                    var metaKey = this._getMetaVarName(slotName);
+
+                    // Always include the slot in the result, even if null
+                    savesInfo[slotName] = null;
+
                     try {
-                        if (result.data.Data[metaKey] && result.data.Data[metaKey].Value) {
-                            savesInfo[slotNames[slotName]] = JSON.parse(result.data.Data[metaKey].Value);
+                        if (result.data.Data && result.data.Data[metaKey] && result.data.Data[metaKey].Value) {
+                            savesInfo[slotName] = JSON.parse(result.data.Data[metaKey].Value);
                         }
                     } catch (e) {
-                        console.error("PlayFabApi: Failed to parse save info", e);
+                        console.error("PlayFabApi: Failed to parse save info for", slotName, e);
                     }
                 }
                 callback(savesInfo);
             } else {
                 console.error("PlayFabApi: getSavesInfo failed!", [result, error]);
-                callback({});
+                // Return empty slots for all requested slots
+                var emptySaves = {};
+                for (var i = 0; i < slotNames.length; i++) {
+                    emptySaves[slotNames[i]] = null;
+                }
+                callback(emptySaves);
             }
         }.bind(this));
     };

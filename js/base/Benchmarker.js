@@ -42,7 +42,7 @@ define("base/Benchmarker", [], function() {
     Benchmarker.prototype.stop = function(runs) {
         if (this.startTime) {
             var duration = Date.now() - this.startTime;
-            console.log("Benchmarker: Completed", runs, "runs in", duration, "ms");
+            //console.log("Benchmarker: Completed", runs, "runs in", duration, "ms");
         }
     };
     
