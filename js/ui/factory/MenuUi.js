@@ -123,7 +123,7 @@ define("ui/factory/MenuUi", [
         });
         
         this.container.find("#settingsButton").click(function() {
-            self.globalUiEm.invokeEvent(GlobalUiEvent.SHOW_SETTINGS);
+            self.gameUiEm.invokeEvent(GameUiEvent.SHOW_SETTINGS);
         });
         
         this.container.find("#timeTravelButton").click(function() {

@@ -4,19 +4,21 @@
  */
 define("ui/GameUi", [
     "base/EventManager",
+    "config/event/GameEvent",
+    "config/event/GlobalUiEvent",
     "ui/FactoriesUi",
     "ui/FactoryUi",
     "ui/ResearchUi",
     "ui/UpgradesUi",
     "ui/AchievementsUi",
-    "ui/SettingsUi"
+    "ui/SettingsUi",
+    "ui/TimeTravelUi"
     // TODO: These dependencies will need to be implemented as we extract more modules
     // "ui/AchievementPopupUi",
     // "ui/HelpUi",
     // "ui/StatisticsUi",
-    // "ui/PurchasesUi",
-    // "ui/TimeTravelUi"
-], function(EventManager, FactoriesUi, FactoryUi, ResearchUi, UpgradesUi, AchievementsUi, SettingsUi) {
+    // "ui/PurchasesUi"
+], function(EventManager, GameEvent, GlobalUiEvent, FactoriesUi, FactoryUi, ResearchUi, UpgradesUi, AchievementsUi, SettingsUi, TimeTravelUi) {
     
     /**
      * GameUi constructor
@@ -37,7 +39,7 @@ define("ui/GameUi", [
         // this.helpUi = null;
         // this.purchasesUi = null;
         this.settingsUi = null;
-        // this.timeTravelUi = null;
+        this.timeTravelUi = null;
         
         this.currentUi = null;
         this.container = null;
@@ -60,7 +62,7 @@ define("ui/GameUi", [
         // this.helpUi = new HelpUi(this.gameUiEm, this.game).init();
         // this.purchasesUi = new PurchasesUi(this.gameUiEm, this.play).init();
         this.settingsUi = new SettingsUi(this.gameUiEm, this.play, this.game, this.play.getUserHash(), this.play.getSaveManager()).init();
-        // this.timeTravelUi = new TimeTravelUi(this.gameUiEm, this.play).init();
+        this.timeTravelUi = new TimeTravelUi(this.gameUiEm, this.play).init();
         
         // Show factories UI by default
         this._showUi("factories");
@@ -132,6 +134,7 @@ define("ui/GameUi", [
         this.globalUiEm.addListener("GameUi", GlobalUiEvent.BLUR, function() {
             this.game.getEventManager().invokeEvent(GameEvent.BLUR);
         }.bind(this));
+
     };
     
     /**
@@ -235,8 +238,8 @@ define("ui/GameUi", [
         // TODO: Destroy UI components when they are available
         // if (this.helpUi) this.helpUi.destroy();
         // if (this.purchasesUi) this.purchasesUi.destroy();
-        // if (this.settingsUi) this.settingsUi.destroy();
-        // if (this.timeTravelUi) this.timeTravelUi.destroy();
+        if (this.settingsUi) this.settingsUi.destroy();
+        if (this.timeTravelUi) this.timeTravelUi.destroy();
         
         // Destroy mission game if applicable
         if (this.game.getMeta().isMission) {

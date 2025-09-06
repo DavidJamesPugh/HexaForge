@@ -107,9 +107,10 @@ define("ui/MainUi", [
             this._showUi("mission", missionData);
         }.bind(this));
         
-        this.globalUiEm.addListener("MainUi", GlobalUiEvent.SHOW_SETTINGS, function() {
-            this._showSettings();
-        }.bind(this));
+        // Settings UI is now handled by GameUi to avoid duplicate modals
+        // this.globalUiEm.addListener("MainUi", GlobalUiEvent.SHOW_SETTINGS, function() {
+        //     this._showSettings();
+        // }.bind(this));
         
         // TODO: Implement when Game events are available
         // this.play.getGame().getEventManager().addListener("MainUi", GameEvent.GAME_TICK, function() {

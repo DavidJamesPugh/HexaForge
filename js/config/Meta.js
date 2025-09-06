@@ -12,6 +12,7 @@ define("config/Meta", [], function() {
         startingMoney: 1000,
         startingResearchPoints: 100,
         minNegativeMoney: -10000,
+        timeTravelTicketValue: 3,
         
         // Factories configuration
         factories: [

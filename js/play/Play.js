@@ -152,15 +152,38 @@ define("play/Play", [
             this.saveManager = {
                 getSavesInfo: function(slotNames, callback) {
                     console.log("Mock getSavesInfo called with slots:", slotNames);
-                    callback({});
+                    // Return mock save data for testing
+                    var mockSaves = {};
+                    slotNames.forEach(function(slotName) {
+                        // Simulate some slots having saves
+                        if (slotName === "slot1" || slotName === "slot2" || slotName === "slot3") {
+                            mockSaves[slotName] = {
+                                timestamp: Math.floor(Date.now() / 1000) - (slotName === "slot1" ? 3600 : slotName === "slot2" ? 7200 : 10800), // 1-3 hours ago
+                                ver: Math.floor(Math.random() * 10000) + 1000 // Random tick count
+                            };
+                        }
+                    });
+                    callback(mockSaves);
                 },
                 saveManual: function(slotName, callback) {
                     console.log("Mock save to slot:", slotName);
-                    callback();
+                    // Simulate save delay
+                    setTimeout(function() {
+                        console.log("Mock save completed for slot:", slotName);
+                        callback();
+                    }, 500);
                 },
                 loadManual: function(slotName, callback) {
                     console.log("Mock load from slot:", slotName);
-                    callback();
+                    // Simulate load delay
+                    setTimeout(function() {
+                        console.log("Mock load completed for slot:", slotName);
+                        callback();
+                    }, 500);
+                },
+                updateGameFromSaveData: function(saveData) {
+                    console.log("Mock updateGameFromSaveData called with:", saveData);
+                    // This would normally update the game state from save data
                 },
                 getCloudSaveInterval: function() {
                     return 900000; // 15 minutes in milliseconds
