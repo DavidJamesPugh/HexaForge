@@ -6,8 +6,8 @@ define("ui/FactoriesUi", [
     // TODO: These dependencies will need to be implemented as we extract more modules
     // "text!template/factories.html",
     // "ui/helper/AlertUi",
-    // "game/action/BuyFactoryAction"
-], function() {
+    "game/action/BuyFactoryAction"
+], function(BuyFactoryAction) {
     
     // Number formatting from original app
     var names = {
@@ -112,7 +112,9 @@ define("ui/FactoriesUi", [
         this._showPlaceholderUi(factories);
         
         // Setup event listeners
+        console.log("Setting up event listeners for factories...");
         this._setupEventListeners();
+        console.log("Event listeners set up. SELECT buttons found:", this.container.find(".selectButton").length);
         
         // Setup game tick listener for updates
         this.game.getEventManager().addListener("factoriesUi", GameEvent.GAME_TICK, function() {
@@ -172,6 +174,7 @@ define("ui/FactoriesUi", [
                 html += '</span>';
                 
                 if (factory.isBought) {
+                    console.log("Factory", factory.name, "is bought - adding SELECT button");
                     html += '';
                     html += '    <div class="productionTitle">Income</div>';
                     html += '    <div class="textLine money" data-id="' + factory.id + '" data-key="income">-</div>';
@@ -217,27 +220,23 @@ define("ui/FactoriesUi", [
         // Factory selection
         this.container.find(".selectButton").click(function(event) {
             var factoryId = $(event.target).attr("data-id");
+            console.log("SELECT button clicked for factory:", factoryId);
+            console.log("Invoking SHOW_FACTORY event with:", factoryId);
             self.gameUiEm.invokeEvent(GameUiEvent.SHOW_FACTORY, factoryId);
         });
         
         // Factory purchase
         this.container.find(".buyButton").click(function(event) {
             var factoryId = $(event.target).attr("data-id");
-            
-            // TODO: Use BuyFactoryAction when available
-            // var buyAction = new BuyFactoryAction(self.game, factoryId);
-            // if (buyAction.canBuy()) {
-            //     buyAction.buy();
-            //     self.gameUiEm.invokeEvent(GameUiEvent.SHOW_FACTORY, factoryId);
-            // } else {
-            //     new AlertUi("", "You don't have enough money to buy this factory!").display();
-            // }
-            
-            // Placeholder implementation
-            if (self.game.getMoney() >= 1000) { // Simple check for now
-                console.log("Would buy factory:", factoryId);
+
+            // Use BuyFactoryAction for proper purchasing
+            var buyAction = new BuyFactoryAction(self.game, factoryId);
+            if (buyAction.canBuy()) {
+                buyAction.buy();
                 self.gameUiEm.invokeEvent(GameUiEvent.SHOW_FACTORY, factoryId);
             } else {
+                // TODO: Use AlertUi when available
+                // new AlertUi("", "You don't have enough money to buy this factory!").display();
                 alert("You don't have enough money to buy this factory!");
             }
         });
@@ -258,7 +257,7 @@ define("ui/FactoriesUi", [
         this.container.find("#income").html(avgProfit ? this._formatNumber(avgProfit) : "?");
         
         // Update research income
-        var avgResearchProduction = this.statistics ? this.statistics.getFactoryAvgResearchPointsProduction() : null;
+        var avgResearchProduction = this.statistics ? this.statistics.getAvgResearchPointsProduction() : null;
         this.container.find("#researchIncome").html(avgResearchProduction ? this._formatNumber(avgResearchProduction) : "?");
         
         // Update factory buttons
@@ -266,21 +265,20 @@ define("ui/FactoriesUi", [
             var factoryId = $(this).attr("data-id");
             
             // Update income display
-            var factoryAvgProfit = self.statistics ? self.statistics.getFactoryAvgProfit(factoryId) : null;
+            var factoryAvgProfit = self.statistics ? self.statistics.getAvgProfit() : null;
             $(this).find(".money[data-key='income']").html(factoryAvgProfit ? self._formatNumber(factoryAvgProfit) : "?");
-            
+
             // Update research production display
-            var factoryAvgResearchProduction = self.statistics ? self.statistics.getFactoryAvgResearchPointsProduction(factoryId) : null;
+            var factoryAvgResearchProduction = self.statistics ? self.statistics.getAvgResearchPointsProduction() : null;
             $(this).find(".research[data-key='researchProduction']").html(factoryAvgResearchProduction ? self._formatNumber(factoryAvgResearchProduction) : "?");
             
             // Update buy button state
-            // TODO: Use BuyFactoryAction when available
-            // var buyAction = new BuyFactoryAction(self.game, factoryId);
-            // if (buyAction.canBuy()) {
-            //     $(this).find(".buyButton").removeClass("cantBuy").html("BUY");
-            // } else {
-            //     $(this).find(".buyButton").addClass("cantBuy").html("TOO EXPENSIVE");
-            // }
+            var buyAction = new BuyFactoryAction(self.game, factoryId);
+            if (buyAction.canBuy()) {
+                $(this).find(".buyButton").removeClass("cantBuy").html("BUY");
+            } else {
+                $(this).find(".buyButton").addClass("cantBuy").html("TOO EXPENSIVE");
+            }
         });
         
         // Update ticks display

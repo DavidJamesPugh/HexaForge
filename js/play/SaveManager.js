@@ -64,13 +64,13 @@ define("play/SaveManager", ["../config/config", "./UrlHandler"], function(config
     SaveManager.prototype._startInterval = function() {
         this.cloudSaveInterval = setInterval(function() {
             this.saveAutoCloud(function() {
-                console.log("SaveManager: Auto saved to cloud");
+                //console.log("SaveManager: Auto saved to cloud");
             });
         }.bind(this), this.cloudSaveIntervalMs);
         
         this.localSaveInterval = setInterval(function() {
             this.saveAutoLocal(function() {
-                console.log("SaveManager: Auto saved to local");
+                //console.log("SaveManager: Auto saved to local");
             });
         }.bind(this), this.localSaveIntervalMs);
     };
@@ -129,10 +129,13 @@ define("play/SaveManager", ["../config/config", "./UrlHandler"], function(config
     };
     
     SaveManager.prototype.loadAuto = function(callback) {
+        console.log("SaveManager: loadAuto called - attempting to load save data");
         this._loadCloud(this.cloudSaveName, function(cloudData) {
+            console.log("SaveManager: Cloud data loaded:", cloudData);
             this._loadLocal(this.cloudSaveName, function(localData) {
+                console.log("SaveManager: Local data loaded:", localData);
                 var preferredData = null;
-                
+
                 if (localData && cloudData) {
                     if (localData.meta.ver > cloudData.meta.ver) {
                         console.log("SaveManager: Preferred local save local ver:" + localData.meta.ver + " > cloud ver:" + cloudData.meta.ver);
@@ -142,13 +145,20 @@ define("play/SaveManager", ["../config/config", "./UrlHandler"], function(config
                         preferredData = cloudData;
                     }
                 } else if (localData) {
+                    console.log("SaveManager: Using local data only");
                     preferredData = localData;
                 } else if (cloudData) {
+                    console.log("SaveManager: Using cloud data only");
                     preferredData = cloudData;
+                } else {
+                    console.log("SaveManager: No save data found");
                 }
-                
+
                 if (preferredData) {
+                    console.log("SaveManager: Loading preferred data:", preferredData);
                     this.updateGameFromSaveData(preferredData);
+                } else {
+                    console.log("SaveManager: No data to load");
                 }
                 callback();
             }.bind(this));

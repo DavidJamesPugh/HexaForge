@@ -37,7 +37,15 @@ define("game/Game", [
             for (var i = 0; i < meta.factories.length; i++) {
                 try {
                     var factoryMeta = meta.factories[i];
-                    this.factories[factoryMeta.id] = new Factory(factoryMeta, this);
+                    var factory = new Factory(factoryMeta, this);
+
+                    // Mark the first factory as bought by default (like original app)
+                    if (i === 0) {
+                        factory.setIsBought(true);
+                        console.log("Marked first factory as bought:", factoryMeta.name);
+                    }
+
+                    this.factories[factoryMeta.id] = factory;
                 } catch (error) {
                     console.warn("Failed to create factory:", factoryMeta, error);
                 }
@@ -365,6 +373,15 @@ define("game/Game", [
                 if (factory && factory.importFromJson) {
                     factory.importFromJson(factoryData);
                 }
+            }
+        }
+
+        // Ensure first factory is always bought (like original app behavior)
+        if (this.meta && this.meta.factories && this.meta.factories.length > 0) {
+            var firstFactory = this.getFactory(this.meta.factories[0].id);
+            if (firstFactory && !firstFactory.getIsBought()) {
+                console.log("Re-marking first factory as bought after save import");
+                firstFactory.setIsBought(true);
             }
         }
         

@@ -34,7 +34,7 @@ define("ui/FactoryUi", [
         
         // Initialize UI components
         this.menuUi = new MenuUi(this.globalUiEm, this.gameUiEm, this.factory);
-        this.mapUi = new MapUi(this.factory, this.game);
+        this.mapUi = new MapUi(this.globalUiEm, this.imageMap, this.factory, { tileSize: 21 });
         this.componentsUi = new ComponentsUi(this.globalUiEm, this.factory);
         // TODO: Initialize remaining UI components when their modules are extracted
         // this.mapToolsUi = new MapToolsUi(this.factory);
@@ -60,6 +60,10 @@ define("ui/FactoryUi", [
         // The new system properly handles both premium and non-premium layouts
         
         // Display UI components in their proper containers
+        console.log("FactoryUi: Displaying components...");
+        console.log("MapContainer:", this.container.find(".mapContainer"));
+        console.log("MapContainer dimensions:", this.container.find(".mapContainer").width(), "x", this.container.find(".mapContainer").height());
+
         this.menuUi.display(this.container.find(".menuContainer"));
         this.mapUi.display(this.container.find(".mapContainer"));
         this.componentsUi.display(this.container.find(".componentsContainer"));

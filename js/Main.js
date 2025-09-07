@@ -48,22 +48,22 @@ define("Main", [
     Main.prototype.init = function(isDevMode, callback) {
         // Create and load the image map
         this.imageMap = this._createImageMap();
-        
+
         this.imageMap.loadAll(function() {
-            // Create the play instance with user hash and API
-            this.play = new Play(this.userHash, this.api);
-            
+            // Create the play instance (it handles its own userHash and API creation)
+            this.play = new Play();
+
             // Initialize the play instance
             this.play.init(isDevMode, function() {
                 // Check if in development mode
                 this.play.isDevMode();
-                
+
                 // Create and initialize the main UI
                 this.mainUi = new MainUi(this.play, this.imageMap);
-                
+
                 // Display the main UI in the game area
                 this.mainUi.display($("#gameArea"));
-                
+
                 // Execute callback if provided
                 if (callback) {
                     callback();

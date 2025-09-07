@@ -176,7 +176,14 @@ define("config/Meta", [], function() {
                 areas: [],
               }
             ],
-        
+
+        // Create factory lookup mappings
+        factoriesById: {},
+        factoriesByIdNum: [],
+
+        // Create areas lookup mapping
+        areasById: {},
+
         // Research configuration
         research: {
             efficiency: {
@@ -552,6 +559,33 @@ define("config/Meta", [], function() {
             4: { id: "research", name: "Research" }
         }
     };
-    
+
+    // Initialize factory mappings
+    for (var i = 0; i < meta.factories.length; i++) {
+        var factory = meta.factories[i];
+        if (meta.factoriesById[factory.id]) {
+            throw new Error("Factory with id " + factory.id + " already exists!");
+        }
+        if (meta.factoriesByIdNum[factory.idNum]) {
+            throw new Error("Factory with idNum " + factory.idNum + " already exists!");
+        }
+        meta.factoriesById[factory.id] = factory;
+        meta.factoriesByIdNum[factory.idNum] = factory;
+    }
+
+    // Initialize areas mappings
+    for (var i = 0; i < meta.factories.length; i++) {
+        var factory = meta.factories[i];
+        if (factory.areas) {
+            for (var j = 0; j < factory.areas.length; j++) {
+                var area = factory.areas[j];
+                if (meta.areasById[area.id]) {
+                    throw new Error("Area with id " + area.id + " already exists!");
+                }
+                meta.areasById[area.id] = area;
+            }
+        }
+    }
+
     return meta;
 });

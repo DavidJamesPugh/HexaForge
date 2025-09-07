@@ -6,12 +6,12 @@ define("game/Factory", [
     "base/EventManager",
     "config/event/FactoryEvent",
     "game/Tile",
-    "game/Component"
+    "game/Component",
     // TODO: These dependencies will need to be implemented as we extract more modules
     // "game/UpgradesManager",
-    // "game/AreasManager",
+    "game/AreasManager",
     // "game/FactorySetup"
-], function(EventManager, FactoryEvent, Tile, Component) {
+], function(EventManager, FactoryEvent, Tile, Component, AreasManager) {
     
     /**
      * Factory constructor
@@ -29,7 +29,7 @@ define("game/Factory", [
         
         // TODO: Initialize managers when their modules are extracted
         // this.upgradesManager = new UpgradesManager(this);
-        // this.areasManager = new AreasManager(this);
+        this.areasManager = new AreasManager(this);
         
         // Initialize tiles array
         this.tiles = [];
@@ -40,6 +40,34 @@ define("game/Factory", [
                 var terrain = this.meta.terrains[this.meta.terrainMap[y * this.meta.tilesX + x]];
                 var buildType = this.meta.buildMap[y * this.meta.tilesX + x];
                 this.tiles[y * this.meta.tilesX + x] = new Tile(x, y, buildType, terrain, this);
+            }
+        }
+
+        // Initialize start components if defined
+        this._initializeStartComponents();
+    };
+
+    /**
+     * Initialize start components from meta configuration
+     * @private
+     */
+    Factory.prototype._initializeStartComponents = function() {
+        if (!this.meta.startComponents) return;
+
+        for (var i = 0; i < this.meta.startComponents.length; i++) {
+            var startComponent = this.meta.startComponents[i];
+
+            // Get component metadata
+            var componentMeta = this.game.getComponentMeta ? this.game.getComponentMeta(startComponent.id) : null;
+            if (componentMeta) {
+                // Create component
+                var component = new Component(this, startComponent.x, startComponent.y, componentMeta);
+
+                // Place on tile
+                var tile = this.getTileAt(startComponent.x, startComponent.y);
+                if (tile) {
+                    tile.setComponent(component);
+                }
             }
         }
     };
@@ -78,7 +106,7 @@ define("game/Factory", [
      * @returns {Object} AreasManager instance
      */
     Factory.prototype.getAreasManager = function() {
-        return this.areasManager || null;
+        return this.areasManager;
     };
 
     /**
@@ -286,33 +314,36 @@ define("game/Factory", [
      */
     Factory.prototype._importTilesFromJson = function(tilesData) {
         if (!tilesData || !this.tiles) return;
-        
+
         // Clear existing components first
         for (var i = 0; i < this.tiles.length; i++) {
             if (this.tiles[i] && this.tiles[i].setComponent) {
                 this.tiles[i].setComponent(null);
             }
         }
-        
+
+        // Also clear the components array if it exists (from old save format)
+        if (this.components) {
+            this.components = [];
+        }
+
         // Import component positions
         for (var tileKey in tilesData) {
             var tileData = tilesData[tileKey];
+
             if (tileData && tileData.x !== undefined && tileData.y !== undefined && tileData.componentId) {
                 var tile = this.getTileAt(tileData.x, tileData.y);
+
                 if (tile) {
                     // Get component meta from the game
                     var componentMeta = this.game.getComponentMeta ? this.game.getComponentMeta(tileData.componentId) : null;
+
                     if (componentMeta) {
                         // Create component using the Component class
                         if (typeof Component !== 'undefined') {
                             var component = new Component(this, tileData.x, tileData.y, componentMeta);
                             tile.setComponent(component);
-                            console.log("Placed component:", tileData.componentId, "at position:", tileData.x, tileData.y);
-                        } else {
-                            console.warn("Component class not available for:", tileData.componentId);
                         }
-                    } else {
-                        console.warn("Component meta not found for:", tileData.componentId);
                     }
                 }
             }
