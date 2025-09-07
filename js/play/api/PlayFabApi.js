@@ -59,34 +59,43 @@ define("play/api/PlayFabApi", [], function() {
     };
     
     PlayFabApi.prototype.load = function(slotName, callback) {
+        console.log("PlayFabApi: Load called for slot:", slotName);
+
         if (typeof PlayFab === 'undefined') {
             console.error("PlayFabApi: PlayFab SDK not loaded");
             callback(null);
             return;
         }
-        
+
         var keys = [slotName, this._getMetaVarName(slotName)];
         var request = { Keys: keys };
-        
+        console.log("PlayFabApi: Load request:", request);
+
         PlayFab.ClientApi.GetUserData(request, function(result, error) {
-            console.log("PlayFabApi: Loaded!", [result, error]);
-            
+            console.log("PlayFabApi: Load response:", result, error);
+
             if (result && result.code === 200 && result.data && result.data.Data) {
+                console.log("PlayFabApi: Available data keys:", Object.keys(result.data.Data));
                 var saveData = null;
                 try {
                     var metaKey = this._getMetaVarName(slotName);
                     var dataKey = slotName;
-                    
+
+                    console.log("PlayFabApi: Looking for metaKey:", metaKey, "dataKey:", dataKey);
+
                     // Check if both meta and data exist
-                    if (result.data.Data[metaKey] && result.data.Data[metaKey].Value && 
+                    if (result.data.Data[metaKey] && result.data.Data[metaKey].Value &&
                         result.data.Data[dataKey] && result.data.Data[dataKey].Value) {
-                        
+
                         saveData = {
                             meta: JSON.parse(result.data.Data[metaKey].Value),
                             data: result.data.Data[dataKey].Value
                         };
+                        console.log("PlayFabApi: Successfully loaded save data:", saveData);
                     } else {
                         console.log("PlayFabApi: Save data incomplete for slot:", slotName);
+                        console.log("PlayFabApi: Meta exists:", !!result.data.Data[metaKey]);
+                        console.log("PlayFabApi: Data exists:", !!result.data.Data[dataKey]);
                     }
                 } catch (e) {
                     console.error("PlayFabApi: Failed to parse save data", e);

@@ -266,7 +266,7 @@ define("play/Play", [
                     },
                     data: this._createBinarySaveData()
                 };
-                console.log("Created save data:", saveData);
+                //console.log("Created save data:", saveData);
                 return saveData;
             }.bind(this))
             .setUpdateGameFromLoadedDataCallback(function(saveData) {
@@ -326,7 +326,7 @@ define("play/Play", [
                 version: "1.0"
             };
             
-            console.log("Created comprehensive save data:", gameData);
+           // console.log("Created comprehensive save data:", gameData);
             
             // Convert to base64 for storage
             return btoa(JSON.stringify(gameData));
@@ -343,9 +343,9 @@ define("play/Play", [
      */
     Play.prototype._exportFactoriesData = function() {
         if (!this.game) return {};
-        
+
         var factoriesData = {};
-        
+
         // Get all factories
         for (var factoryId in this.game.factories) {
             var factory = this.game.factories[factoryId];
@@ -361,7 +361,7 @@ define("play/Play", [
                 };
             }
         }
-        
+
         return factoriesData;
     };
     
@@ -392,27 +392,43 @@ define("play/Play", [
      */
     Play.prototype._exportFactoryTiles = function(factory) {
         if (!factory || !factory.tiles) return {};
-        
+
         var tilesData = {};
-        
+
         // Export each tile with component information
         for (var i = 0; i < factory.tiles.length; i++) {
             var tile = factory.tiles[i];
-            if (tile && tile.isMainComponentContainer && tile.isMainComponentContainer()) {
-                var component = tile.getComponent();
+
+            if (tile) {
+                var component = tile.getComponent ? tile.getComponent() : null;
+
                 if (component) {
-                    tilesData[tile.getIdStr ? tile.getIdStr() : (tile.getX() + ":" + tile.getY())] = {
-                        x: tile.getX ? tile.getX() : 0,
-                        y: tile.getY ? tile.getY() : 0,
-                        componentId: component.getMeta ? component.getMeta().id : 'unknown',
-                        componentType: component.getMeta && component.getMeta().strategy ? component.getMeta().strategy.type : 'unknown',
-                        inputOutput: this._safeExportToWriter(component.getInputOutputManager),
-                        producer: this._safeExportToWriter(component.producer)
-                    };
+                    var componentMeta = component.getMeta ? component.getMeta() : null;
+                    var tileX = tile.getX ? tile.getX() : tile.x;
+                    var tileY = tile.getY ? tile.getY() : tile.y;
+
+                    // Check if this is the main component container (position matches)
+                    var isMainContainer = tile.isMainComponentContainer ?
+                        tile.isMainComponentContainer() :
+                        (component.getX && component.getY &&
+                         component.getX() == tileX &&
+                         component.getY() == tileY);
+
+                    if (isMainContainer) {
+                        var tileKey = tile.getIdStr ? tile.getIdStr() : (tileX + ":" + tileY);
+                        tilesData[tileKey] = {
+                            x: tileX,
+                            y: tileY,
+                            componentId: componentMeta ? componentMeta.id : 'unknown',
+                            componentType: componentMeta && componentMeta.strategy ? componentMeta.strategy.type : 'unknown',
+                            inputOutput: this._safeExportToWriter(component.getInputOutputManager),
+                            producer: this._safeExportToWriter(component.producer)
+                        };
+                    }
                 }
             }
         }
-        
+
         return tilesData;
     }
     

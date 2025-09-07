@@ -81,11 +81,13 @@ define("ui/GameUi", [
         
         // Show factory UI
         this.gameUiEm.addListener("GameUi", GameUiEvent.SHOW_FACTORY, function(factoryId) {
+            console.log("SHOW_FACTORY event received with factoryId:", factoryId);
             if (factoryId) {
                 lastFactoryId = factoryId;
             } else {
                 factoryId = lastFactoryId;
             }
+            console.log("Calling _showUi with factory and factoryId:", factoryId);
             this._showUi("factory", factoryId);
         }.bind(this));
         
@@ -135,6 +137,12 @@ define("ui/GameUi", [
             this.game.getEventManager().invokeEvent(GameEvent.BLUR);
         }.bind(this));
 
+        // Add global debugging function
+        window.debugShowFactory = function(factoryId) {
+            console.log("Manually triggering SHOW_FACTORY for:", factoryId);
+            this.gameUiEm.invokeEvent(GameUiEvent.SHOW_FACTORY, factoryId || "level1");
+        }.bind(this);
+
     };
     
     /**
@@ -144,12 +152,20 @@ define("ui/GameUi", [
      * @private
      */
     GameUi.prototype._showUi = function(uiType, data) {
+        console.log("_showUi called with uiType:", uiType, "data:", data);
         this._destroyCurrentUi();
-        
+
         if (uiType === "factory") {
+            console.log("Creating FactoryUi for factory:", data);
+            var factory = this.game.getFactory(data);
+            console.log("Factory retrieved:", factory);
+            console.log("Factory isBought:", factory ? factory.getIsBought() : "N/A");
+
             // Create and display the factory UI
-            this.currentUi = new FactoryUi(this.globalUiEm, this.gameUiEm, this.game.getFactory(data), this.play, this.imageMap);
+            this.currentUi = new FactoryUi(this.globalUiEm, this.gameUiEm, factory, this.play, this.imageMap);
+            console.log("FactoryUi created, calling display...");
             this.currentUi.display(this.container);
+            console.log("FactoryUi.display completed");
             
         } else if (uiType === "factories") {
             // Create and display the factories list UI

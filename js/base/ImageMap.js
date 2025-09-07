@@ -37,7 +37,7 @@ define("base/ImageMap", [], function() {
      * @param {Function} callback - Callback function to call when all images are loaded
      */
     ImageMap.prototype.loadAll = function(callback) {
-        console.log("ImageMap: Start loading " + this.noOfImages + " images");
+       // console.log("ImageMap: Start loading " + this.noOfImages + " images");
         
         var self = this;
         
@@ -47,7 +47,7 @@ define("base/ImageMap", [], function() {
             img.onload = function() {
                 self.noOfImagesLoaded++;
                 if (self.noOfImagesLoaded === self.noOfImages) {
-                    console.log("ImageMap: Loaded " + self.noOfImagesLoaded + " images");
+                    //console.log("ImageMap: Loaded " + self.noOfImagesLoaded + " images");
                     if (callback) {
                         callback();
                     }
@@ -58,7 +58,7 @@ define("base/ImageMap", [], function() {
                 console.warn("ImageMap: Failed to load image:", this.src);
                 self.noOfImagesLoaded++;
                 if (self.noOfImagesLoaded === self.noOfImages) {
-                    console.log("ImageMap: Finished loading process (" + self.noOfImagesLoaded + " total, some may have failed)");
+                    //console.log("ImageMap: Finished loading process (" + self.noOfImagesLoaded + " total, some may have failed)");
                     if (callback) {
                         callback();
                     }
@@ -72,7 +72,7 @@ define("base/ImageMap", [], function() {
         
         // Handle case where no images need to be loaded
         if (this.noOfImages === 0) {
-            console.log("ImageMap: No images to load");
+           // console.log("ImageMap: No images to load");
             if (callback) {
                 setTimeout(callback, 0);
             }
