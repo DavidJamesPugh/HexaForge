@@ -32,9 +32,9 @@ define("ui/factory/MapUi", [
 
         // Initialize layers
         this.backgroundLayer = new BackgroundLayer(this.imageMap, this.factory, { tileSize: this.tileSize });
-        // this.componentLayer = new ComponentLayer(this.imageMap, this.factory, { tileSize: this.tileSize });
-        // this.packageLayer = new PackageLayer(this.imageMap, this.factory, { tileSize: this.tileSize });
-        // this.mouseLayer = new MouseLayer(this.imageMap, this.factory, { tileSize: this.tileSize });
+         this.componentLayer = new ComponentLayer(this.imageMap, this.factory, { tileSize: this.tileSize });
+        this.packageLayer = new PackageLayer(this.imageMap, this.factory, { tileSize: this.tileSize });
+        this.mouseLayer = new MouseLayer(this.imageMap, this.factory, { tileSize: this.tileSize });
         // this.areasLayer = new AreasLayer(this.imageMap, this.factory, { tileSize: this.tileSize });
     };
     
@@ -81,16 +81,12 @@ define("ui/factory/MapUi", [
 
         // Display layers
         console.log("Displaying layers...");
-        console.log("BackgroundLayer:", this.backgroundLayer);
-        // console.log("ComponentLayer:", this.componentLayer);
-        // console.log("PackageLayer:", this.packageLayer);
-        // console.log("MouseLayer:", this.mouseLayer);
         // console.log("AreasLayer:", this.areasLayer);
 
         this.backgroundLayer.display(this.element);
-        // this.componentLayer.display(this.element);
-        // this.packageLayer.display(this.element);
-        // this.mouseLayer.display(this.element);
+         this.componentLayer.display(this.element);
+         this.packageLayer.display(this.element);
+         this.mouseLayer.display(this.element);
         // this.areasLayer.display(this.element);
 
         //console.log("All layers displayed");

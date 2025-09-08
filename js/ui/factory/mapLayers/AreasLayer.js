@@ -3,7 +3,7 @@
  * Extracted from original_app.js
  */
 define("ui/factory/mapLayers/AreasLayer", [
-    "../../../game/action/BuyAreaAction",
+    "game/action/BuyAreaAction",
     "ui/helper/ConfirmUi",
     "ui/helper/AlertUi"
 ], function(BuyAreaAction, ConfirmUi, AlertUi) {
