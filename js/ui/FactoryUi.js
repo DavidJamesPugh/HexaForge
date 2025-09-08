@@ -3,8 +3,7 @@
  * Extracted from original_app.js
  */
 define("ui/FactoryUi", [
-    // TODO: These dependencies will need to be implemented as we extract more modules
-    // "text!template/factory.html",
+    "text!template/factory.html",
     "ui/factory/MenuUi",
     "ui/factory/MapUi",
     "ui/factory/ComponentsUi",
@@ -13,7 +12,7 @@ define("ui/FactoryUi", [
     // "ui/factory/MapToolsUi",
     // "ui/factory/OverviewUi",
     // "ui/IncentivizedAdButtonUi"
-], function(MenuUi, MapUi, ComponentsUi) {
+], function(factoryTemplate, MenuUi, MapUi, ComponentsUi) {
     
     /**
      * FactoryUi constructor
