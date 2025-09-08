@@ -7,12 +7,13 @@ define("ui/FactoryUi", [
     "ui/factory/MenuUi",
     "ui/factory/MapUi",
     "ui/factory/ComponentsUi",
+    "lib/handlebars"
     // "ui/factory/InfoUi",
     // "ui/factory/ControlsUi",
     // "ui/factory/MapToolsUi",
     // "ui/factory/OverviewUi",
     // "ui/IncentivizedAdButtonUi"
-], function(factoryTemplate, MenuUi, MapUi, ComponentsUi) {
+], function(factoryTemplate, MenuUi, MapUi, ComponentsUi, Handlebars) {
     
     /**
      * FactoryUi constructor
@@ -51,7 +52,7 @@ define("ui/FactoryUi", [
      */
     FactoryUi.prototype.display = function(container) {
         this.container = container;
-        
+        this.container.html(Handlebars.compile(factoryTemplate)());
         // Create the factory layout with proper containers
         this._createFactoryLayout();
         
@@ -92,38 +93,38 @@ define("ui/FactoryUi", [
 window.factoryUi = this;
 console.log("FactoryUi now accessible globally as window.factoryUi");
         if (this.container && this.container.length > 0) {
-            var html = '';
+            // var html = '';
             
-            // Use exact same table structure as original app
-            html += '<table class="factoryBox" width="100%" cellspacing="0" cellpadding="0" border="0">';
+            // // Use exact same table structure as original app
+            // html += '<table class="factoryBox" width="100%" cellspacing="0" cellpadding="0" border="0">';
             
-            // Top row: Overview + Top controls
-            html += '    <tr>';
-            html += '        <td class="overviewArea" valign="top">';
-            html += '            <div class="overviewContainer"></div>';
-            html += '        </td>';
-            html += '        <td class="topArea" valign="top">';
-            html += '            <div class="topContainer">';
-            html += '                <div class="menuContainer"></div>';
-            html += '                <div class="infoContainer"></div>';
-            html += '                <div class="controlsContainer"></div>';
-            html += '            </div>';
-            html += '        </td>';
-            html += '    </tr>';
+            // // Top row: Overview + Top controls
+            // html += '    <tr>';
+            // html += '        <td class="overviewArea" valign="top">';
+            // html += '            <div class="overviewContainer"></div>';
+            // html += '        </td>';
+            // html += '        <td class="topArea" valign="top">';
+            // html += '            <div class="topContainer">';
+            // html += '                <div class="menuContainer"></div>';
+            // html += '                <div class="infoContainer"></div>';
+            // html += '                <div class="controlsContainer"></div>';
+            // html += '            </div>';
+            // html += '        </td>';
+            // html += '    </tr>';
             
-            // Bottom row: Components + Map
-            html += '    <tr>';
-            html += '        <td class="componentsArea" valign="top">';
-            html += '            <div class="componentsContainer"></div>';
-            html += '            <div class="mapToolsContainer"></div>';
-            html += '        </td>';
-            html += '        <td class="mapArea" valign="top">';
-            html += '            <div class="mapContainer"></div>';
-            html += '        </td>';
-            html += '    </tr>';
-            html += '</table>';
+            // // Bottom row: Components + Map
+            // html += '    <tr>';
+            // html += '        <td class="componentsArea" valign="top">';
+            // html += '            <div class="componentsContainer"></div>';
+            // html += '            <div class="mapToolsContainer"></div>';
+            // html += '        </td>';
+            // html += '        <td class="mapArea" valign="top">';
+            // html += '            <div class="mapContainer"></div>';
+            // html += '        </td>';
+            // html += '    </tr>';
+            // html += '</table>';
             
-            this.container.html(html);
+            // this.container.html(html);
             
             // Set up container references
             this.overviewContainer = this.container.find('.overviewContainer');
@@ -281,74 +282,6 @@ console.log("FactoryUi now accessible globally as window.factoryUi");
         console.log("mainWithAdd class present:", $('.main').hasClass('mainWithAdd'));
     };
     
-    /**
-     * Show placeholder UI while actual components are being implemented
-     * @private
-     */
-    FactoryUi.prototype._showPlaceholderUi = function() {
-        if (this.container && this.container.length > 0) {
-            var html = '<div style="padding: 20px; font-family: Arial, sans-serif;">';
-            html += '<h2 style="color: #4CAF50;">🏭 Factory: ' + this.factory.getMeta().name + '</h2>';
-            
-            html += '<div style="padding: 15px; border-radius: 5px; margin: 10px 0;">';
-            html += '<h3>Factory Information:</h3>';
-            html += '<p><strong>Status:</strong> ' + (this.factory.getIsPaused() ? 'Paused' : 'Running') + '</p>';
-            html += '<p><strong>Size:</strong> ' + this.factory.getMeta().width + ' x ' + this.factory.getMeta().height + '</p>';
-            html += '<p><strong>Components:</strong> ' + (this.factory.getComponents ? this.factory.getComponents().length : 0) + '</p>';
-            html += '</div>';
-            
-            html += '<div style="margin: 20px 0;">';
-            html += '<h3>Factory UI Components (Placeholder):</h3>';
-            html += '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">';
-            html += '<div style="border: 1px solid #ddd; padding: 15px; border-radius: 5px;">';
-            html += '<h4>📋 Menu</h4>';
-            html += '<p>Navigation and factory controls</p>';
-            html += '</div>';
-            html += '<div style="border: 1px solid #ddd; padding: 15px; border-radius: 5px;">';
-            html += '<h4>🗺️ Map</h4>';
-            html += '<p>Factory grid and tile management</p>';
-            html += '</div>';
-            html += '<div style="border: 1px solid #ddd; padding: 15px; border-radius: 5px;">';
-            html += '<h4>⚙️ Components</h4>';
-            html += '<p>Building blocks and placement</p>';
-            html += '</div>';
-            html += '<div style="border: 1px solid #ddd; padding: 15px; border-radius: 5px;">';
-            html += '<h4>ℹ️ Info</h4>';
-            html += '<p>Factory statistics and details</p>';
-            html += '</div>';
-            html += '<div style="border: 1px solid #ddd; padding: 15px; border-radius: 5px;">';
-            html += '<h4>🎮 Controls</h4>';
-            html += '<p>Game controls and settings</p>';
-            html += '</div>';
-            html += '<div style="border: 1px solid #ddd; padding: 15px; border-radius: 5px;">';
-            html += '<h4>📊 Overview</h4>';
-            html += '<p>Factory performance overview</p>';
-            html += '</div>';
-            html += '</div>';
-            html += '</div>';
-            
-            html += '<div style="padding: 15px; border-radius: 5px; margin: 10px 0;">';
-            html += '<h3>FactoryUi Module Status:</h3>';
-            html += '<div style="text-align: left; max-width: 400px; margin: 0 auto;">';
-            html += '<p>✅ FactoryUi Class Extracted</p>';
-            html += '<p>✅ MenuUi (Completed)</p>';
-            html += '<p>✅ MapUi (Completed)</p>';
-            html += '<p>✅ ComponentsUi (Completed)</p>';
-            html += '<p>✅ Strategy Classes (Completed)</p>';
-            html += '<p>✅ Helper Modules (Completed)</p>';
-            html += '<p>⏳ Game Managers (Next Priority)</p>';
-            html += '<p>⏳ InfoUi (Pending)</p>';
-            html += '<p>⏳ ControlsUi (Pending)</p>';
-            html += '<p>⏳ OverviewUi (Pending)</p>';
-            html += '</div>';
-            html += '</div>';
-            
-            html += '<p style="color: #666;">The FactoryUi framework is ready! Ready to integrate individual factory UI components.</p>';
-            html += '</div>';
-            
-            this.container.html(html);
-        }
-    };
     
     /**
      * Destroy the FactoryUi and clean up resources

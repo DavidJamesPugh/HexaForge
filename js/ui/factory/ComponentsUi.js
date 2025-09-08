@@ -3,17 +3,17 @@
  * Handles component icon clicks and communicates with MouseLayer for placement
  */
 define("ui/factory/ComponentsUi", [
+    //"text!templates/factory/components.html",
     "config/event/FactoryEvent",
     "config/event/GlobalUiEvent",
-    "handlebars",
-    "templates/factory/components"
-], function(FactoryEvent, GlobalUiEvent, Handlebars, componentsTemplate) {
+    "handlebars"
+], function(FactoryEvent, GlobalUiEvent, Handlebars) {
 
     var ComponentsUi = function(globalUiEventManager, factory) {
         this.globalUiEventManager = globalUiEventManager;
         this.factory = factory;
         this.game = factory.getGame();
-        this.previouslySelectedComponentId = null;
+        this.lastSelectedComponentId = null;
         this.currentlySelectedComponentId = null;
     };
 
@@ -124,7 +124,7 @@ define("ui/factory/ComponentsUi", [
             function(selectedComponentId) {
                 // Update selection state if component changed
                 if (self.currentlySelectedComponentId !== selectedComponentId) {
-                    self.previouslySelectedComponentId = self.currentlySelectedComponentId;
+                    self.lastSelectedComponentId = self.currentlySelectedComponentId;
                 }
 
                 self.currentlySelectedComponentId = selectedComponentId;
@@ -172,7 +172,7 @@ define("ui/factory/ComponentsUi", [
                 var keyCode = keyboardEvent.charCode !== undefined ? keyboardEvent.charCode : keyboardEvent.keyCode;
 
                 if (keyCode === 0 || keyCode === 32) { // Spacebar pressed
-                    var componentIdToSelect = self.currentlySelectedComponentId ? null : self.previouslySelectedComponentId;
+                    var componentIdToSelect = self.currentlySelectedComponentId ? null : self.lastSelectedComponentId;
                     self.factory.getEventManager().invokeEvent(FactoryEvent.COMPONENT_META_SELECTED, componentIdToSelect);
                     keyboardEvent.preventDefault();
                 }

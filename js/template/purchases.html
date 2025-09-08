@@ -1,0 +1,66 @@
+<div id="purchasesBg"></div>
+<div id="purchases">
+  <a href="javascript:void(0);" class="closeButton" style="float:right; display:block;">Close</a>
+  <b>Extra</b>
+  <br />
+  <br /> I really like making games and have been building them from my free time for a very long time. (Check my games) <br /> But as making games is very time consuming (I have two young children and a full time job at a startup. So if you can relate, imagine that :p), I highly appreciate any support - would it be ideas, comments, criticism or monetary! <br /> With this game I have good ideas on what features to add and if you like this game, I kindly ask you to show your support by making a purchase. I don\'t expect these games to pay a salary, but to cover at least some of the time I put into making them. :) <br /> I really don\'t like monetizing strategies games use nowadays - pay for every freaking move, so most certainly I will not follow them. <br />
+  <br /> {{#if mainSiteVersion}}
+    <b>Any purchase will remove ads and scales game to use whole screen. (Only if played at factoryidle.com)</b>
+    <br /> {{/if}}
+  <br style="clear:both" />
+  <div class="specials"> {{#each specials}}
+      <div class="item {{#if isBought}}boughtItem{{/if}}" data-id="{{id}}">
+        <div class="name">{{name}}</div>
+        <div class="description">{{{description}}}</div>
+        <div class="buy"> {{#if isBought}}
+            <span class="bought">Bought</span>
+          {{else}}
+            <a href="javascript:void(0);" data-purchaseId="{{id}}" class="button">Get it!</a> {{/if}}
+        </div>
+        <div class="price">{{#if isBought}}&nbsp;{{else}}{{priceStr}}{{/if}}</div>
+      </div>
+    {{/each}}
+  </div>
+  <br style="clear:both;" />
+  <table class="timeTravelTable listTable">
+    <tr>
+      <td colspan="4" class="title">Time travel</td>
+    </tr>
+    <tr>
+      <td colspan="4" class="description">Each ticket gives you <b>3 hour</b> income and research points. <br />You can use them any time you like after the purchase. </td>
+    </tr> {{#each timeTravelTickets}}
+      <tr class="item" data-id="{{id}}">
+        <td width="150">{{name}}</td>
+        <td width="40">{{priceStr}}</td>
+        <td class="comment">{{description}}</td>
+        <td width="50">
+          <a href="javascript:void(0);" data-purchaseId="{{id}}" class="button">Get it!</a>
+        </td>
+      </tr>
+    {{/each}}
+  </table>
+  <table class="bonusTicksTable listTable">
+    <tr>
+      <td colspan="4" class="title">
+        <b>Bonus ticks</b>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="4" class="description">Makes game ticks run really fast - <b>up to 200ticks/sec</b>
+        <br />(Ticks run fastest if game runs in background mode - not focused)
+      </td>
+    </tr> {{#each bonusTicks}}
+      <tr class="item" data-id="{{id}}">
+        <td width="150">{{name}}</td>
+        <td width="40">{{priceStr}}</td>
+        <td class="comment">{{description}}</td>
+        <td width="50">
+          <a href="javascript:void(0);" data-purchaseId="{{id}}" class="button">Get it!</a>
+        </td>
+      </tr>
+    {{/each}}
+  </table>
+  <br style="clear:both" />
+  <br />
+  <span style="font-size:0.9em; color:gray">* If you have problems with purchases, write to <a href="mailto:factoryidle@inditel.ee" style="color:gray" target="_blank">factoryidle@inditel.ee</a>. Please attach your user key. </span>
+</div>

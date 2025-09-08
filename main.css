@@ -1594,8 +1594,6 @@ div.vis-color-picker input.vis-range {
     padding: 5px;
 }
 
-.factoryBox {}
-
 .factoryBox .overviewArea .overviewContainer {
     height: 120px;
     overflow: hidden;
@@ -1608,12 +1606,6 @@ div.vis-color-picker input.vis-range {
     overflow: hidden;
     border-bottom: 1px dotted lightgray;
 }
-
-.factoryBox .topArea .topContainer .menuContainer {}
-
-.factoryBox .topArea .topContainer .controlsContainer {}
-
-.factoryBox .topArea .topContainer .infoContainer {}
 
 .factoryBox .componentsArea .componentsContainer {
     width: 210px;

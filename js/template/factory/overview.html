@@ -1,0 +1,26 @@
+<div class="overviewBox">
+  <span class="miniText">Money:</span>
+  <span class="money">$ <b id="money"></b>
+  </span>
+  <br />
+  <span class="miniText">Income:</span>
+  <span class="money smallText">$ <span id="income"></span>
+  </span>
+  <span class="smallText">/tick (avg)</span>
+  <br />
+  <br /> {{#if researchBought}}
+    <span class="miniText">Research:</span>
+    <span class="research smallText">
+      <span id="research"></span>
+    </span>
+    <br />
+    <span class="miniText">Income:</span>
+    <span class="research smallText">
+      <span id="researchIncome"></span>
+    </span>
+    <span class="smallText">/tick (avg)</span>
+    <br /> {{/if}}
+  <span class="miniText ticks">
+    <span id="ticks"></span> ticks/sec </span>
+  <br />
+</div>

@@ -1,0 +1,16 @@
+<div class="mapToolsBox">
+  <div class="location"></div>
+  <div class="title">Map tools</div>
+  <div class="help">Press ALT to draw</div>
+  <div class="button buttonSelected but" data-id="">Nothing</div> {{#each tools}} {{#if showBreak}}
+      <br style="clear:both" /> {{/if}}
+    <div class="button but{{id}}" data-id="{{id}}">
+      <div class="mapTool {{id}}" data-id="{{id}}">{{name}}</div>
+    </div>
+  {{/each}}
+  <br style="clear:both" />
+  <br />
+  <div class="title">Map data</div>
+  <textArea id="mapData"></textArea>
+  <br />
+</div>

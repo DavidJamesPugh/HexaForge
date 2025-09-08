@@ -1,3 +1,0 @@
-define("text!template/achievements.html", [], function () {
-    return '<div class="achievementsBox">\r\n\r\n    <span class="backButton" id="backToReactor">Back to factory</span>\r\n\r\n    <br/>\r\n    {{#each achievements}}\r\n    {{#if changeGroup}}\r\n    <br style="clear:left"/><br/>\r\n    {{/if}}\r\n    <div class="item" data-id="{{id}}">\r\n\r\n        <div class="icon {{icon}}" style="float:left;"></div>\r\n        <div class="bonus">{{{bonus}}}</div>\r\n        <div class="name">\r\n            {{name}}\r\n        </div>\r\n        <br/>\r\n\r\n        <div class="requirements">\r\n            {{{requirements}}}\r\n        </div>\r\n\r\n    </div>\r\n    {{/each}}\r\n\r\n</div>';
-});

@@ -1,51 +1,32 @@
 /**
- * Text loader module - loads text files (like HTML templates) asynchronously
- * Based on the original app's text loader functionality
+ * RequireJS Text Plugin - loads text files (like HTML templates)
+ * Standard RequireJS plugin interface
  */
-define("lib/text", [], function() {
-    
-    /**
-     * Load text content from a URL
-     * @param {string} url - URL to load text from
-     * @param {Function} callback - Callback function with loaded text
-     */
-    function loadText(url, callback) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', url, true);
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === 4) {
-                if (xhr.status === 200) {
-                    callback(xhr.responseText);
-                } else {
-                    console.error('Failed to load text from:', url, 'Status:', xhr.status);
-                    callback('');
+
+define(function() {
+    'use strict';
+
+    var text = {
+        load: function(name, req, onload, config) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', req.toUrl(name), true);
+            xhr.onreadystatechange = function(evt) {
+                if (xhr.readyState === 4) {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        onload(xhr.responseText);
+                    } else {
+                        onload.error(new Error('Failed to load ' + name + ': ' + xhr.status));
+                    }
                 }
-            }
-        };
-        xhr.send();
-    }
-    
-    /**
-     * Load text content synchronously (for AMD compatibility)
-     * @param {string} url - URL to load text from
-     * @returns {string} Loaded text content
-     */
-    function loadTextSync(url) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', url, false); // Synchronous
-        xhr.send();
-        
-        if (xhr.status === 200) {
-            return xhr.responseText;
-        } else {
-            console.error('Failed to load text from:', url, 'Status:', xhr.status);
-            return '';
+            };
+            xhr.send(null);
+        },
+
+        normalize: function(name, normalize) {
+            return name;
         }
-    }
-    
-    return {
-        loadText: loadText,
-        loadTextSync: loadTextSync
     };
+
+    return text;
 });
 

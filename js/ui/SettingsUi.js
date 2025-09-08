@@ -6,10 +6,10 @@
 define("ui/SettingsUi", [
     "ui/helper/LoadingUi", 
     "ui/helper/ConfirmUi",
-    "templates/settings",
+    //"text!template/settings.html",
     "lib/handlebars",
     "config/event/GameUiEvent"
-], function(LoadingUi, ConfirmUi, settingsTemplate, Handlebars, GameUiEvent) {
+], function(LoadingUi, ConfirmUi, Handlebars, GameUiEvent) {
     
     var SettingsUi = function(gameUiEm, play, game, userHash, saveManager) {
         this.gameUiEm = gameUiEm;

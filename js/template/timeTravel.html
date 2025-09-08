@@ -1,0 +1,25 @@
+<div id="timeTravelBg"></div>
+<div id="timeTravel">
+  <a href="javascript:void(0);" class="closeButton" style="float:right; display:block;">Close</a>
+  <b>Time travel</b>
+  <br />
+  <br /> Travel quickly through space and time to build your empire faster. <br /> Each ticket will give you <b>3 hour</b> income and research points. <br />
+  <br /> You have <b class="tickets">{{tickets}}</b> tickets for time travel! <br />
+  <a href="javascript:void(0);" class="getMore">Get more tickets</a>
+  <br style="clear:both" />
+  <br /> If you travel now you will pass <b>{{ticks}}</b> ticks and get: <br />
+  <span class="money">
+    <b>${{profit}}</b> ( <b>${{profitPerTick}}</b> per tick) </span>
+  <br />
+  <span class="research">
+    <b>{{researchPoints}}</b> research points ( <b>{{researchPointsPerTick}}</b> per tick) </span>
+  <br />
+  <span class="comment"> These are your combined avg incomes from all factories. <br /> It might be wise to wait until your factories balance <a href="javascript:void(0)" class="refresh">refresh</a>
+  </span>
+  <br /> {{#if hasTickets}}
+    <br />
+    <a href="javascript:void(0);" class="travel">Use 1 ticket and travel to the future!</a>
+    <br style="clear:both" />
+  {{else}}
+    <br /> Unfortunately you don\'t have any tickets... {{/if}}
+</div>

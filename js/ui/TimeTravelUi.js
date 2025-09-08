@@ -4,11 +4,11 @@
  */
 
 define("ui/TimeTravelUi", [
-    "templates/timeTravel",
+    //"text!template/timeTravel.html",
     "game/action/PassTimeAction",
     "lib/handlebars",
     "config/event/GameUiEvent"
-], function(timeTravelTemplate, PassTimeAction, Handlebars, GameUiEvent) {
+], function( PassTimeAction, Handlebars, GameUiEvent) {
 
     /**
      * TimeTravelUi constructor

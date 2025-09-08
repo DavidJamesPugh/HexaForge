@@ -1,0 +1,20 @@
+<div class="componentsBox">
+  <div class="title">Components</div>
+  <table cellspacing="0" cellpadding="0" border="0"> {{#each components}}
+      <tr> {{#each sub}}
+          <td>
+            <div class="buttonArea"> {{#if name}}
+                <div class="button but{{id}} {{#if isNoComponent}}buttonSelected{{/if}}" data-id="{{id}}">
+                  <div class="icon" data-id="{{id}}" "{{style}}"></div>
+                </div>
+              {{/if}}
+            </div>
+          </td>
+        {{/each}}
+      </tr>
+    {{/each}}
+  </table>
+  <div style="text-align:center; margin: 10px 0 10px 0;">
+    <a href="javascript:void(0);" id="makeScreenShotButton" style="color:white; font-size:0.9em;">Show whole map</a>
+  </div>
+</div>

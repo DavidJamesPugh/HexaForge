@@ -1,4 +1,6 @@
-define("ui/helper/TipUi", ["templates/helper/tip"], function(tipTemplate) {
+define("ui/helper/TipUi", [
+   // "text!template/helper/tip.html"
+], function(tipTemplate) {
     var tipIdCounter = 0;
 
     var TipUi = function(initElement, content) {

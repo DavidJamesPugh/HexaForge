@@ -1,3 +1,0 @@
-define("text!template/runningInBackgroundInfoUi.html", [], function () {
-    return '<div class="runningInBackgroundInfoUiBg" id="runningInBackgroundInfoUi"></div>\r\n<div class="runningInBackgroundInfoUi">\r\n    <b>Background mode active</b><br/>\r\n    <br/>\r\n    Don\'t worry, game runs at <b class="green">normal speed</b>, just uses a lot less CPU (power) thanks to not updating some graphical\r\n    elements.<br/>\r\n    <br/>\r\n    <span class="green">Just focus (click) the game to deactivate</span>\r\n</div>';
-});

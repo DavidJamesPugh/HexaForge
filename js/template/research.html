@@ -1,0 +1,24 @@
+<div class="researchBox">
+  <span class="backButton" id="backToReactor">Back to factory</span>
+  <div class="header"> You have <b id="researchPoints" class="research">????</b> research points and <b class="money">$ <span id="money"></span>
+    </b>. Use it wisely! You have researched <b>{{have}} of {{max}}</b> technologies. <br />
+    <span class="miniText">Research applies to every factory.</span>
+  </div>
+  <br /> {{#each research}} {{#if changeGroup}}
+      <br style="clear:left" />
+      <br /> {{/if}}
+    <div class="researchItem" data-id="{{id}}">
+      <div class="icon">
+        <div class="iconSelf" "{{iconStyle}}"></div>
+      </div>
+      <div class="buyButton" data-id="{{id}}">BUY</div> {{name}} {{#if showBoughtAndMax}}
+        <span class="bought"></span>/{{max}} {{/if}} &nbsp;&nbsp;&nbsp;&nbsp; {{#if price}}
+        <span class="priceTitle">Price:</span>
+        <span class="money">{{price}}</span> {{/if}} {{#if priceResearchPoints}}
+        <span class="priceTitle">Research:</span>
+        <span class="research">{{priceResearchPoints}}</span> {{/if}}
+      <br />
+      <div class="description"> {{description}} </div>
+    </div>
+  {{/each}}
+</div>

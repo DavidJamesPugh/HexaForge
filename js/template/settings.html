@@ -1,0 +1,46 @@
+<div id="settingsBg" class="modalBg"></div>
+<div id="settings" class="modal">
+  <div class="modalContent">
+    <div class="modalHeader">
+      <h2>Settings</h2>
+      <a href="javascript:void(0);" class="closeButton">×</a>
+    </div>
+    <div class="modalBody">
+      <div class="settingSection">
+        <h3>User Information</h3>
+        <label>User Hash:</label>
+        <input type="text" id="userHash" value="{{userHash}}" readonly />
+      </div>
+      <div class="settingSection">
+        <h3>Save Settings</h3>
+        <div class="saveInterval">
+          <label>Cloud Save Interval:</label>
+          <span>{{cloudSaveInterval}}</span>
+        </div>
+        <div class="saveInterval">
+          <label>Local Save Interval:</label>
+          <span>{{localSaveInterval}}</span>
+        </div>
+      </div>
+      <div class="settingSection">
+        <h3>Save Slots</h3> {{#each saveSlots}}
+          <div class="saveSlot" data-slot-id="{{id}}">
+            <span class="slotName">{{name}}</span> {{#if hasSave}}
+              <span class="slotInfo">Last save: {{lastSave}} (Ticks: {{ticks}})</span>
+              <button class="loadSlot">Load</button>
+              <button class="saveSlot">Save</button>
+            {{else}}
+              <span class="slotInfo">Empty</span>
+              <button class="saveSlot">Save</button> {{/if}}
+          </div>
+        {{/each}}
+      </div> {{#if devMode}}
+        <div class="settingSection">
+          <h3>Developer Options</h3>
+          <button id="exportGame">Export Game Data</button>
+          <button id="importGame">Import Game Data</button>
+        </div>
+      {{/if}}
+    </div>
+  </div>
+</div>
