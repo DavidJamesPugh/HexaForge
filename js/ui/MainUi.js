@@ -154,13 +154,11 @@ define("ui/MainUi", [
             // TODO: Implement when MissionsUi is available
             // this.currentUi = new MissionsUi(this.globalUiEm, meta.missions);
             console.log("Would show missions UI");
-            this._showPlaceholderUi("Missions");
             
         } else if (uiType === "mission") {
             // TODO: Implement when GameUi is available for mission mode
             // this.currentUi = new GameUi(this.globalUiEm, this.play.getMission(data), this.play, this.imageMap);
             console.log("Would show mission UI:", data);
-            this._showPlaceholderUi("Mission: " + data);
         }
         
         // TODO: Remove this placeholder when actual UI components are implemented
@@ -193,57 +191,10 @@ define("ui/MainUi", [
                 settingsUi.display();
             } else {
                 console.log("SaveManager not available");
-                this._showPlaceholderUi("Settings (SaveManager not available)");
+                
             }
         } else {
             console.log("Play or getSaveManager not available");
-            this._showPlaceholderUi("Settings (Play not available)");
-        }
-    };
-
-    /**
-     * Show a placeholder UI while actual components are being implemented
-     * @param {string} uiName - Name of the UI being shown
-     * @private
-     */
-    MainUi.prototype._showPlaceholderUi = function(uiName) {
-        if (this.container && this.container.length > 0) {
-            this.container.html(
-                '<div style="padding: 40px; text-align: center; font-family: Arial, sans-serif;">' +
-                '<h1 style="color: #4CAF50;">🎉 ' + uiName + ' UI Loaded!</h1>' +
-                '<div style="padding: 20px; border-radius: 8px; margin: 20px 0;">' +
-                '<h3>Frontend Extraction Progress:</h3>' +
-                '<div style="text-align: left; max-width: 400px; margin: 0 auto;">' +
-                '<p>✅ DOM Error Fixes</p>' +
-                '<p>✅ Play Class Extracted</p>' +
-                '<p>✅ MainUi Class Extracted</p>' +
-                '<p>✅ ImageMap Class (Completed)</p>' +
-                '<p>✅ Factory Class (Completed)</p>' +
-                '<p>✅ Component Class (Completed)</p>' +
-                '<p>✅ Tile Class (Completed)</p>' +
-                '<p>✅ InputOutputManager (Completed)</p>' +
-                '<p>✅ Buyer Strategy (Completed)</p>' +
-                '<p>✅ Seller Strategy (Completed)</p>' +
-                '<p>✅ Converter Strategy (Completed)</p>' +
-                '<p>✅ Transport Strategy (Completed)</p>' +
-                '<p>✅ Garbage Strategy (Completed)</p>' +
-                '<p>✅ Sorter Strategy (Completed)</p>' +
-                '<p>✅ GameUi Class (Completed)</p>' +
-                '<p>✅ FactoriesUi (Completed)</p>' +
-                '<p>✅ FactoryUi (Completed)</p>' +
-                '<p>✅ ResearchUi (Completed)</p>' +
-                '<p>✅ UpgradesUi (Completed)</p>' +
-                                   '<p>✅ AchievementsUi (Completed)</p>' +
-                   '<p>✅ Factory Management Modules (Completed)</p>' +
-                   '<p>✅ Remaining Strategy Classes (Completed)</p>' +
-                                      '<p>✅ Helper Modules (Completed)</p>' +
-                   '<p>⏳ Game Managers (Next Priority)</p>' +
-                   '</div>' +
-                   '</div>' +
-                   '<p style="color: #666;">🎉 <strong>FACTORY MAP IS NOW READY!</strong> You can see the factory and place components!</p>' +
-                   '<p style="color: #666;">All core modules are working. Check the browser console for detailed logs.</p>' +
-                   '</div>'
-            );
         }
     };
 

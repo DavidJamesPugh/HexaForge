@@ -108,9 +108,6 @@ define("ui/FactoriesUi", [
         //     researchBought: !!this.game.getResearchManager().getResearch("researchCenter") 
         // }));
         
-        // Show placeholder UI for now
-        this._showPlaceholderUi(factories);
-        
         // Setup event listeners
         console.log("Setting up event listeners for factories...");
         this._setupEventListeners();
@@ -132,83 +129,7 @@ define("ui/FactoriesUi", [
         $("#missionsButton").hide();
     };
     
-    /**
-     * Show placeholder UI while template is being implemented
-     * @param {Array} factories - Array of factory data
-     * @private
-     */
-    FactoriesUi.prototype._showPlaceholderUi = function(factories) {
-        if (this.container && this.container.length > 0) {
-            var html = '';
-            
-            // Header section - exactly like original app
-            html += '<div class="headerXX">';
-            html += '    You have <span class="money">$<b id="money"></b></span> to spend. Isn\'t that nice.';
-            html += '    Average total income <span class="money">$<b id="income"></b></span>.<br />';
-            html += '    <span class="research"><b id="researchPoints"></b></span> research points.';
-            html += '    Avg production <span class="research"><b id="researchIncome"></b></span>';
-            html += '</div>';
-            
-            // Help section - exactly like original app
-            html += '<div class="helpXX">';
-            html += '    <div style="float:right"><span id="ticks"></span> ticks/sec</div>';
-            html += '    Buy more land to create even bigger empire. Go ahead, buy some!';
-            html += '</div>';
-            
-            // Factory selection - exactly like original app
-            html += '<div id="factorySelection" class="factories">';
-            
-            for (var i = 0; i < factories.length; i++) {
-                var factory = factories[i];
-                
-                html += '<div class="factoryButton" data-id="' + factory.id + '">';
-                html += '    <div class="name">';
-                html += '        ' + factory.name;
-                html += '    </div>';
-                html += '    <span class="paused">';
-                if (factory.isPaused) {
-                    html += '&lt;&lt; Paused &gt;&gt;';
-                } else {
-                    html += '&nbsp;';
-                }
-                html += '</span>';
-                
-                if (factory.isBought) {
-                    console.log("Factory", factory.name, "is bought - adding SELECT button");
-                    html += '';
-                    html += '    <div class="productionTitle">Income</div>';
-                    html += '    <div class="textLine money" data-id="' + factory.id + '" data-key="income">-</div>';
-                    html += '    <div class="productionTitle">Research</div>';
-                    html += '    <div class="textLine research" data-id="' + factory.id + '" data-key="researchProduction">-</div>';
-                    html += '    <div class="button selectButton" data-id="' + factory.id + '">SELECT</div>';
-                    html += '';
-                } else {
-                    html += '';
-                    html += '    <div class="productionTitle price">Price</div>';
-                    html += '    <div class="textLine money">$' + factory.price + '</div>';
-                    html += '    <div class="button buyButton" data-id="' + factory.id + '">BUY</div>';
-                    html += '';
-                }
-                
-                html += '</div>';
-            }
-            
-            // Missions button - exactly like original app
-            html += '    <div class="missionsButton" id="missionsButton">';
-            html += '        <div class="name">';
-            html += '            Challenges';
-            html += '        </div>';
-            html += '        <div class="description">';
-            html += '            Test your knowledge with these custom scenarios. May cause brain injury!';
-            html += '        </div>';
-            html += '        <div class="button">PLAY</div>';
-            html += '    </div>';
-            
-            html += '</div>';
-            
-            this.container.html(html);
-        }
-    };
+    
     
     /**
      * Setup event listeners for factory interactions

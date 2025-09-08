@@ -39,8 +39,6 @@ define("ui/UpgradesUi", [
         // TODO: Use template when available
         // this.container.html(Handlebars.compile(template)({ groups: upgradeGroups }));
         
-        // Show placeholder UI for now
-        this._showPlaceholderUi(upgradeGroups);
         
         // Setup event listeners
         this._setupEventListeners();
@@ -164,79 +162,6 @@ define("ui/UpgradesUi", [
             investment: "Get better returns on investments"
         };
         return descriptions[upgradeId] || "Improve factory performance";
-    };
-    
-    /**
-     * Show placeholder UI while actual components are being implemented
-     * @param {Array} upgradeGroups - Array of upgrade groups
-     * @private
-     */
-    UpgradesUi.prototype._showPlaceholderUi = function(upgradeGroups) {
-        if (this.container && this.container.length > 0) {
-            var html = '<div style="padding: 20px; font-family: Arial, sans-serif;">';
-            html += '<h2 style="color: #FF9800;">⚡ Factory Upgrades</h2>';
-            
-            html += '<div style="background: #f5f5f5; padding: 15px; border-radius: 5px; margin: 10px 0;">';
-            html += '<h3>Upgrade Status:</h3>';
-            html += '<p><strong>Money:</strong> <span id="money">$' + (this.game.getMoney ? this.game.getMoney() : 0) + '</span></p>';
-            html += '<p><strong>Factory:</strong> ' + (this.factory.getMeta ? this.factory.getMeta().name : 'Unknown') + '</p>';
-            html += '</div>';
-            
-            html += '<div style="margin: 20px 0;">';
-            html += '<h3>Available Upgrades:</h3>';
-            
-            for (var i = 0; i < upgradeGroups.length; i++) {
-                var group = upgradeGroups[i];
-                
-                if (group.isBreak) {
-                    html += '<br style="clear:both"/>';
-                } else {
-                    html += '<div class="upgradeGroup" style="border: 1px solid #ddd; padding: 15px; margin: 15px 0; border-radius: 5px;">';
-                    html += '<h4 style="color: #2196F3;">' + group.name + '</h4>';
-                    
-                    for (var j = 0; j < group.upgrades.length; j++) {
-                        var upgrade = group.upgrades[j];
-                        
-                        if (upgrade.isSeparator) {
-                            html += '<div style="width:10px; height:10px; float:right;"></div>';
-                        } else {
-                            html += '<div class="upgradeItem" data-id="' + upgrade.id + '" data-action="' + upgrade.action + '" style="border: 1px solid #ddd; padding: 10px; margin: 10px 0; border-radius: 3px; display: inline-block; width: 200px; margin-right: 10px;">';
-                            html += '<div class="upgradeIcon" style="width: 26px; height: 26px; background: #ccc; display: inline-block; vertical-align: top; margin-right: 10px;"></div>';
-                            html += '<div style="display: inline-block; vertical-align: top;">';
-                            html += '<h5 style="margin: 0 0 5px 0;">' + upgrade.title + '</h5>';
-                            html += '<p style="margin: 0 0 5px 0; font-size: 12px;">' + upgrade.description + '</p>';
-                            html += '<p style="margin: 0 0 5px 0;"><strong>Price:</strong> ' + upgrade.buyPrice + '</p>';
-                            html += '<button class="upgradeButton" style="background: #4CAF50; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">BUY</button>';
-                            html += '</div>';
-                            html += '</div>';
-                        }
-                    }
-                    
-                    html += '</div>';
-                }
-            }
-            
-            html += '</div>';
-            
-            html += '<div style="background: #e8f5e8; padding: 15px; border-radius: 5px; margin: 10px 0;">';
-            html += '<h3>UpgradesUi Module Status:</h3>';
-            html += '<div style="text-align: left; max-width: 400px; margin: 0 auto;">';
-            html += '<p>✅ UpgradesUi Class Extracted</p>';
-            html += '<p>⏳ UpgradesManager (Next Priority)</p>';
-            html += '<p>⏳ BuyUpgrade Action (Pending)</p>';
-            html += '<p>⏳ SellUpgrade Action (Pending)</p>';
-            html += '</div>';
-            html += '</div>';
-            
-            html += '<div style="text-align: center; margin: 20px 0;">';
-            html += '<button id="backToFactory" style="background: #2196F3; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-size: 16px;">← Back to Factory</button>';
-            html += '</div>';
-            
-            html += '<p style="color: #666;">The UpgradesUi framework is ready! Ready to integrate factory upgrade management.</p>';
-            html += '</div>';
-            
-            this.container.html(html);
-        }
     };
     
     /**

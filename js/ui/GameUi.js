@@ -190,7 +190,7 @@ define("ui/GameUi", [
         } else if (uiType === "statistics") {
             // TODO: Create StatisticsUi when available
             // this.currentUi = new StatisticsUi(this.gameUiEm, this.game.getFactory(data), this.imageMap);
-            this._showPlaceholderUi("Statistics: " + data);
+
         }
         
         // TODO: Display actual UI when components are available
@@ -199,39 +199,7 @@ define("ui/GameUi", [
         // }
     };
     
-    /**
-     * Show placeholder UI while actual components are being implemented
-     * @param {string} uiName - Name of the UI being shown
-     * @private
-     */
-    GameUi.prototype._showPlaceholderUi = function(uiName) {
-        if (this.container && this.container.length > 0) {
-            this.container.html(
-                '<div style="padding: 40px; text-align: center; font-family: Arial, sans-serif;">' +
-                '<h1 style="color: #2196F3;">🎮 ' + uiName + ' UI</h1>' +
-                '<div style="padding: 20px; border-radius: 8px; margin: 20px 0;">' +
-                '<h3>GameUi Module Status:</h3>' +
-                '<div style="text-align: left; max-width: 400px; margin: 0 auto;">' +
-                '<p>✅ GameUi Class Extracted</p>' +
-                '<p>✅ Event System Integrated</p>' +
-                '<p>✅ UI Navigation Framework</p>' +
-                '<p>✅ FactoriesUi (Completed)</p>' +
-                '<p>✅ FactoryUi (Completed)</p>' +
-                '<p>✅ ResearchUi (Completed)</p>' +
-                '<p>✅ UpgradesUi (Completed)</p>' +
-                '<p>✅ AchievementsUi (Completed)</p>' +
-                '<p>✅ Factory Management Modules (Completed)</p>' +
-                '<p>✅ Remaining Strategy Classes (Completed)</p>' +
-                '<p>✅ Helper Modules (Completed)</p>' +
-                '</div>' +
-                '</div>' +
-                '<p style="color: #666;">The GameUi navigation system is working! Factory management modules are now integrated.</p>' +
-                '<p style="color: #666;">Check the browser console for detailed navigation logs.</p>' +
-                '</div>'
-            );
-        }
-    };
-    
+   
     /**
      * Destroy the current UI component
      * @private

@@ -36,8 +36,6 @@ define("ui/AchievementsUi", [
         // TODO: Use template when available
         // this.container.html(Handlebars.compile(template)({ achievements: achievements }));
         
-        // Show placeholder UI for now
-        this._showPlaceholderUi(achievements);
         
         // Setup event listeners
         this._setupEventListeners();
@@ -148,64 +146,6 @@ define("ui/AchievementsUi", [
         };
         
         return icons[achievementId] || "🏆";
-    };
-    
-    /**
-     * Show placeholder UI while actual components are being implemented
-     * @param {Array} achievements - Array of achievement data
-     * @private
-     */
-    AchievementsUi.prototype._showPlaceholderUi = function(achievements) {
-        if (this.container && this.container.length > 0) {
-            var html = '<div style="padding: 20px; font-family: Arial, sans-serif;">';
-            html += '<h2 style="color: #FFD700;">🏆 Achievements</h2>';
-            
-            html += '<div style="background: #f5f5f5; padding: 15px; border-radius: 5px; margin: 10px 0;">';
-            html += '<h3>Achievement Status:</h3>';
-            html += '<p><strong>Total Achievements:</strong> ' + achievements.length + '</p>';
-            html += '<p><strong>Completed:</strong> <span id="completedCount">0</span></p>';
-            html += '<p><strong>Completion Rate:</strong> <span id="completionRate">0%</span></p>';
-            html += '</div>';
-            
-            html += '<div style="margin: 20px 0;">';
-            html += '<h3>Available Achievements:</h3>';
-            
-            for (var i = 0; i < achievements.length; i++) {
-                var achievement = achievements[i];
-                html += '<div class="achievementItem" data-id="' + achievement.id + '" style="border: 1px solid #ddd; padding: 15px; margin: 15px 0; border-radius: 5px; display: flex; align-items: center;">';
-                html += '<div class="achievementIcon" style="font-size: 32px; margin-right: 15px; width: 50px; text-align: center;">' + achievement.icon + '</div>';
-                html += '<div style="flex: 1;">';
-                html += '<h4 style="margin: 0 0 10px 0; color: #333;">' + achievement.name + '</h4>';
-                html += '<p style="margin: 0 0 8px 0; color: #666;"><strong>Requirements:</strong> ' + achievement.requirements + '</p>';
-                html += '<p style="margin: 0 0 8px 0; color: #4CAF50;"><strong>Bonus:</strong> ' + achievement.bonus + '</p>';
-                html += '<div class="achievementStatus" style="margin-top: 10px;">';
-                html += '<span class="status waiting" style="background: #FFC107; color: white; padding: 4px 8px; border-radius: 3px; font-size: 12px;">WAITING</span>';
-                html += '</div>';
-                html += '</div>';
-                html += '</div>';
-            }
-            
-            html += '</div>';
-            
-            html += '<div style="background: #e8f5e8; padding: 15px; border-radius: 5px; margin: 10px 0;">';
-            html += '<h3>AchievementsUi Module Status:</h3>';
-            html += '<div style="text-align: left; max-width: 400px; margin: 0 auto;">';
-            html += '<p>✅ AchievementsUi Class Extracted</p>';
-            html += '<p>⏳ AchievementsManager (Next Priority)</p>';
-            html += '<p>⏳ AchievementPopupUi (Pending)</p>';
-            html += '<p>⏳ Achievement Templates (Pending)</p>';
-            html += '</div>';
-            html += '</div>';
-            
-            html += '<div style="text-align: center; margin: 20px 0;">';
-            html += '<button id="backToFactory" style="background: #2196F3; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-size: 16px;">← Back to Factory</button>';
-            html += '</div>';
-            
-            html += '<p style="color: #666;">The AchievementsUi framework is ready! Ready to integrate achievement tracking and rewards.</p>';
-            html += '</div>';
-            
-            this.container.html(html);
-        }
     };
     
     /**
