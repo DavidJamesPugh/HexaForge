@@ -1,0 +1,3 @@
+define("text!template/factory/mapTools.html", [], function () {
+    return '<div class="mapToolsBox">\r\n    <div class="location"></div>\r\n    <div class="title">Map tools</div>\r\n    <div class="help">Press ALT to draw</div>\r\n\r\n    <div class="button buttonSelected but" data-id="">Nothing</div>\r\n    {{#each tools}}\r\n    {{#if showBreak}}\r\n    <br style="clear:both"/>\r\n    {{/if}}\r\n    <div class="button but{{id}}" data-id="{{id}}">\r\n        <div class="mapTool {{id}}" data-id="{{id}}">{{name}}</div>\r\n    </div>\r\n    {{/each}}\r\n    <br style="clear:both"/>\r\n    <br/>\r\n\r\n    <div class="title">Map data</div>\r\n    <textArea id="mapData"></textArea><br/>\r\n</div>';
+});
