@@ -3,11 +3,13 @@
  * Extracted from original_app.js
  */
 define("ui/factory/MenuUi", [
+    "text!template/factory/menu.html",
     "base/EventManager",
     "config/event/GameEvent",
     "config/event/GameUiEvent",
-    "config/event/GlobalUiEvent"
-], function(EventManager, GameEvent, GameUiEvent, GlobalUiEvent) {
+    "config/event/GlobalUiEvent",
+    "lib/handlebars"
+], function(menuTemplate, EventManager, GameEvent, GameUiEvent, GlobalUiEvent, Handlebars) {
     
     var MenuUi = function(globalUiEm, gameUiEm, factory) {
         this.globalUiEm = globalUiEm;
@@ -21,7 +23,7 @@ define("ui/factory/MenuUi", [
         this.container = container;
         
         // Create menu HTML with placeholder content
-        var menuHtml = this._createMenuHtml({
+        var menuHtml = Handlebars.compile(menuTemplate)({
             isMission: isMission,
             hasResearch: this.game.getMeta().research && this.game.getMeta().research.length > 0,
             hasUpgrades: this.game.getMeta().upgrades && this.game.getMeta().upgrades.length > 0,
@@ -45,43 +47,6 @@ define("ui/factory/MenuUi", [
         
         this.updateButtons();
     };
-    
-    MenuUi.prototype._createMenuHtml = function(data) {
-        // Use exact same structure as original app's factory/menu.html
-        var html = '<div class="menuBox">';
-        
-        if (data.isMission) {
-            html += '<a href="javascript:void(0);" id="missionsButton">Challenges</a>';
-            html += '<a href="javascript:void(0);" id="mainGameButton">Factories</a>';
-        } else {
-            html += '<a href="javascript:void(0);" id="factoriesButton">Factories</a>';
-        }
-        
-        if (data.hasStatistics) {
-            html += '<a href="javascript:void(0);" id="statisticsButton">Statistics</a>';
-        }
-        
-        if (data.hasResearch) {
-            html += '<a href="javascript:void(0);" id="researchButton">Research</a>';
-        }
-        
-        if (data.hasUpgrades) {
-            html += '<a href="javascript:void(0);" id="upgradesButton">Upgrades</a>';
-        }
-        
-        if (data.hasAchievements) {
-            html += '<a href="javascript:void(0);" id="achievementsButton">Achievements</a>';
-        }
-        
-        html += '<a href="javascript:void(0);" id="extraButton">Extra</a>';
-        html += '<a href="javascript:void(0);" id="timeTravelButton">Time travel</a>';
-        html += '<a href="javascript:void(0);" id="settingsButton">Settings</a>';
-        html += '<a href="javascript:void(0);" id="helpButton">Help</a>';
-        
-        html += '</div>';
-        return html;
-    };
-    
     MenuUi.prototype._setupEventListeners = function() {
         var self = this;
         

@@ -1,1 +1,25 @@
-<div class="alertBg" id="{{idBg}}"></div><div class="alert" id="{{id}}">    <span class="title">{{title}}</span><br/>    <span class="message">{{{message}}}</span><br/>    <span class="button">{{buttonTitle}}</span></div>
+<div class="headerXX"> You have <span class="money">$<b id="money"></b></span> to spend. Isn't that nice. Average total
+    income <span class="money">$<b id="income"></b></span>.<br /> {{#if researchBought}} You have <span
+        class="research"><b id="researchPoints"></b></span> research points. Avg production <span class="research"><b
+            id="researchIncome"></b></span> {{/if}}</div>
+<div class="helpXX">
+    <div style="float:right"><span id="ticks"></span> ticks/sec</div> Buy more land to create even bigger empire. Go
+    ahead, buy some!
+</div>
+<div id="factorySelection" class="factories"> {{#each factories}} <div class="factoryButton {{design}}"
+        data-id="{{id}}">
+        <div class="name"> {{name}} </div> <span class="paused">{{#if isPaused}}&lt;&lt; Paused
+            &gt;&gt;{{else}}&nbsp;{{/if}}</span> {{#if isBought}} <div class="productionTitle">Income</div>
+        <div class="textLine money" data-id="{{id}}" data-key="income">-</div>
+        <div class="productionTitle">Research</div>
+        <div class="textLine research" data-id="{{id}}" data-key="researchProduction">-</div>
+        <div class="button selectButton" data-id="{{id}}">SELECT</div> {{else}} <div class="productionTitle price">Price
+        </div>
+        <div class="textLine money">${{price}}</div>
+        <div class="button buyButton" data-id="{{id}}">BUY</div> {{/if}}
+    </div> {{/each}} <div class="missionsButton" id="missionsButton">
+        <div class="name"> Challenges </div>
+        <div class="description"> Test your knowledge with these custom scenarios. May cause brain injury! </div>
+        <div class="button">PLAY</div>
+    </div>
+</div>

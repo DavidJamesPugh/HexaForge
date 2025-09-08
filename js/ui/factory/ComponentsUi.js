@@ -3,11 +3,11 @@
  * Handles component icon clicks and communicates with MouseLayer for placement
  */
 define("ui/factory/ComponentsUi", [
-    //"text!templates/factory/components.html",
+    "text!template/factory/components.html",
     "config/event/FactoryEvent",
     "config/event/GlobalUiEvent",
     "handlebars"
-], function(FactoryEvent, GlobalUiEvent, Handlebars) {
+], function(componentsTemplate, FactoryEvent, GlobalUiEvent, Handlebars) {
 
     var ComponentsUi = function(globalUiEventManager, factory) {
         this.globalUiEventManager = globalUiEventManager;
@@ -27,9 +27,9 @@ define("ui/factory/ComponentsUi", [
         // Build component selection data from game metadata
         var componentGroups = this._buildComponentSelectionData();
 
-        // Create HTML for component selection interface
-        var htmlContent = this._createComponentSelectionHtml({ components: componentGroups });
-        this.container.html(htmlContent);
+        var compiledTemplate = Handlebars.compile(componentsTemplate)({ components: componentGroups });
+        
+        this.container.html(compiledTemplate);
 
         // Set up event listeners for user interactions
         this._setupInteractionHandlers();
@@ -42,7 +42,7 @@ define("ui/factory/ComponentsUi", [
      * Build component selection data from game metadata
      */
     ComponentsUi.prototype._buildComponentSelectionData = function() {
-        var componentGroups = [];
+        var components = [];
         var componentSelectionLayout = this.game.getMeta().componentsSelection;
 
         // Fallback to basic component layout if not defined
@@ -56,33 +56,33 @@ define("ui/factory/ComponentsUi", [
 
         // Process each row of components
         for (var rowIndex = 0; rowIndex < componentSelectionLayout.length; rowIndex++) {
-            componentGroups[rowIndex] = { componentsInRow: [] };
+            components[rowIndex] = { sub: [] };
 
             // Process each component in the current row
             for (var colIndex = 0; colIndex < componentSelectionLayout[rowIndex].length; colIndex++) {
                 var componentId = componentSelectionLayout[rowIndex][colIndex];
                 var componentMetadata = this.game.getMeta().componentsById[componentId];
 
-                componentGroups[rowIndex].componentsInRow[colIndex] = {};
+                components[rowIndex].sub[colIndex] = {};
 
                 // Check if component is available for purchase
                 if (componentMetadata && this._isComponentAvailableForPurchase(componentMetadata)) {
-                    componentGroups[rowIndex].componentsInRow[colIndex] = {
+                    components[rowIndex].sub[colIndex] = {
                         id: componentMetadata.id,
                         name: componentMetadata.name,
-                        iconStyle: "background-position: -" + (26 * (componentMetadata.iconX || 0)) + "px -" + (26 * (componentMetadata.iconY || 0)) + "px"
+                        style: "background-position: -" + (26 * (componentMetadata.iconX || 0)) + "px -" + (26 * (componentMetadata.iconY || 0)) + "px"
                     };
                 } else if (componentId === "noComponent") {
                     // Special case for "no component" selection
-                    componentGroups[rowIndex].componentsInRow[colIndex] = {
+                    components[rowIndex].sub[colIndex] = {
                         name: "No component",
-                        iconStyle: "background-position: 0px 0px"
+                        style: "background-position: 0px 0px"
                     };
                 }
             }
         }
-
-        return componentGroups;
+console.log(components);
+        return components;
     };
 
     /**
@@ -98,17 +98,6 @@ define("ui/factory/ComponentsUi", [
             return researchManager.getResearch(componentMetadata.requiresResearch) > 0;
         }
         return true; // No research requirements, component is available
-    };
-
-    /**
-     * Create HTML for the component selection interface using Handlebars template
-     */
-    ComponentsUi.prototype._createComponentSelectionHtml = function(data) {
-        // Compile the Handlebars template and render with data
-        var compiledTemplate = Handlebars.compile(componentsTemplate);
-        return compiledTemplate({
-            componentGroups: data.components
-        });
     };
 
     /**
@@ -136,10 +125,10 @@ define("ui/factory/ComponentsUi", [
         );
 
         // Handle component button clicks
-        this.container.on("click", ".button", function(event) {
+        this.container.find(".button").click(function(event) {
             var clickedElement = $(event.target);
-            var selectedComponentId = clickedElement.attr("data-component-id") ||
-                                    clickedElement.closest(".button").attr("data-component-id");
+            var selectedComponentId = clickedElement.attr("data-id");
+                                    
 
             // Notify MouseLayer of component selection
             self.factory.getEventManager().invokeEvent(
@@ -148,20 +137,15 @@ define("ui/factory/ComponentsUi", [
             );
         });
 
-        // Handle mouse hover for component preview
-        this.container.on("mouseenter", ".button", function(event) {
-            var hoveredElement = $(event.target);
-            var componentId = hoveredElement.attr("data-component-id") ||
-                            hoveredElement.closest(".button").attr("data-component-id");
-
+        this.container.on("mouseenter mouseleave", ".button", function (event) {
+            var componentId = (event.type === "mouseenter")
+                ? $(event.target).attr("data-id")
+                : null;
+        
             self.factory.getEventManager().invokeEvent(
                 FactoryEvent.HOVER_COMPONENT_META,
-                componentId || null
+                componentId
             );
-        });
-
-        this.container.on("mouseleave", ".button", function(event) {
-            self.factory.getEventManager().invokeEvent(FactoryEvent.HOVER_COMPONENT_META, null);
         });
 
         // Handle keyboard shortcuts (spacebar toggles selection)
@@ -180,8 +164,8 @@ define("ui/factory/ComponentsUi", [
         );
 
         // Handle screenshot/map view button
-        this.container.on("click", "#showFullMapButton", function() {
-            self.globalUiEventManager.invokeEvent(FactoryEvent.SHOW_SCREENSHOT_VIEW);
+        this.container.on("click", "#makeScreenShotButton", function() {
+            self.globalUiEventManager.invokeEvent(FactoryEvent.OPEN_SCREENSHOT_VIEW);
         });
     };
 

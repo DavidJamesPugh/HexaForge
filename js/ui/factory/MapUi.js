@@ -32,7 +32,7 @@ define("ui/factory/MapUi", [
 
         // Initialize layers
         this.backgroundLayer = new BackgroundLayer(this.imageMap, this.factory, { tileSize: this.tileSize });
-         this.componentLayer = new ComponentLayer(this.imageMap, this.factory, { tileSize: this.tileSize });
+        this.componentLayer = new ComponentLayer(this.imageMap, this.factory, { tileSize: this.tileSize });
         this.packageLayer = new PackageLayer(this.imageMap, this.factory, { tileSize: this.tileSize });
         this.mouseLayer = new MouseLayer(this.imageMap, this.factory, { tileSize: this.tileSize });
         // this.areasLayer = new AreasLayer(this.imageMap, this.factory, { tileSize: this.tileSize });
@@ -224,7 +224,7 @@ define("ui/factory/MapUi", [
         this.componentLayer.destroy();
         this.packageLayer.destroy();
         this.mouseLayer.destroy();
-        this.areasLayer.destroy();
+        //this.areasLayer.destroy();
 
         // Clean up DOM
         if (this.container) {

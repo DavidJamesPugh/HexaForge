@@ -8,7 +8,7 @@
     "server": "json-server -p3001 --watch db.json",
     "build:ui": "rimraf ..\\IncBackEnd\\dist && cd ../HexaForge && npm run build && xcopy dist ..\\IncBackEnd\\dist /E /I",
     "deploy:full": "npm run build:ui && git add .",
-    "dev": "http-server -p 8080 -o --cors -c-1",
+    "dev": "http-server -p 8080 --cors -c-1",
     "start": "http-server -p 8080 --cors -c-1",
     "serve": "node server.js",
     "serve:dev": "nodemon server.js"

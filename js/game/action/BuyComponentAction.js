@@ -3,6 +3,9 @@ define("game/action/BuyComponentAction", ["game/Component", "config/event/Factor
         (this.tile = tile), (this.factory = tile.getFactory()), (this.game = this.factory.getGame()), (this.componentMeta = componentMeta);
     };
     return (
+        BuyComponentAction.possibleToBuy = function() {
+            return this.game.getMoney() >= this.componentMeta.price;
+        },
         (BuyComponentAction.prototype.canBuy = function() {
             return this.game.getMoney() >= this.componentMeta.price;
         }),

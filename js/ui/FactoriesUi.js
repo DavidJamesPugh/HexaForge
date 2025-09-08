@@ -4,10 +4,11 @@
  */
 define("ui/FactoriesUi", [
     // TODO: These dependencies will need to be implemented as we extract more modules
-    // "text!template/factories.html",
+     "text!template/factories.html",
     // "ui/helper/AlertUi",
-    "game/action/BuyFactoryAction"
-], function(BuyFactoryAction) {
+    "game/action/BuyFactoryAction",
+    "lib/handlebars"
+], function(factoriesTemplate,BuyFactoryAction,Handlebars) {
     
     // Number formatting from original app
     var names = {
@@ -103,10 +104,10 @@ define("ui/FactoriesUi", [
         }
         
         // TODO: Use Handlebars template when available
-        // this.container.html(Handlebars.compile(template)({ 
-        //     factories: factories, 
+         this.container.html(Handlebars.compile(factoriesTemplate)({ 
+             factories: factories, 
         //     researchBought: !!this.game.getResearchManager().getResearch("researchCenter") 
-        // }));
+         }));
         
         // Setup event listeners
         console.log("Setting up event listeners for factories...");
