@@ -4,8 +4,9 @@
  */
 define("ui/AchievementsUi", [
     // TODO: These dependencies will need to be implemented as we extract more modules
-    // "text!template/achievements.html"
-], function() {
+         "text!template/achievements.html",
+         "lib/handlebars"
+], function(achievementsTemplate, Handlebars) {
     
     /**
      * AchievementsUi constructor
@@ -25,7 +26,10 @@ define("ui/AchievementsUi", [
      */
     AchievementsUi.prototype.display = function(container) {
         this.container = container;
-        
+        var self = this;
+        this.container.on("click", ".backButton", function () {
+            self.gameUiEm.invokeEvent(GameUiEvent.SHOW_FACTORY);
+        }.bind(this));
         // TODO: Use Handlebars template when available
         // var achievements = [];
         // var gameAchievements = this.game.getMeta().achievements || [];
@@ -34,7 +38,7 @@ define("ui/AchievementsUi", [
         var achievements = this._buildAchievementsList();
         
         // TODO: Use template when available
-        // this.container.html(Handlebars.compile(template)({ achievements: achievements }));
+         this.container.html(Handlebars.compile(achievementsTemplate)({ achievements: achievements }));
         
         
         // Setup event listeners

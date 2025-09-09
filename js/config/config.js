@@ -2,16 +2,12 @@
 define("config/config", [], function() {
     // Placeholder - implement when ready
     // This basic structure prevents the Main.js error
+   
     return {
-        imageMap: {
-            path: "img/" // Basic path for images
-        },
-        saveManager: {
-            cloudSaveIntervalMs: 900000,  // 15 minutes
-            localSaveIntervalMs: 5000     // 5 seconds
-        },
-        userHash: {
-            key: "HexaForgeUserHash"
-        }
+        userHash: { key: "FactoryIdleUserHash" },
+        imageMap: { path: "" },
+        api: { server: { url: "/api/games" }, armorGames: { gameKey: "" }, local: { storageKey: "FactoryIdleLocal" } },
+        saveManager: { cloudSaveIntervalMs: 9e5, localSaveIntervalMs: 5e3 },
+        main: { warnToStoreUserHashAfterTicks: { 1e4: !0, 1e5: !0, 1e6: !0 } },
     };
 });
