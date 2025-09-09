@@ -121,11 +121,9 @@ define("play/Play", [
         // TODO: This is a simplified implementation while we extract other modules
         // The full implementation requires UserHash, ApiFactory, Game, etc.
         
-        // Create game instance with proper meta configuration
-        var gameMeta = this.getMeta();
         var placeholderTimestamp = { timestamp: Date.now() };
-        
-        this.game = new Game(gameMeta, placeholderTimestamp);
+
+        this.game = new Game(meta.main, placeholderTimestamp);
         this.game.init();
         
         // Initialize API and SaveManager

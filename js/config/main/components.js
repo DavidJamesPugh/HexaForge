@@ -1,8 +1,8 @@
 define("config/main/components", ["./helper/ProductionCostCalculator"], function (e) {
-    var t = function (e, t) {
-            return e * Math.pow(1e3, t);
-        },
-        n = {
+    
+    const scale = (base, exponent) => base * Math.pow(1000, exponent);
+
+    const config = {
             selection: [
                 ["noComponent", "transportLine", "garbageCollector", "sorterVertical", "sorterHorizontal"],
                 ["ironBuyer", "ironFoundry", "ironSeller", null, "coalBuyer", "steelFoundry", "steelSeller"],
@@ -291,7 +291,7 @@ define("config/main/components", ["./helper/ProductionCostCalculator"], function
                     iconX: 1,
                     iconY: 1,
                     runningCostPerTick: 120,
-                    price: t(50, 2),
+                    price: scale(50, 2),
                     priceRefund: 1,
                     requiresResearch: "electronicsComponents",
                     strategy: { type: "buyer", purchaseResources: { silicon: { price: 400, amount: 1 } }, outputResourcesOrder: ["silicon"], interval: 10 },
@@ -307,7 +307,7 @@ define("config/main/components", ["./helper/ProductionCostCalculator"], function
                     iconX: 2,
                     iconY: 1,
                     runningCostPerTick: 300,
-                    price: t(200, 2),
+                    price: scale(200, 2),
                     priceRefund: 1,
                     requiresResearch: "electronicsComponents",
                     strategy: {
@@ -330,7 +330,7 @@ define("config/main/components", ["./helper/ProductionCostCalculator"], function
                     iconX: 3,
                     iconY: 1,
                     runningCostPerTick: 90,
-                    price: t(80, 2),
+                    price: scale(80, 2),
                     priceRefund: 1,
                     requiresResearch: "electronicsComponents",
                     strategy: { type: "seller", resources: { electronics: { amount: 1, sellPrice: 0, sellMargin: 2.1 } }, interval: 10 },
@@ -346,7 +346,7 @@ define("config/main/components", ["./helper/ProductionCostCalculator"], function
                     iconX: 7,
                     iconY: 1,
                     runningCostPerTick: 1900,
-                    price: t(500, 2),
+                    price: scale(500, 2),
                     priceRefund: 1,
                     requiresResearch: "gunComponents",
                     strategy: { type: "buyer", purchaseResources: { explosives: { price: 900, amount: 1 } }, outputResourcesOrder: ["explosives"], interval: 20 },
@@ -362,7 +362,7 @@ define("config/main/components", ["./helper/ProductionCostCalculator"], function
                     iconX: 8,
                     iconY: 1,
                     runningCostPerTick: 3900,
-                    price: t(800, 2),
+                    price: scale(800, 2),
                     priceRefund: 1,
                     requiresResearch: "gunComponents",
                     strategy: { type: "converter", inputResources: { steel: { perOutputResource: 3 }, explosives: { perOutputResource: 2 } }, production: { bullets: { amount: 2 } }, outputResourcesOrder: ["bullets"], interval: 20 },
@@ -378,7 +378,7 @@ define("config/main/components", ["./helper/ProductionCostCalculator"], function
                     iconX: 9,
                     iconY: 1,
                     runningCostPerTick: 5900,
-                    price: t(1, 3),
+                    price: scale(1, 3),
                     priceRefund: 1,
                     requiresResearch: "gunComponents",
                     strategy: { type: "converter", inputResources: { steel: { perOutputResource: 3 }, bullets: { perOutputResource: 2 } }, production: { guns: { amount: 2 } }, outputResourcesOrder: ["guns"], interval: 20 },
@@ -394,7 +394,7 @@ define("config/main/components", ["./helper/ProductionCostCalculator"], function
                     iconX: 0,
                     iconY: 2,
                     runningCostPerTick: 1100,
-                    price: t(400, 2),
+                    price: scale(400, 2),
                     priceRefund: 1,
                     requiresResearch: "gunComponents",
                     strategy: { type: "seller", resources: { guns: { amount: 2, sellPrice: 0, sellMargin: 2.1 } }, interval: 20 },
@@ -410,7 +410,7 @@ define("config/main/components", ["./helper/ProductionCostCalculator"], function
                     iconX: 4,
                     iconY: 1,
                     runningCostPerTick: 48e3,
-                    price: t(3, 3),
+                    price: scale(3, 3),
                     priceRefund: 1,
                     requiresResearch: "engineComponents",
                     strategy: { type: "buyer", purchaseResources: { aluminium: { price: 1400, amount: 1 } }, outputResourcesOrder: ["aluminium"], interval: 10 },
@@ -426,7 +426,7 @@ define("config/main/components", ["./helper/ProductionCostCalculator"], function
                     iconX: 5,
                     iconY: 1,
                     runningCostPerTick: 12e4,
-                    price: t(32, 3),
+                    price: scale(32, 3),
                     priceRefund: 1,
                     requiresResearch: "engineComponents",
                     strategy: {
@@ -449,7 +449,7 @@ define("config/main/components", ["./helper/ProductionCostCalculator"], function
                     iconX: 6,
                     iconY: 1,
                     runningCostPerTick: 8e4,
-                    price: t(8, 3),
+                    price: scale(8, 3),
                     priceRefund: 1,
                     requiresResearch: "engineComponents",
                     strategy: { type: "seller", resources: { engine: { amount: 1, sellPrice: 0, sellMargin: 2.1 } }, interval: 10 },
@@ -465,7 +465,7 @@ define("config/main/components", ["./helper/ProductionCostCalculator"], function
                     iconX: 1,
                     iconY: 2,
                     runningCostPerTick: 16e5,
-                    price: t(400, 3),
+                    price: scale(400, 3),
                     priceRefund: 1,
                     requiresResearch: "tankComponents",
                     strategy: {
@@ -487,7 +487,7 @@ define("config/main/components", ["./helper/ProductionCostCalculator"], function
                     iconX: 2,
                     iconY: 2,
                     runningCostPerTick: 2e6,
-                    price: t(800, 3),
+                    price: scale(800, 3),
                     priceRefund: 1,
                     requiresResearch: "tankComponents",
                     strategy: { type: "converter", inputResources: { guns: { perOutputResource: 4 }, steel: { perOutputResource: 6 } }, production: { tankTurret: { amount: 1 } }, outputResourcesOrder: ["tankTurret"], interval: 10 },
@@ -503,7 +503,7 @@ define("config/main/components", ["./helper/ProductionCostCalculator"], function
                     iconX: 3,
                     iconY: 2,
                     runningCostPerTick: 18e5,
-                    price: t(700, 3),
+                    price: scale(700, 3),
                     priceRefund: 1,
                     requiresResearch: "tankComponents",
                     strategy: {
@@ -525,7 +525,7 @@ define("config/main/components", ["./helper/ProductionCostCalculator"], function
                     iconX: 4,
                     iconY: 2,
                     runningCostPerTick: 24e5,
-                    price: t(500, 3),
+                    price: scale(500, 3),
                     priceRefund: 1,
                     requiresResearch: "tankComponents",
                     strategy: {
@@ -549,7 +549,7 @@ define("config/main/components", ["./helper/ProductionCostCalculator"], function
                     iconX: 5,
                     iconY: 2,
                     runningCostPerTick: 18e6,
-                    price: t(15, 4),
+                    price: scale(15, 4),
                     priceRefund: 1,
                     requiresResearch: "dieselRefinery",
                     strategy: {
@@ -571,7 +571,7 @@ define("config/main/components", ["./helper/ProductionCostCalculator"], function
                     iconX: 1,
                     iconY: 3,
                     runningCostPerTick: 1e8,
-                    price: t(35, 4),
+                    price: scale(35, 4),
                     priceRefund: 1,
                     requiresResearch: "rocketComponents",
                     strategy: {
@@ -593,7 +593,7 @@ define("config/main/components", ["./helper/ProductionCostCalculator"], function
                     iconX: 6,
                     iconY: 2,
                     runningCostPerTick: 15e7,
-                    price: t(60, 4),
+                    price: scale(60, 4),
                     priceRefund: 1,
                     requiresResearch: "rocketComponents",
                     strategy: {
@@ -615,7 +615,7 @@ define("config/main/components", ["./helper/ProductionCostCalculator"], function
                     iconX: 7,
                     iconY: 2,
                     runningCostPerTick: 12e7,
-                    price: t(130, 4),
+                    price: scale(130, 4),
                     priceRefund: 1,
                     requiresResearch: "rocketComponents",
                     strategy: {
@@ -637,7 +637,7 @@ define("config/main/components", ["./helper/ProductionCostCalculator"], function
                     iconX: 8,
                     iconY: 2,
                     runningCostPerTick: 19e6,
-                    price: t(110, 4),
+                    price: scale(110, 4),
                     priceRefund: 1,
                     requiresResearch: "rocketComponents",
                     strategy: {
@@ -659,7 +659,7 @@ define("config/main/components", ["./helper/ProductionCostCalculator"], function
                     iconX: 5,
                     iconY: 4,
                     runningCostPerTick: 1e9,
-                    price: t(6, 5),
+                    price: scale(6, 5),
                     priceRefund: 1,
                     requiresResearch: "droneComponents",
                     strategy: {
@@ -681,7 +681,7 @@ define("config/main/components", ["./helper/ProductionCostCalculator"], function
                     iconX: 6,
                     iconY: 4,
                     runningCostPerTick: 15e8,
-                    price: t(6, 5),
+                    price: scale(6, 5),
                     priceRefund: 1,
                     requiresResearch: "droneComponents",
                     strategy: {
@@ -703,7 +703,7 @@ define("config/main/components", ["./helper/ProductionCostCalculator"], function
                     iconX: 7,
                     iconY: 4,
                     runningCostPerTick: 3e9,
-                    price: t(4, 5),
+                    price: scale(4, 5),
                     priceRefund: 1,
                     requiresResearch: "droneComponents",
                     strategy: {
@@ -811,7 +811,7 @@ define("config/main/components", ["./helper/ProductionCostCalculator"], function
                     iconX: 4,
                     iconY: 4,
                     runningCostPerTick: 12e3,
-                    price: t(2, 3),
+                    price: scale(2, 3),
                     priceRefund: 1,
                     requiresResearch: "analystCenter",
                     strategy: {
@@ -833,7 +833,7 @@ define("config/main/components", ["./helper/ProductionCostCalculator"], function
                     iconX: 3,
                     iconY: 4,
                     runningCostPerTick: 35e3,
-                    price: t(6, 3),
+                    price: scale(6, 3),
                     priceRefund: 1,
                     requiresResearch: "analystCenter",
                     applyUpgradesFrom: "researchCenter",
@@ -849,8 +849,8 @@ define("config/main/components", ["./helper/ProductionCostCalculator"], function
                     spriteY: 16,
                     iconX: 0,
                     iconY: 4,
-                    runningCostPerTick: t(400, 2),
-                    price: t(3, 5),
+                    runningCostPerTick: scale(400, 2),
+                    price: scale(3, 5),
                     priceRefund: 1,
                     requiresResearch: "qualityCenter",
                     strategy: {
@@ -877,8 +877,8 @@ define("config/main/components", ["./helper/ProductionCostCalculator"], function
                     spriteY: 18,
                     iconX: 1,
                     iconY: 4,
-                    runningCostPerTick: t(50, 2),
-                    price: t(2, 5),
+                    runningCostPerTick: scale(50, 2),
+                    price: scale(2, 5),
                     priceRefund: 1,
                     requiresResearch: "qualityCenter",
                     applyUpgradesFrom: "researchCenter",
@@ -886,32 +886,43 @@ define("config/main/components", ["./helper/ProductionCostCalculator"], function
                 },
             ],
         };
-    return (
-        (function () {
-            var t = {};
-            for (var i in n.components) {
-                var r = n.components[i];
-                t[r.id] = r;
+        (() => {
+            const componentsById = {};
+            for (const comp of config.components) {
+                componentsById[comp.id] = comp;
             }
-            var o = new e(t, n.productionTree);
-            for (var i in n.components) {
-                var r = n.components[i];
-                if ("seller" == r.strategy.type)
-                    for (var s in r.strategy.resources) {
-                        var a = {},
-                            u = o.calculateCostFor(r.id, s, a);
-                        u > 0 && (r.strategy.resources[s].sellPrice = Math.ceil(u));
+    
+            // Create cost calculator (example)
+            const calculator = new e(componentsById, config.productionTree);
+    
+            for (const comp of config.components) {
+                if (comp.strategy?.type === "seller") {
+                    for (const resourceKey in comp.strategy.resources) {
+                        const costData = {};
+                        const cost = calculator.calculateCostFor(comp.id, resourceKey, costData);
+                        if (cost > 0) comp.strategy.resources[resourceKey].sellPrice = Math.ceil(cost);
                     }
+                }
+    
+                // Set max values for buyers/converters/sellers
+                if (comp.strategy?.type === "buyer") {
+                    for (const key in comp.strategy.purchaseResources) {
+                        comp.strategy.purchaseResources[key].max = 20 * comp.strategy.purchaseResources[key].amount;
+                    }
+                } else if (comp.strategy?.type === "converter") {
+                    for (const key in comp.strategy.inputResources) {
+                        comp.strategy.inputResources[key].max = 20 * comp.strategy.inputResources[key].perOutputResource;
+                    }
+                    for (const key in comp.strategy.production) {
+                        comp.strategy.production[key].max = 20 * comp.strategy.production[key].amount;
+                    }
+                } else if (comp.strategy?.type === "seller") {
+                    for (const key in comp.strategy.resources) {
+                        comp.strategy.resources[key].max = 20 * comp.strategy.resources[key].amount;
+                    }
+                }
             }
-            for (var i in n.components) {
-                var r = n.components[i];
-                if ("buyer" == r.strategy.type) for (var i in r.strategy.purchaseResources) r.strategy.purchaseResources[i].max = 20 * r.strategy.purchaseResources[i].amount;
-                else if ("converter" == r.strategy.type) {
-                    for (var i in r.strategy.inputResources) r.strategy.inputResources[i].max = 20 * r.strategy.inputResources[i].perOutputResource;
-                    for (var i in r.strategy.production) r.strategy.production[i].max = 20 * r.strategy.production[i].amount;
-                } else if ("seller" == r.strategy.type) for (var i in r.strategy.resources) r.strategy.resources[i].max = 20 * r.strategy.resources[i].amount;
-            }
-        })(),
-        n
-    );
+        })();
+    
+        return config;
 });

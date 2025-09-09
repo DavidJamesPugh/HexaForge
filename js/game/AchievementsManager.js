@@ -1,54 +1,125 @@
-/**
- * Achievements Manager module - manages game achievements
- * Placeholder implementation
- */
-define("game/AchievementsManager", [], function() {
-    
-    /**
-     * Achievements Manager class
-     * @constructor
-     * @param {Object} game - Game instance
-     */
-    var AchievementsManager = function(game) {
-        this.game = game;
-        this.achievements = {};
-    };
-    
-    /**
-     * Initialize the achievements manager
-     */
-    AchievementsManager.prototype.init = function() {
-        // Placeholder initialization
-    };
-    
-    /**
-     * Destroy the achievements manager
-     */
-    AchievementsManager.prototype.destroy = function() {
-        // Placeholder cleanup
-    };
-    
-    /**
-     * Test all achievements
-     */
-    AchievementsManager.prototype.testAll = function() {
-        // Placeholder achievement testing
-    };
-    
-    /**
-     * Get achievement by ID
-     * @param {string} achievementId - Achievement identifier
-     * @returns {Object} Achievement data
-     */
-    AchievementsManager.prototype.getAchievement = function(achievementId) {
-        // Return placeholder achievement data
-        return {
-            id: achievementId,
-            name: "Placeholder Achievement",
-            description: "This achievement is not yet implemented",
-            isUnlocked: false
-        };
-    };
-    
+define("game/AchievementsManager", [], function () {
+
+    class AchievementsManager {
+
+        constructor(game) {
+            this.game = game;
+            this.achievements = {}; // stores achievement states
+            this.testers = this.getTesterImplementations();
+            this.bonuses = this.getBonusImplementations();
+        }
+
+        // --- Achievement state management ---
+        _setAchieved(achievementId, value) {
+            this.achievements[achievementId] = value;
+        }
+
+        setAchieved(achievementId, value) {
+            this._setAchieved(achievementId, value);
+            if (value) {
+                this.game.getEventManager().invokeEvent(GameEvent.ACHIEVEMENT_RECEIVED, achievementId);
+            }
+        }
+
+        getAchievement(achievementId) {
+            return this.achievements[achievementId];
+        }
+
+        isVisible(achievementId) {
+            const achievement = this.game.getMeta().achievementsById[achievementId];
+            return !(achievement.requiresAchievement && !this.getAchievement(achievement.requiresAchievement));
+        }
+
+        // --- Achievement testing ---
+        getTester(achievementTest) {
+            return this.testers[achievementTest.type].test(achievementTest);
+        }
+
+        test(achievement) {
+            return achievement.tests.every(test => this.testers[test.type].test(test));
+        }
+
+        testAll() {
+            const allAchievements = this.game.getMeta().achievements;
+            console.log("allAchievements", allAchievements);
+            for (const achievement of allAchievements) {
+                if (!this.getAchievement(achievement.id) && this.test(achievement)) {
+                    this.setAchieved(achievement.id, true);
+                    if (achievement.bonus) {
+                        this.bonuses[achievement.bonus.type].invoke(achievement.bonus);
+                    }
+                }
+            }
+        }
+        getTesterDescriptionText(achievementId) {
+            const achievement = this.game.getMeta().achievementsById[achievementId];
+            if (!achievement) return [];
+            return achievement.tests.map(test => this.testers[test.type].getRequirementsInfoText(test));
+        }
+
+        getBonusDescriptionText(achievementId) {
+            const achievement = this.game.getMeta().achievementsById[achievementId];
+            if (!achievement || !achievement.bonus) return "";
+            return this.bonuses[achievement.bonus.type].getInfoText(achievement.bonus);
+        }
+
+        // --- Tester implementations ---
+        getTesterImplementations() {
+            return {
+                amountOfMoney: {
+                    getRequirementsInfoText: test => `Have more money than <span class="money">$${nf(test.amount)}</span>`,
+                    test: test => this.game.getMoney() > test.amount
+                },
+                avgMoneyIncome: {
+                    getRequirementsInfoText: test => `Have avg income greater than <span class="money">$${nf(test.amount)}</span>`,
+                    test: test => this.game.getStatistics().getAvgProfit() > test.amount
+                },
+                researched: {
+                    getRequirementsInfoText: test => `Research ${this.game.getMeta().researchById[test.researchId].name.lcFirst()}`,
+                    test: test => this.game.getResearchManager().getResearch(test.researchId) > 0
+                }
+            };
+        }
+
+        // --- Bonus implementations ---
+        getBonusImplementations() {
+            return {
+                money: {
+                    getInfoText: bonus => `<span class="money">+$${nf(bonus.amount)}</span>`,
+                    invoke: bonus => this.game.addMoney(bonus.amount)
+                },
+                custom: {
+                    getInfoText: bonus => bonus.description,
+                    invoke: () => {} // no-op
+                }
+            };
+        }
+
+        // --- Export / Import achievements state ---
+        exportToWriter() {
+            const writer = new BinaryArrayWriter();
+            const achievements = this.game.getMeta().achievementsByIdNum;
+
+            writer.writeUint16(achievements.length);
+            writer.writeBooleansArrayFunc(achievements, achievement => this.getAchievement(achievement.id));
+            return writer;
+        }
+
+        importFromReader(reader) {
+            if (reader.getLength() === 0) return;
+
+            const length = reader.readUint16();
+            this.achievements = {};
+
+            reader.readBooleanArrayFunc(length, (index, value) => {
+                if (value) {
+                    const achievement = this.game.getMeta().achievementsByIdNum[index];
+                    if (achievement) this._setAchieved(achievement.id, true);
+                }
+            });
+        }
+
+    }
+
     return AchievementsManager;
 });

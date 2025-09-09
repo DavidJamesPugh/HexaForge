@@ -1,6 +1,6 @@
 /**
- * Main application controller module
- * This is the primary entry point for the game application
+ * Main application controller
+ * Entry point for the game
  */
 
 define("Main", [
@@ -28,80 +28,73 @@ define("Main", [
     BinaryArrayWriter,
     MainUi
 ) {
-    // Set global event constants for easy access
+
+    // Global event constants
     GameEvent = gameEvent;
     FactoryEvent = factoryEvent;
     GameUiEvent = gameUiEvent;
     GlobalUiEvent = globalUiEvent;
     ApiEvent = apiEvent;
 
-    /**
-     * Main application class
-     */
-    var Main = function() {};
+    class Main {
 
-    /**
-     * Initialize the main application
-     * @param {boolean} isDevMode - Whether to run in development mode
-     * @param {Function} callback - Callback function to execute after initialization
-     */
-    Main.prototype.init = function(isDevMode, callback) {
-        // Create and load the image map
-        this.imageMap = this._createImageMap();
+        /**
+         * Initialize the main application
+         * @param {boolean} [isDevMode=false]
+         * @param {Function} [callback]
+         */
+        async init(isDevMode = false, callback) {
+            this.imageMap = this._createImageMap();
 
-        this.imageMap.loadAll(function() {
-            // Create the play instance (it handles its own userHash and API creation)
+            // Load all images (Promise-based wrapper)
+            await this.imageMap.loadAllAsync();
+
+            // Initialize Play instance (Promise-based wrapper)
             this.play = new Play();
+            await new Promise(resolve => this.play.init(isDevMode, resolve));
 
-            // Initialize the play instance
-            this.play.init(isDevMode, function() {
-                // Check if in development mode
-                this.play.isDevMode();
+            // Optional: check dev mode
+            this.play.isDevMode();
 
-                // Create and initialize the main UI
-                this.mainUi = new MainUi(this.play, this.imageMap);
+            // Initialize main UI
+            this.mainUi = new MainUi(this.play, this.imageMap);
+            this.mainUi.display($("#gameArea"));
 
-                // Display the main UI in the game area
-                this.mainUi.display($("#gameArea"));
-
-                // Execute callback if provided
-                if (callback) {
-                    callback();
-                }
-            }.bind(this));
-        }.bind(this));
-    };
-
-    /**
-     * Create the image map for the game
-     * @returns {ImageMap} The configured image map instance
-     */
-    Main.prototype._createImageMap = function() {
-        return new ImageMap(gameConfig.imageMap.path).addImages({
-            yellowSelection: "mouse/yellow.png",
-            greenSelection: "mouse/green.png", 
-            redSelection: "mouse/red.png",
-            blueSelection: "mouse/selected.png",
-            cantPlace: "mouse/cantPlace.png",
-            terrains: "terrains.png",
-            components: "components.png",
-            componentIcons: "componentIcons.png",
-            transportLine: "transportLine.png",
-            resources: "resources.png"
-        });
-    };
-
-    /**
-     * Clean up resources when destroying the application
-     */
-    Main.prototype.destroy = function() {
-        if (this.mainUi) {
-            this.mainUi.destroy();
+            // Call callback if provided
+            callback?.();
         }
-        if (this.play) {
-            this.play.destroy();
+
+        /**
+         * Create the image map for the game
+         * Adds a promise-based loader for async/await
+         */
+        _createImageMap() {
+            const map = new ImageMap("img/").addImages({
+                yellowSelection: "mouse/yellow.png",
+                greenSelection: "mouse/green.png",
+                redSelection: "mouse/red.png",
+                blueSelection: "mouse/selected.png",
+                cantPlace: "mouse/cantPlace.png",
+                terrains: "terrains.png",
+                components: "components.png",
+                componentIcons: "componentIcons.png",
+                transportLine: "transportLine.png",
+                resources: "resources.png"
+            });
+
+            // Add promise wrapper for async/await
+            map.loadAllAsync = () => new Promise(resolve => map.loadAll(resolve));
+            return map;
         }
-    };
+
+        /**
+         * Clean up resources
+         */
+        destroy() {
+            this.mainUi?.destroy();
+            this.play?.destroy();
+        }
+    }
 
     return Main;
 });
