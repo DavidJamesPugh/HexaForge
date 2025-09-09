@@ -20,21 +20,6 @@ define("ui/factory/mapLayers/BackgroundLayer", [
         this.tileSize = (options && options.tileSize) ? options.tileSize : 21;
         this.tilesX = factory.getMeta().tilesX;
         this.tilesY = factory.getMeta().tilesY;
-
-        // Create canvas (matching original app structure)
-        this.canvas = document.createElement('canvas');
-        this.canvas.width = this.tilesX * this.tileSize;
-        this.canvas.height = this.tilesY * this.tileSize;
-        this.canvas.className = 'background-canvas';
-        this.canvas.style.position = 'absolute';
-        this.canvas.style.left = '0px';
-        this.canvas.style.top = '0px';
-        this.canvas.style.zIndex = '1';
-
-        this.ctx = this.canvas.getContext('2d');
-
-        // Get sprite from ImageMap (like original app)
-        this.sprite = this.imageMap.getImage("terrains");
     };
 
 
@@ -236,7 +221,18 @@ define("ui/factory/mapLayers/BackgroundLayer", [
      */
     BackgroundLayer.prototype.display = function(container) {
         this.container = container;
+
+
+        // Create canvas (matching original app structure)
+        this.canvas = document.createElement('canvas');
+        this.canvas.width = this.tilesX * this.tileSize;
+        this.canvas.height = this.tilesY * this.tileSize;
+        this.canvas.style.position = 'absolute';
+
         container.append(this.canvas);
+
+        // Get sprite from ImageMap (like original app)
+        this.sprite = this.imageMap.getImage("terrains");
 
         this.redraw();
 

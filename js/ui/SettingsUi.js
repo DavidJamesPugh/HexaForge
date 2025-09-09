@@ -4,12 +4,12 @@
  */
 
 define("ui/SettingsUi", [
+    "text!template/settings.html",
     "ui/helper/LoadingUi", 
     "ui/helper/ConfirmUi",
-    //"text!template/settings.html",
     "lib/handlebars",
     "config/event/GameUiEvent"
-], function(LoadingUi, ConfirmUi, Handlebars, GameUiEvent) {
+], function(settingsTemplate, LoadingUi, ConfirmUi, Handlebars, GameUiEvent) {
     
     var SettingsUi = function(gameUiEm, play, game, userHash, saveManager) {
         this.gameUiEm = gameUiEm;
@@ -114,7 +114,6 @@ define("ui/SettingsUi", [
             try {
                 var successful = document.execCommand("copy");
                 var msg = successful ? "successful" : "unsuccessful";
-                console.log("Copying text command was " + msg);
             } catch (err) {
                 console.log("Oops, unable to copy");
             }
@@ -123,18 +122,15 @@ define("ui/SettingsUi", [
         // Save to slot
         settingsElement.find(".saveToSlot").click(function() {
             var slotId = $(this).attr("data-id");
-            console.log("Save button clicked for slot:", slotId);
-            console.log("SaveManager:", self.saveManager);
-            
             self.saveManager.saveManual(slotId, function() {
                 console.log("Save completed for slot:", slotId);
                 self.hide();
             });
         });
         
-        // Load from slot
-        settingsElement.find(".loadSlot").click(function() {
+        settingsElement.on("click", ".loadSlot", function(event) {
             var slotId = $(this).attr("data-id");
+
             new ConfirmUi("Load game", "Are you sure you want to load game?")
                 .setCancelTitle("Yes, load game")
                 .setOkTitle("Nooooo!!!")

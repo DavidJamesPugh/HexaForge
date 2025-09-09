@@ -1,16 +1,33 @@
 <div class="componentGraph"></div>
 <div class="componentInfoArea">
   <span class="title">{{component.name}}</span>
-  <br /> {{#if isMeta}}Price: <b class="money">{{component.priceStr}}</b> &nbsp;&nbsp; {{/if}} {{#if component.runningCostStr}}Costs: <b class="money">{{component.runningCostStr}}</b>{{/if}} {{#if component.effectivenessStr}}
-    <span class="effectiveness">Efficiency: <b class="effectiveness">{{component.effectivenessStr}}</b>
-    </span>{{/if}}
+  <br /> {{#if isMeta}}Price: <b class="money">{{component.priceStr}}</b> &nbsp;&nbsp; {{/if}} {{#if
+  component.runningCostStr}}Costs: <b class="money">{{component.runningCostStr}}</b>{{/if}} {{#if
+  component.effectivenessStr}}
+  <span class="effectiveness">Efficiency: <b class="effectiveness">{{component.effectivenessStr}}</b>
+  </span>{{/if}}
   <br />
   <div class="specialInfo"> {{#if component.description}}
-      <span class="description">{{component.description}}</span>{{/if}} {{#if component.isBuyer}} Buys {{{component.buyStr}}} {{#if component.purchasePrice}}for <b class="money">${{component.purchasePrice}}</b>{{/if}} after every <b>{{component.interval}}</b> ticks and sends it to conveyors. Should have <b>{{component.noOfOutputs}}</b> out conveyor(s). <br /> {{/if}} {{#if component.isConverter}} After every <b>{{component.interval}}</b> ticks uses {{{component.inputStr}}} to produce {{{component.outputStr}}}. Should have at least <b>{{component.noOfOutputs}}</b> out conveyor(s). <br /> {{/if}} {{#if component.isSeller}} Sells {{{component.sellStr}}} for <b class="money">${{component.sellPrice}}</b> after every <b>{{component.interval}}</b> ticks {{#if component.bonusStr}}
-        <br />Bonus: {{{component.bonusStr}}}{{/if}}
-      <br /> {{/if}} {{#if component.isGarbage}} After every <b>{{component.interval}}</b> ticks removes <b>{{component.removeAmount}}</b> items. <br /> {{#if isLocation}} Stock <b>{{component.noOfItems}}</b>/{{component.max}} items {{/if}} {{/if}} {{#if component.isSorter}} Takes in any element and sorts them to different outputs. {{/if}} {{#if component.isResearchCenter}} Produces <span class="research">{{{component.productionStr}}}</span> after every <b>{{component.interval}}</b> ticks. <br /> Production bonus of each {{{component.bonusStr}}} <br /> {{/if}} {{#if component.isLab}} Produces <b>{{{component.outputStr}}}</b> after every <b>{{component.interval}}</b> ticks <br /> Production bonus of each {{{component.bonusStr}}} <br /> {{/if}} {{#if component.isTransport}} Transports items from one component to another. Can take in 1 item/tick. {{/if}} {{#if component.stock}}
-      <b>Stock</b> {{#each component.stock}}
-        <span class="{{resourceId}}">{{resourceName}}: </span>
-        <b class="{{resource}}">{{amount}}</b>/{{max}} {{/each}} {{/if}}
+    <span class="description">{{component.description}}</span>{{/if}} {{#if component.isBuyer}} Buys
+    {{{component.buyStr}}} {{#if component.purchasePrice}}for <b class="money">${{component.purchasePrice}}</b>{{/if}}
+    after every <b>{{component.interval}}</b> ticks and sends it to conveyors. Should have
+    <b>{{component.noOfOutputs}}</b> out conveyor(s). <br /> {{/if}} {{#if component.isConverter}} After every
+    <b>{{component.interval}}</b> ticks uses {{{component.inputStr}}} to produce {{{component.outputStr}}}. Should have
+    at least <b>{{component.noOfOutputs}}</b> out conveyor(s). <br /> {{/if}} {{#if component.isSeller}} Sells
+    {{{component.sellStr}}} for <b class="money">${{component.sellPrice}}</b> after every <b>{{component.interval}}</b>
+    ticks {{#if component.bonusStr}}
+    <br />Bonus: {{{component.bonusStr}}}{{/if}}
+    <br /> {{/if}} {{#if component.isGarbage}} After every <b>{{component.interval}}</b> ticks removes
+    <b>{{component.removeAmount}}</b> items. <br /> {{#if isLocation}} Stock
+    <b>{{component.noOfItems}}</b>/{{component.max}} items {{/if}} {{/if}} {{#if component.isSorter}} Takes in any
+    element and sorts them to different outputs. {{/if}} {{#if component.isResearchCenter}} Produces <span
+      class="research">{{{component.productionStr}}}</span> after every <b>{{component.interval}}</b> ticks. <br />
+    Production bonus of each {{{component.bonusStr}}} <br /> {{/if}} {{#if component.isLab}} Produces
+    <b>{{{component.outputStr}}}</b> after every <b>{{component.interval}}</b> ticks <br /> Production bonus of each
+    {{{component.bonusStr}}} <br /> {{/if}} {{#if component.isTransport}} Transports items from one component to
+    another. Can take in 1 item/tick. {{/if}} {{#if component.stock}}
+    <b>Stock</b> {{#each component.stock}}
+    <span class="{{resourceId}}">{{resourceName}}: </span>
+    <b class="{{resource}}">{{amount}}</b>/{{max}} {{/each}} {{/if}}
   </div>
 </div>

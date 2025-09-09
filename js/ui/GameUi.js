@@ -35,14 +35,6 @@ define("ui/GameUi", [
         this.imageMap = imageMap;
         this.focusInterval = null;
         
-        // TODO: Initialize UI components when their modules are extracted
-        // this.helpUi = null;
-        // this.purchasesUi = null;
-        this.settingsUi = null;
-        this.timeTravelUi = null;
-        
-        this.currentUi = null;
-        this.container = null;
     };
     
     /**

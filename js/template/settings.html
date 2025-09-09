@@ -1,46 +1,63 @@
-<div id="settingsBg" class="modalBg"></div>
-<div id="settings" class="modal">
-  <div class="modalContent">
-    <div class="modalHeader">
-      <h2>Settings</h2>
-      <a href="javascript:void(0);" class="closeButton">×</a>
-    </div>
-    <div class="modalBody">
-      <div class="settingSection">
-        <h3>User Information</h3>
-        <label>User Hash:</label>
-        <input type="text" id="userHash" value="{{userHash}}" readonly />
-      </div>
-      <div class="settingSection">
-        <h3>Save Settings</h3>
-        <div class="saveInterval">
-          <label>Cloud Save Interval:</label>
-          <span>{{cloudSaveInterval}}</span>
-        </div>
-        <div class="saveInterval">
-          <label>Local Save Interval:</label>
-          <span>{{localSaveInterval}}</span>
-        </div>
-      </div>
-      <div class="settingSection">
-        <h3>Save Slots</h3> {{#each saveSlots}}
-          <div class="saveSlot" data-slot-id="{{id}}">
-            <span class="slotName">{{name}}</span> {{#if hasSave}}
-              <span class="slotInfo">Last save: {{lastSave}} (Ticks: {{ticks}})</span>
-              <button class="loadSlot">Load</button>
-              <button class="saveSlot">Save</button>
-            {{else}}
-              <span class="slotInfo">Empty</span>
-              <button class="saveSlot">Save</button> {{/if}}
-          </div>
-        {{/each}}
-      </div> {{#if devMode}}
-        <div class="settingSection">
-          <h3>Developer Options</h3>
-          <button id="exportGame">Export Game Data</button>
-          <button id="importGame">Import Game Data</button>
-        </div>
-      {{/if}}
-    </div>
-  </div>
+<div id="settingsBg"></div>
+<div id="settings">
+  <a href="javascript:void(0);" class="closeButton" style="float:right; display:block;">Close</a>
+  <b class="title">User key</b>
+  <br /> This is your unique user key. Keep it safe and have a backup!<br /> There is no
+  way
+  to restore your game if this key gets lost!
+  <br /> 
+  <input type="text" class="userHash" id="userHash"
+    value="{{userHash}}" name="userHash" readonly="readonly" /> 
+    <a href="javascript:void(0)" id="copyToClipboardButton">Click here to copy to clipboard</a> or select user id and press CTRL+C (windows) or CMD+C
+  (mac) to copy it. <br /> <br /> <b class="title">Save </b>
+  <br />
+   Use manual save if you want to experiment and might
+  need to get your game back to earlier state. Game <b>auto saves</b> to your computer every {{localSaveInterval}} and
+  to cloud every {{cloudSaveInterval}}.<br /> {{#each saveSlots}} 
+  <div class="saveSlot"> <b>{{name}}</b>
+    <br /> 
+    <input type="button" class="saveToSlot" data-id="{{id}}" value="Save" />
+    <br /> 
+    <br />
+     {{#if hasSave}} {{lastSave}}
+     <br />
+    Ticks: <b>{{ticks}}</b>
+    <br /> 
+    <input type="button" class="loadSlot" data-id="{{id}}" value="Load" /> {{else}} No
+    save exists on 
+    <br />
+     this slot yet 
+     <br />
+      {{/if}} 
+    </div> {{/each}} 
+    <br style="clear:both" /> {{#if devMode}} <b
+    class="title">Load from data</b>
+    <br /> 
+    <input type="text" id="loadData" />
+    <input type="button" id="loadDataButton" value="Load data"> <br style="clear:both" /> {{/if}} 
+    <br /> 
+    <b class="title">Switch user key</b>
+    <br /> If you have
+  existing user key, copy it here and click update. <br /> This will reload the page with new account. 
+  <br /> 
+  <br />
+  <input type="text" class="updateUserHash" id="updateUserHash" value="" name="updateUserHash" /> 
+  <input type="button" name="updateUserHashButton" id="updateUserHashButton" value="Update" /> 
+    <br /> 
+    <br /> 
+    <b class="title">Reset</b>
+  <br /> 
+  <b class="red">Resets the game</b> You have been warned! 
+  <br /> 
+  Notice that:
+  <br />
+   * Manual saves will not
+  be deleted and can be used to restore the game 
+  <br />
+   * If you have made purchases, you keep unlocks like faster ticks, but lose consumed items like bonus ticks 
+  <br /> 
+  <br /> 
+  <input type="button" name="resetGame" id="resetGame"
+    value="Reset whole game - you lose all progress!" />
+  <div style="float:right">Version 1.07</div> <br />
 </div>

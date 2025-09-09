@@ -1,0 +1,77 @@
+define("base/Logger", function () {});
+    var names = {
+            6: " million",
+            9: " billion",
+            12: " trillion",
+            15: " quadrillion",
+            18: " quintillion",
+            21: " sextillion",
+            24: " septillion",
+            27: " octillion",
+            30: " nonillion",
+            33: " decillion",
+            36: " undecillion",
+            39: " duodecillion",
+            42: " tredecillion",
+            45: " quattuordecillion",
+            48: " quindecillion",
+            51: " sexdecillion",
+            54: " septendecillion",
+            57: " octodecillion",
+            60: " novemdecillion",
+            63: " vigintillion",
+        },
+        nf = function (e) {
+            return numberFormat.format(e);
+        },
+        nfPlus = function (e) {
+            var t = "";
+            return e > 0 && (t = "+"), t + numberFormat.format(e);
+        },
+        numberFormat = {
+            format: function (e) {
+                if (void 0 == e) return "?";
+                if (Math.abs(e) < 10) return Math.round(100 * e) / 100;
+                if (Math.abs(e) < 1e3) return Math.round(10 * e) / 10;
+                if (Math.abs(e) < 1e6)
+                    return Number(e)
+                        .toFixed(0)
+                        .replace(/\d(?=(\d{3})+$)/g, "$& ");
+                e = e.toString().split("e+", 2);
+                var t = e[0],
+                    n = t < 0 ? 2 : 1,
+                    i = 3 * Math.floor((Number(t).toFixed(0).length - n) / 3),
+                    r = i + (e[1] ? Number(e[1]) : 0),
+                    o = r % 3;
+                return (t *= Math.pow(10, o - i)), (r -= o), Math.round(100 * t) / 100 + (names[r] ? names[r] : "e" + r);
+            },
+            test: function () {
+                var e = {
+                    1: "1",
+                    10: "10",
+                    10.5: "10.5",
+                    100: "100",
+                    100.5: "100.5",
+                    1e3: "1 000",
+                    1000.5: "1 001",
+                    1234.5: "1 235",
+                    0x69400dfdfc9950000: "121.35 quintillion",
+                    0x41c808bebddfd40000: "1.21 sextillion",
+                    1.2134523451212334e22: "12.13 sextillion",
+                    1.2134523451212333e23: "121.35 sextillion",
+                    1.2134523451212334e24: "1.21 septillion",
+                    "121345234512123331233123412134523451212333123312341213452345121112.1": "121.35 vigintillion",
+                    1.4860535876960295e25: "14.86 septillion",
+                    9.026470548765505e24: "9.03 septillion",
+                    4.689829190868461e23: "468.98 sextillion",
+                    3.836127347506669e23: "383.61 sextillion",
+                    1.9180636737457225e22: "19.18 sextillion",
+                };
+                for (var t in e) {
+                    var n = nf(t);
+                    n == e[t] ? console.logRow(t + " " + e[t] + " == " + n) : console.error(t + " " + e[t] + " == " + n);
+                    var i = nf("-" + t);
+                    i == "-" + e[t] ? console.logRow(t + " -" + e[t] + " == " + i) : console.error(t + " -" + e[t] + " == " + i);
+                }
+            },
+        };

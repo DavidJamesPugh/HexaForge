@@ -24,18 +24,6 @@ define("ui/factory/mapLayers/ComponentLayer", [
         this.tilesX = factory.getMeta().tilesX;
         this.tilesY = factory.getMeta().tilesY;
 
-        // Create canvas (like original app)
-        this.canvas = document.createElement('canvas');
-        this.canvas.width = this.tilesX * this.tileSize;
-        this.canvas.height = this.tilesY * this.tileSize;
-        this.canvas.className = 'component-canvas';
-        this.canvas.style.position = 'absolute';
-        this.canvas.style.left = '0px';
-        this.canvas.style.top = '0px';
-        this.canvas.style.zIndex = '2';
-
-        this.ctx = this.canvas.getContext('2d');
-
         // Create strategies (like original app)
         this.strategies = {
             default: new Default(this.imageMap, { tileSize: this.tileSize }),
@@ -92,6 +80,14 @@ define("ui/factory/mapLayers/ComponentLayer", [
     ComponentLayer.prototype.display = function(container) {
         console.log("ComponentLayer.display called");
         this.container = container;
+
+        // Create canvas (like original app)
+        this.canvas = document.createElement('canvas');
+        this.canvas.width = this.tilesX * this.tileSize;
+        this.canvas.height = this.tilesY * this.tileSize;
+        this.canvas.style.position = 'absolute';
+
+        this.ctx = this.canvas.getContext('2d');
 
         container.append(this.canvas);
 

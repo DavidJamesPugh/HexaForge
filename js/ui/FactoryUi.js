@@ -7,13 +7,13 @@ define("ui/FactoryUi", [
     "ui/factory/MenuUi",
     "ui/factory/MapUi",
     "ui/factory/ComponentsUi",
+    "ui/factory/InfoUi",
     "lib/handlebars"
-    // "ui/factory/InfoUi",
     // "ui/factory/ControlsUi",
     // "ui/factory/MapToolsUi",
     // "ui/factory/OverviewUi",
     // "ui/IncentivizedAdButtonUi"
-], function(factoryTemplate, MenuUi, MapUi, ComponentsUi, Handlebars) {
+], function(factoryTemplate, MenuUi, MapUi, ComponentsUi, InfoUi, Handlebars) {
     
     /**
      * FactoryUi constructor
@@ -31,6 +31,7 @@ define("ui/FactoryUi", [
         this.imageMap = imageMap;
         this.game = factory.getGame();
         this.statistics = this.game.getStatistics();
+        this.infoUi = new InfoUi(this.factory, this.statistics, this.play, this.imageMap);
         
         // Initialize UI components
         this.menuUi = new MenuUi(this.globalUiEm, this.gameUiEm, this.factory);
@@ -38,7 +39,6 @@ define("ui/FactoryUi", [
         this.componentsUi = new ComponentsUi(this.globalUiEm, this.factory);
         // TODO: Initialize remaining UI components when their modules are extracted
         // this.mapToolsUi = new MapToolsUi(this.factory);
-        // this.infoUi = new InfoUi(this.factory, this.statistics, this.play, imageMap);
         // this.controlsUi = new ControlsUi(this.factory);
         // this.overviewUi = new OverviewUi(this.factory, this.statistics);
         // this.incentivizedAdButtonUi = new IncentivizedAdButtonUi(this.play);
@@ -56,26 +56,19 @@ define("ui/FactoryUi", [
         // Create the factory layout with proper containers
         this._createFactoryLayout();
         
-        // Remove the old premium handling code - it's now handled by _applyPremiumMapDimensions()
-        // The new system properly handles both premium and non-premium layouts
-        
-        // Display UI components in their proper containers
-        console.log("FactoryUi: Displaying components...");
-        console.log("MapContainer:", this.container.find(".mapContainer"));
-        console.log("MapContainer dimensions:", this.container.find(".mapContainer").width(), "x", this.container.find(".mapContainer").height());
-
         this.menuUi.display(this.container.find(".menuContainer"));
         this.mapUi.display(this.container.find(".mapContainer"));
         this.componentsUi.display(this.container.find(".componentsContainer"));
-        // TODO: Display remaining UI components when they are available
-        // this.infoUi.display(this.container.find(".infoContainer"));
-        // this.controlsUi.display(this.container.find(".controlsContainer"));
-        // this.overviewUi.display(this.container.find(".overviewContainer"));
+        this.infoUi.display(this.container.find(".infoContainer"));
+        // this.controlsUi.display(this.container.find(".controlsContainer")),
+        // this.overviewUi.display(this.container.find(".overviewContainer")),
         
+        // this.incentivizedAdButtonUi.display(this.container.find(".incentivizedAd"));
+
         // Show map tools in dev mode
         if (this.play.isDevMode && this.play.isDevMode()) {
             // TODO: Display map tools when available
-            // this.mapToolsUi.display(this.container.find(".mapToolsContainer"));
+             //this.mapToolsUi.display(this.container.find(".mapToolsContainer"));
         }
         
         // TODO: Display incentivized ad button when available
@@ -91,40 +84,7 @@ define("ui/FactoryUi", [
 // Temporary global access for testing
 //DJPP Remove
 window.factoryUi = this;
-console.log("FactoryUi now accessible globally as window.factoryUi");
         if (this.container && this.container.length > 0) {
-            // var html = '';
-            
-            // // Use exact same table structure as original app
-            // html += '<table class="factoryBox" width="100%" cellspacing="0" cellpadding="0" border="0">';
-            
-            // // Top row: Overview + Top controls
-            // html += '    <tr>';
-            // html += '        <td class="overviewArea" valign="top">';
-            // html += '            <div class="overviewContainer"></div>';
-            // html += '        </td>';
-            // html += '        <td class="topArea" valign="top">';
-            // html += '            <div class="topContainer">';
-            // html += '                <div class="menuContainer"></div>';
-            // html += '                <div class="infoContainer"></div>';
-            // html += '                <div class="controlsContainer"></div>';
-            // html += '            </div>';
-            // html += '        </td>';
-            // html += '    </tr>';
-            
-            // // Bottom row: Components + Map
-            // html += '    <tr>';
-            // html += '        <td class="componentsArea" valign="top">';
-            // html += '            <div class="componentsContainer"></div>';
-            // html += '            <div class="mapToolsContainer"></div>';
-            // html += '        </td>';
-            // html += '        <td class="mapArea" valign="top">';
-            // html += '            <div class="mapContainer"></div>';
-            // html += '        </td>';
-            // html += '    </tr>';
-            // html += '</table>';
-            
-            // this.container.html(html);
             
             // Set up container references
             this.overviewContainer = this.container.find('.overviewContainer');

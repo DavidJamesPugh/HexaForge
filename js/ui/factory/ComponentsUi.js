@@ -45,15 +45,6 @@ define("ui/factory/ComponentsUi", [
         var components = [];
         var componentSelectionLayout = this.game.getMeta().componentsSelection;
 
-        // Fallback to basic component layout if not defined
-        if (!componentSelectionLayout) {
-            componentSelectionLayout = [
-                ["noComponent", "buyer", "converter", "seller"],
-                ["garbage", "sorter", "transport", "researchCenter"],
-                ["lab", "conveyor", "splitter", "merger"]
-            ];
-        }
-
         // Process each row of components
         for (var rowIndex = 0; rowIndex < componentSelectionLayout.length; rowIndex++) {
             components[rowIndex] = { sub: [] };
@@ -81,7 +72,7 @@ define("ui/factory/ComponentsUi", [
                 }
             }
         }
-console.log(components);
+        
         return components;
     };
 
@@ -125,7 +116,7 @@ console.log(components);
         );
 
         // Handle component button clicks
-        this.container.find(".button").click(function(event) {
+        this.container.on("click", ".button", function(event) {
             var clickedElement = $(event.target);
             var selectedComponentId = clickedElement.attr("data-id");
                                     

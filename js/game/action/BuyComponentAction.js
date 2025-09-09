@@ -1,6 +1,10 @@
 define("game/action/BuyComponentAction", ["game/Component", "config/event/FactoryEvent"], function(Component, FactoryEvent) {
     var BuyComponentAction = function(tile, componentMeta) {
-        (this.tile = tile), (this.factory = tile.getFactory()), (this.game = this.factory.getGame()), (this.componentMeta = componentMeta);
+        (this.tile = tile), 
+        (this.factory = tile.getFactory()), 
+        (this.game = this.factory.getGame()), 
+        (this.componentMeta = componentMeta);
+        this.globalUiEventManager = globalUiEventManager;
     };
     return (
         BuyComponentAction.possibleToBuy = function() {
