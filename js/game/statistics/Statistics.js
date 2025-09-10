@@ -1,5 +1,6 @@
 // Statistics.js
 import StatisticsCollector from "./StatisticsCollector.js";
+import GameEvent from "../../config/event/GameEvent.js";
 
 export default class Statistics {
     game;

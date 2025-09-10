@@ -1,4 +1,4 @@
-import logger from "base/Logger.js";
+import logger from "../base/Logger.js";
 
 export default class ConfirmedTimestamp {
     constructor(loaderFunction) {
@@ -8,15 +8,18 @@ export default class ConfirmedTimestamp {
         this.loaderFunction = loaderFunction;
     }
 
-    init(callback) {
-        this.loaderFunction((ts) => {
-            this.serverTs = ts && !isNaN(Number(ts)) ? Number(ts) : Math.round(Date.now() / 1000);
-            this.localTs = Math.round(Date.now() / 1000);
-            this.timeDif = this.serverTs - this.localTs;
-            logger.info("Ts", `Loaded ${ts} Used: ${this.serverTs} Dif: ${this.timeDif}`);
-            callback();
+    init() {
+        return new Promise((resolve) => {
+            this.loaderFunction((ts) => {
+                this.serverTs = ts && !isNaN(Number(ts)) ? Number(ts) : Math.round(Date.now() / 1000);
+                this.localTs = Math.round(Date.now() / 1000);
+                this.timeDif = this.serverTs - this.localTs;
+                logger.info("Ts", `Loaded ${ts} Used: ${this.serverTs} Dif: ${this.timeDif}`);
+                resolve(); // resolves the promise
+            });
         });
     }
+    
 
     getConfirmedNow() {
         return Math.round(Date.now() / 1000) + this.timeDif;

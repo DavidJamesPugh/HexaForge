@@ -1,217 +1,150 @@
-/**
- * SettingsUi - Displays the settings modal with save/load functionality
- * Based on the original Factory Idle implementation
- */
+import Handlebars from "handlebars";
+import settingsTemplateHtml from "../template/settings.html";
+import LoadingUi from "./helper/LoadingUi.js";
+import ConfirmUi from "./helper/ConfirmUi.js";
+import GameUiEvent from "../config/event/GameEvent.js";
+import GameContext from "../base/GameContext.js";
+import { dateToStr } from "../utils/dateUtils.js"; // (assuming you have a helper like this)
 
-define("ui/SettingsUi", [
-    "text!template/settings.html",
-    "ui/helper/LoadingUi", 
-    "ui/helper/ConfirmUi",
-    "lib/handlebars",
-    "config/event/GameUiEvent"
-], function(settingsTemplate, LoadingUi, ConfirmUi, Handlebars, GameUiEvent) {
-    
-    var SettingsUi = function(gameUiEm, play, game, userHash, saveManager) {
-        this.gameUiEm = gameUiEm;
+export default class SettingsUi {
+    constructor(play, game, userHash, saveManager) {
+        this.gameUiEm = GameContext.gameUiBus;
         this.play = play;
         this.game = game;
         this.userHash = userHash;
         this.saveManager = saveManager;
         this.isVisible = false;
-    };
-    
-    SettingsUi.prototype.init = function() {
-        this.gameUiEm.addListener("settingsUi", GameUiEvent.SHOW_SETTINGS, function() {
+    }
+
+    init() {
+        this.gameUiEm.addListener("settingsUi", GameUiEvent.SHOW_SETTINGS, () => {
             this.display();
-        }.bind(this));
-        
+        });
         return this;
-    };
-    
-    SettingsUi.prototype.display = function() {
-        if (!this.isVisible) {
-            // Ensure any existing modals are removed first
-            this.hide();
-            
-            var cancelled = false;
-            var loading = new LoadingUi()
-                .setClickCallback(function() {
-                    cancelled = true;
-                }.bind(this))
-                .display();
-            
-            this.saveManager.getSavesInfo(["slot1", "slot2", "slot3"], function(savesInfo) {
-                if (!cancelled) {
-                    loading.hide();
-                    this._display(savesInfo);
-                }
-            }.bind(this));
-        }
-    };
-    
-    SettingsUi.prototype._display = function(savesInfo) {
+    }
 
-        // Check if saveManager has required methods
-        if (!this.saveManager.getCloudSaveInterval || !this.saveManager.getLocalSaveInterval) {
-            console.error("SaveManager missing required methods:", this.saveManager);
-            return;
-        }
+    display() {
+        if (this.isVisible) return;
 
-        var saveSlots = [];
-        for (var i = 1; i <= 3; i++) {
-            var slotName = "slot" + i;
-            var slot = savesInfo[slotName];
+        let cancelled = false;
+        const loading = new LoadingUi()
+            .setClickCallback(() => {
+                cancelled = true;
+            })
+            .display();
+
+        this.saveManager.getSavesInfo(["slot1", "slot2", "slot3"], (slots) => {
+            if (!cancelled) {
+                loading.hide();
+                this._display(slots);
+            }
+        });
+    }
+
+    _display(slots) {
+        const saveSlots = [];
+        for (let i = 1; i <= 3; i++) {
+            const slot = slots[`slot${i}`];
             saveSlots.push({
-                id: slotName,
-                name: "Slot " + i,
+                id: `slot${i}`,
+                name: `Slot ${i}`,
                 hasSave: !!slot,
-                lastSave: slot ? this._dateToStr(new Date(slot.timestamp * 1000), false) : "-",
+                lastSave: slot ? dateToStr(new Date(slot.timestamp * 1000), false) : "-",
                 ticks: slot ? slot.ver : "-"
             });
         }
-        
-        var templateData = {
-            userHash: this.userHash.getUserHash(),
-            cloudSaveInterval: Math.ceil(this.saveManager.getCloudSaveInterval() / 60000) + " minutes",
-            localSaveInterval: Math.ceil(this.saveManager.getLocalSaveInterval() / 1000) + " seconds",
-            saveSlots: saveSlots,
-            devMode: this.play.isDevMode()
-        };
 
-        // Use Handlebars to compile the template with data
-        var html = Handlebars.compile(settingsTemplate)(templateData);
-        $("body").append(html);
-        
+        $("body").append(
+            Handlebars.compile(settingsTemplateHtml)({
+                userHash: this.userHash.toString(),
+                cloudSaveInterval: Math.ceil(this.saveManager.getCloudSaveInterval() / 60000) + " minutes",
+                localSaveInterval: Math.ceil(this.saveManager.getLocalSaveInterval() / 1000) + " seconds",
+                saveSlots,
+                devMode: this.play.isDevMode()
+            })
+        );
+
         this.isVisible = true;
-        var self = this;
-        var settingsElement = $("#settings");
-        
-        // Center the modal
-        settingsElement.css("left", ($("html").width() - settingsElement.outerWidth()) / 2);
-        
-        // Close button
-        settingsElement.find(".closeButton").click(function() {
-            self.hide();
+        const el = $("#settings");
+
+        // Center horizontally
+        el.css("left", ($("html").width() - el.outerWidth()) / 2);
+
+        // Events
+        el.find(".closeButton").click(() => this.hide());
+
+        el.find("#userHash").click(function () {
+            this.setSelectionRange(0, $(this).val().length);
         });
-        
-        // User hash click to select
-        settingsElement.find("#userHash").click(function() {
-            $(this).get(0).setSelectionRange(0, $(this).val().length);
-        });
-        
-        // Update user hash
-        settingsElement.find("#updateUserHashButton").click(function() {
-            var newHash = settingsElement.find("#updateUserHash").val();
+
+        el.find("#updateUserHashButton").click(() => {
+            const newHash = el.find("#updateUserHash").val();
             if (newHash) {
-                self.userHash.updateUserHash(newHash);
-                document.location = document.location;
+                this.userHash.updateUserHash(newHash);
+                document.location = document.location; // refresh
             }
         });
-        
-        // Copy to clipboard
-        settingsElement.find("#copyToClipboardButton").click(function() {
+
+        el.find("#copyToClipboardButton").click(() => {
             $("#userHash").get(0).select();
             try {
-                var successful = document.execCommand("copy");
-                var msg = successful ? "successful" : "unsuccessful";
+                const success = document.execCommand("copy");
+                console.log("Copying text command was " + (success ? "successful" : "unsuccessful"));
             } catch (err) {
                 console.log("Oops, unable to copy");
             }
         });
-        
-        // Save to slot
-        settingsElement.find(".saveToSlot").click(function() {
-            var slotId = $(this).attr("data-id");
-            self.saveManager.saveManual(slotId, function() {
-                console.log("Save completed for slot:", slotId);
-                self.hide();
-            });
-        });
-        
-        settingsElement.on("click", ".loadSlot", function(event) {
-            var slotId = $(this).attr("data-id");
 
+        el.find(".saveToSlot").click((ev) => {
+            const slotId = $(ev.currentTarget).attr("data-id");
+            this.saveManager.saveManual(slotId, () => this.hide());
+        });
+
+        el.find(".loadSlot").click((ev) => {
+            const slotId = $(ev.currentTarget).attr("data-id");
             new ConfirmUi("Load game", "Are you sure you want to load game?")
                 .setCancelTitle("Yes, load game")
                 .setOkTitle("Nooooo!!!")
-                .setCancelCallback(function() {
-                    self.saveManager.loadManual(slotId, function() {
-                        self.hide();
-                        self.gameUiEm.invokeEvent(GameUiEvent.SHOW_FACTORIES);
+                .setCancelCallback(() => {
+                    this.saveManager.loadManual(slotId, () => {
+                        this.hide();
+                        this.gameUiEm.invokeEvent(GameUiEvent.SHOW_FACTORIES);
                     });
                 })
                 .display();
         });
-        
-        // Load from data
-        settingsElement.find("#loadDataButton").click(function() {
-            var data = settingsElement.find("#loadData").val();
-            self.saveManager.updateGameFromSaveData({ data: data });
-            self.hide();
-            self.gameUiEm.invokeEvent(GameUiEvent.SHOW_FACTORIES);
+
+        el.find("#loadDataButton").click(() => {
+            const raw = el.find("#loadData").val();
+            this.saveManager.updateGameFromSaveData({ data: raw });
+            this.hide();
+            this.gameUiEm.invokeEvent(GameUiEvent.SHOW_FACTORIES);
         });
-        
-        // Reset game
-        settingsElement.find("#resetGame").click(function() {
+
+        el.find("#resetGame").click(() => {
             new ConfirmUi("Reset game", "Are you sure you want to reset the game?")
                 .setCancelTitle("Yes, RESET GAME")
                 .setOkTitle("Nooooo!!!")
-                .setCancelCallback(function() {
-                    // Reset the game by destroying and reinitializing MainInstance
-                    if (typeof MainInstance !== 'undefined' && MainInstance) {
-                        console.log("Resetting game...");
-                        MainInstance.destroy();
-                        MainInstance.init(true, function() {
-                            console.log("Game reset completed");
-                        });
-                    } else {
-                        console.log("MainInstance not available for reset");
-                        // Fallback: reload the page
-                        document.location = document.location;
-                    }
-                    self.hide();
+                .setCancelCallback(() => {
+                    MainInstance.destroy();
+                    MainInstance.init(true);
+                    this.destroy();
                 })
                 .display();
         });
-        
-        // Background click to close
-        $("#settingsBg").click(function() {
-            self.hide();
-        });
-    };
-    
-    SettingsUi.prototype._dateToStr = function(date, utc) {
-        if (!date) return "";
-        
-        var year = utc ? date.getUTCFullYear() : date.getFullYear();
-        var month = utc ? date.getUTCMonth() + 1 : date.getMonth() + 1;
-        var day = utc ? date.getUTCDate() : date.getDate();
-        var hours = utc ? date.getUTCHours() : date.getHours();
-        var minutes = utc ? date.getUTCMinutes() : date.getMinutes();
-        var seconds = utc ? date.getUTCSeconds() : date.getSeconds();
-        
-        month = (month < 10 ? "0" : "") + month;
-        day = (day < 10 ? "0" : "") + day;
-        hours = (hours < 10 ? "0" : "") + hours;
-        minutes = (minutes < 10 ? "0" : "") + minutes;
-        seconds = (seconds < 10 ? "0" : "") + seconds;
-        
-        return year + "." + month + "." + day + " " + hours + ":" + minutes + ":" + seconds;
-    };
-    
-    SettingsUi.prototype.hide = function() {
+
+        $("#settingsBg").click(() => this.hide());
+    }
+
+    hide() {
         this.isVisible = false;
-        // Remove only the specific settings modal elements
         $("#settings").remove();
         $("#settingsBg").remove();
-        // Don't remove the settings button - it has a different ID
-    };
-    
-    SettingsUi.prototype.destroy = function() {
+    }
+
+    destroy() {
         this.hide();
         this.game.getEventManager().removeListenerForType("settingsUi");
         this.gameUiEm.removeListenerForType("settingsUi");
-    };
-    
-    return SettingsUi;
-});
+    }
+}

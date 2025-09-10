@@ -2,15 +2,15 @@
 import gameConfig from "../config/config.js";
 import Meta from "../config/Meta.js";
 import Game from "../game/Game.js";
-// import SaveManager from "./SaveManager.js";
-// import PurchasesManager from "./PurchasesManager.js";
+import SaveManager from "./SaveManager.js";
+import PurchasesManager from "./PurchasesManager.js";
 import UserHash from "./UserHash.js";
 import UrlHandler from "./UrlHandler.js";
 import ApiFactory from "./api/ApiFactory.js";
-// import ConfirmedTimestamp from "./ConfirmedTimestamp.js";
-// import IncentivizedAdCompletedAction from "game/action/IncentivizedAdCompletedAction.js";
+import ConfirmedTimestamp from "./ConfirmedTimestamp.js";
+import IncentivizedAdCompletedAction from "../game/action/IncentivizedAdCompletedAction.js";
 import GameContext from "../base/GameContext.js";
-// import { ApiEvent } from "../config/event/ApiEvent.js";
+import ApiEvent from "../config/event/ApiEvent.js";
 import logger from "../base/Logger.js";
 
 export default class Play {
@@ -57,48 +57,63 @@ export default class Play {
   }
 
   async init(isDevMode = false, onReady = () => {}) {
-    // Initialize UserHash
-    this.userHash = new UserHash(gameConfig.userHash.key);
-    await this.userHash.init();
+    try {
+      console.log("Play: Starting initialization...");
+      
+      // Initialize UserHash
+      console.log("Play: Initializing UserHash...");
+      this.userHash = new UserHash(gameConfig.userHash.key);
+      await this.userHash.init();
+      console.log("Play: UserHash initialized");
 
-    // Initialize API
-    this.api = ApiFactory(UrlHandler.identifySite(), this.userHash.getUserHash());
-    await this.api.init();
+      // Initialize API
+      console.log("Play: Initializing API...");
+      this.api = ApiFactory(UrlHandler.identifySite(), this.userHash.getUserHash());
+      await this.api.init();
+      console.log("Play: API initialized");
 
-    // Subscribe to incentivized ads completed event
-    this.api.getEventManager().addListener(
-      "Play",
-      ApiEvent.INCENTIVIZED_AD_COMPLETED,
-      () => new IncentivizedAdCompletedAction(this.getGame()).complete()
-    );
+      // Subscribe to incentivized ads completed event
+      this.api.getEventManager().addListener(
+        "Play",
+        ApiEvent.INCENTIVIZED_AD_COMPLETED,
+        () => new IncentivizedAdCompletedAction(this.getGame()).complete()
+      );
 
-    // Initialize confirmed timestamp
-    this.confirmedTimestamp = new ConfirmedTimestamp(this.api.getTimestamp.bind(this.api));
-    await this.confirmedTimestamp.init();
+      // Initialize confirmed timestamp
+      console.log("Play: Initializing confirmed timestamp...");
+      this.confirmedTimestamp = new ConfirmedTimestamp(this.api.getTimestamp.bind(this.api));
+      await this.confirmedTimestamp.init();
+      console.log("Play: Confirmed timestamp initialized");
 
-    // Initialize Game instance
-    this.game = new Game(gameConfig.main, this.confirmedTimestamp);
-    GameContext.game = this.game; // store in global context
+      // Initialize Game instance
+      console.log("Play: Initializing Game...");
+      this.game = new Game(gameConfig.main, this.confirmedTimestamp);
+      GameContext.game = this.game; // store in global context
+      console.log("Play: Game instance created");
 
-    // Initialize missions
-    this.missions = {};
-    for (const id in gameConfig.missions) {
-      this.missions[id] = new Game(gameConfig.missions[id]);
+      // Initialize SaveManager
+      console.log("Play: Initializing SaveManager...");
+      this.saveManager = this._createSaveManager();
+      await this.saveManager.init(isDevMode);
+      console.log("Play: SaveManager initialized");
+
+      // Initialize PurchasesManager
+      console.log("Play: Initializing PurchasesManager...");
+      this.purchasesManager = new PurchasesManager(this);
+      await this.purchasesManager.init();
+      console.log("Play: PurchasesManager initialized");
+
+      // Initialize game logic
+      console.log("Play: Initializing game logic...");
+      this.game.init();
+      console.log("Play: Game logic initialized");
+      
+      logger.info("Play", "Initialized");
+      onReady();
+    } catch (error) {
+      console.error("Play: Initialization failed:", error);
+      throw error;
     }
-
-    // Initialize SaveManager
-    this.saveManager = this._createSaveManager();
-    await this.saveManager.init(isDevMode);
-
-    // Initialize PurchasesManager
-    this.purchasesManager = new PurchasesManager(this);
-    await this.purchasesManager.init();
-
-    // Initialize game logic
-    this.game.init();
-    logger.info("Play", "Initialized");
-
-    onReady();
   }
 
   _createSaveManager() {

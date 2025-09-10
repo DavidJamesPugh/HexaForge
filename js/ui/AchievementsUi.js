@@ -1,105 +1,65 @@
-
-define("ui/AchievementsUi", [
-         "text!template/achievements.html",
-         "lib/handlebars"
-], function(achievementsTemplate, Handlebars) {
-    
-
-    var AchievementsUi = function(gameUiEm, game) {
-        this.gameUiEm = gameUiEm;
+import Handlebars from "handlebars";
+import achievementsTemplateHtml from "../template/achievements.html";
+import GameEvent from "../config/event/GameEvent.js";
+import GameContext from "../base/GameContext.js";
+export default class AchievementsUi {
+    constructor(game) {
+        this.gameUiEm = GameContext.gameUiBus;
         this.game = game;
         this.manager = this.game.getAchievementsManager();
         this.container = null;
-    };
-    
-    AchievementsUi.prototype.display = function(container) {
+    }
+
+    display(container) {
         this.container = container;
-        
-        this.container.on("click", ".backButton", () => {
-            this.gameUiEm.invokeEvent(GameUiEvent.SHOW_FACTORY);
-        });
-        
-        var achievements = this._buildAchievementsList();
-        
-         this.container.html(Handlebars.compile(achievementsTemplate)({ achievements: achievements }));
-        
-        this._setupEventListeners();
-        
-        if (this.game.getEventManager) {
-            this.game.getEventManager().addListener("achievementsUi", GameEvent.ACHIEVEMENT_RECEIVED, () => {
-                this.update();
-            });
-        }
-        
-        this.update();
-    };
-    
-    /**
-     * Build achievements list from game meta
-     * @returns {Array} Array of achievement data
-     * @private
-     */
-    AchievementsUi.prototype._buildAchievementsList = function() {
-        var achievements = [];
-        var gameAchievements = this.game.getMeta().achievements || [];
-        
-        for (var i = 0; i < gameAchievements.length; i++) {
-            var achievement = gameAchievements[i];
-            
-            // TODO: Check if achievement is visible when manager is available
-             if (this.manager && this.manager.isVisible(achievement.id)) {
-                var achievementData = {
+        const achievementsList = [];
+
+        const achievementsMeta = this.game.getMeta().achievements;
+        for (const achievement of achievementsMeta) {
+            if (this.manager.isVisible(achievement.id)) {
+                achievementsList.push({
                     id: achievement.id,
                     name: achievement.name,
                     requirements: this.manager.getTesterDescriptionText(achievement.id),
-                    bonus: this.manager.getBonusDescriptionText(achievement.id)
-                };
-                
-                achievements.push(achievementData);
+                    bonus: this.manager.getBonusDescriptionText(achievement.id),
+                });
             }
         }
-        
-        return achievements;
-    };
-    
-    /**
-     * Update the achievements UI display
-     */
-    AchievementsUi.prototype.update = function() {
-        var self = this;
-        
-        // Update achievement items
-        this.container.find(".item").each((_, item) => {
-            const $item = $(item); // cache the jQuery object
-            const achievementId = $item.attr("data-id");
 
-            if (this.manager.getAchievement(achievementId)) {
-                $item.addClass("achieved");
+        this.container.html(
+            Handlebars.compile(achievementsTemplateHtml)({ achievements: achievementsList })
+        );
+
+        this.container.find(".backButton").click(() => {
+            this.gameUiEm.invokeEvent(GameEvent.SHOW_FACTORY);
+        });
+
+        this.game.getEventManager().addListener(
+            "achievementsUi",
+            GameEvent.ACHIEVEMENT_RECEIVED,
+            () => this.update()
+        );
+
+        this.update();
+    }
+
+    update() {
+        this.container.find(".item").each((_, el) => {
+            const id = $(el).attr("data-id");
+            if (this.manager.getAchievement(id)) {
+                $(el).addClass("achieved");
             } else {
-                $item.removeClass("achieved");
+                $(el).removeClass("achieved");
             }
         });
-    };
-    
-    /**
-     * Destroy the AchievementsUi and clean up resources
-     */
-    AchievementsUi.prototype.destroy = function() {
-        // Remove event listeners
-        if (this.game.getEventManager) {
-            this.game.getEventManager().removeListenerForType("achievementsUi");
-        }
-        
-        if (this.gameUiEm) {
-            this.gameUiEm.removeListenerForType("achievementsUi");
-        }
-        
-        // Clear container
+    }
+
+    destroy() {
+        this.game.getEventManager().removeListenerForType("achievementsUi");
+        this.gameUiEm.removeListenerForType("achievementsUi");
         if (this.container) {
             this.container.html("");
             this.container = null;
         }
-    };
-    
-    return AchievementsUi;
-});
+    }
+}

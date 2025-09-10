@@ -1,5 +1,7 @@
 // Ticker.js
 import Benchmarker from "../base/Benchmarker.js";
+import GameEvent from "../config/event/GameEvent.js";
+import logger from "../base/Logger.js";
 
 export default class Ticker {
     game;

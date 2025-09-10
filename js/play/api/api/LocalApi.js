@@ -50,14 +50,17 @@ export default class LocalApi {
         }
     }
 
-    init(callback) {
-        this._loadFromLocalStorage();
-        this.initializeIncentivizedAds();
-        logger.info("Local", "Init");
-        setTimeout(() => {
-            logger.info("Local", "API loaded");
-            callback();
-        }, 100);
+    init() {
+        return new Promise((resolve) => {
+            this._loadFromLocalStorage();
+            this.initializeIncentivizedAds();
+            logger.info("Local", "Init");
+    
+            setTimeout(() => {
+                logger.info("Local", "API loaded");
+                resolve();
+            }, 100);
+        });
     }
 
     destroy() {

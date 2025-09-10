@@ -1,25 +1,52 @@
-define("game/action/SellComponentAction", ["config/event/FactoryEvent"], function(FactoryEvent) {
-    var SellComponentAction = function(tile, width, height) {
-        (this.tile = tile), (this.factory = tile.getFactory()), (this.width = width || 1), (this.height = height || 1);
-    };
-    return (
-        (SellComponentAction.prototype.canSell = function() {
-            return !0;
-        }),
-        (SellComponentAction.prototype.sell = function() {
-            for (var e = 0; e < this.width; e++)
-                for (var t = 0; t < this.height; t++) {
-                    var n = this.factory.getTile(this.tile.getX() + e, this.tile.getY() + t);
-                    this._sellTile(n);
-                }
-        }),
-        (SellComponentAction.prototype._sellTile = function(e) {
-            var t = e.getComponent();
-            if (t) {
-                var n = t.getMeta();
-                this.factory.getGame().addMoney(n.price), e.setComponent(null), this.factory.getEventManager().invokeEvent(FactoryEvent.FACTORY_COMPONENTS_CHANGED);
+// SellComponentAction.js
+
+export default class SellComponentAction {
+    constructor(tile, width = 1, height = 1) {
+        this.tile = tile;
+        this.factory = tile.getFactory();
+        this.width = width;
+        this.height = height;
+    }
+
+    canSell() {
+        return true;
+    }
+
+    sell() {
+        for (let x = 0; x < this.width; x++) {
+            for (let y = 0; y < this.height; y++) {
+                const tile = this.factory.getTile(this.tile.getX() + x, this.tile.getY() + y);
+                this._sellTile(tile);
             }
-        }),
-        SellComponentAction
-    );
-});
+        }
+    }
+
+    _sellTile(tile) {
+        const component = tile.getComponent();
+        if (!component) return;
+
+        const meta = component.getMeta();
+        const x = component.getX();
+        const y = component.getY();
+        let refundable = true;
+
+        for (let startComp of this.factory.getMeta().startComponents) {
+            if (startComp.id === meta.id && startComp.x === x && startComp.y === y) {
+                refundable = false;
+            }
+        }
+
+        for (let a = 0; a < meta.width; a++) {
+            for (let u = 0; u < meta.height; u++) {
+                const cTile = this.factory.getTile(x + a, y + u);
+                cTile.setComponent(null);
+            }
+        }
+
+        this.factory.getEventManager().invokeEvent(FactoryEvent.FACTORY_COMPONENTS_CHANGED, tile);
+
+        if (refundable) {
+            this.factory.getGame().addMoney(meta.price * meta.priceRefund);
+        }
+    }
+}

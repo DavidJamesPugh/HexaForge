@@ -1,18 +1,18 @@
 // MainUi.js
-import meta from "../config/Meta.js";
 import gameConfig from "../config/config.js";
-import EventManager from "../base/EventManager.js";
+import imageMap from "../config/gameAssets.js";
 import GameUi from "./GameUi.js";
 import GlobalUiEvent from "../config/event/GlobalUiEvent.js";
+import GameEvent from "../config/event/GameEvent.js";
 import globalUiBus from "../base/GlobalUiBus.js";
 //import MissionsUi from "./MissionsUi.js";
-//import RunningInBackgroundInfoUi from "./RunningInBackgroundInfoUi.js";
+import RunningInBackgroundInfoUi from "./RunningInBackgroundInfoUi.js";
 //import AlertUi from "./helper/AlertUi.js";
 //import GoogleAddsUi from "./GoogleAddsUi.js";
-//import IntroUi from "./IntroUi.js";
+import IntroUi from "./IntroUi.js";
 
 export default class MainUi {
-    constructor(play, imageMap) {
+    constructor(play) {
         this.play = play;
         this.imageMap = imageMap;
         this.globalUiEm = globalUiBus; // shared singleton
@@ -48,9 +48,10 @@ export default class MainUi {
         // Google Ads
         if (this.play.getGame().getIsPremium()) {
             console.info("MainUi: Premium version, skipping loading ads");
-        } else {
-            GoogleAddsUi();
         }
+            // } else {
+        //     GoogleAddsUi();
+        // }
 
         // Key press listener
         window.addEventListener("keypress", (e) => {
@@ -76,7 +77,7 @@ export default class MainUi {
         });
 
         // Periodic user hash alert
-        this.play.getGame().getEventManager().addListener("MainUi", window.GameEvent.GAME_TICK, () => {
+        this.play.getGame().getEventManager().addListener("MainUi", GameEvent.GAME_TICK, () => {
             const tickCount = this.play.getGame().getTicker().getNoOfTicks();
             if (gameConfig.main.warnToStoreUserHashAfterTicks[tickCount]) {
                 const inputId = `userHashTmpAlert${Math.round(1e10 * Math.random())}`;
@@ -105,13 +106,8 @@ export default class MainUi {
         this._destroyCurrentUi();
 
         if (type === "mainGame") {
-            this.currentUi = new GameUi(this.globalUiEm, this.play.getGame(), this.play, this.imageMap);
-        } else if (type === "missions") {
-            this.currentUi = new MissionsUi(this.globalUiEm, meta.missions);
-        } else if (type === "mission") {
-            this.currentUi = new GameUi(this.globalUiEm, this.play.getMission(mission), this.play, this.imageMap);
-        }
-
+            this.currentUi = new GameUi(this.play);
+        } 
         this.currentUi.display(this.container);
     }
 

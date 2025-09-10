@@ -1,5 +1,5 @@
-import Meta from "config/Meta.js";
-import logger from "base/Logger.js";
+import Meta from "../../config/Meta.js";
+import logger from "../../base/Logger.js";
 
 export default class IncentivizedAdCompletedAction {
     constructor(game) {

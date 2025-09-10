@@ -1,181 +1,84 @@
-/**
- * ComponentsUi - Factory component selection interface
- * Handles component icon clicks and communicates with MouseLayer for placement
- */
-define("ui/factory/ComponentsUi", [
-    "text!template/factory/components.html",
-    "config/event/FactoryEvent",
-    "config/event/GlobalUiEvent",
-    "handlebars"
-], function(componentsTemplate, FactoryEvent, GlobalUiEvent, Handlebars) {
+// ComponentsUi.js
+import componentsTemplate from "../../template/factory/components.html";
+import BuyComponentAction from "../../game/action/BuyComponentAction.js";
+import FactoryEvent from "../../config/event/FactoryEvent.js";
+import GlobalUiEvent from "../../config/event/GlobalUiEvent.js";
+import Handlebars from "handlebars";
+import GlobalUiBus from "../../base/GlobalUiBus.js";
 
-    var ComponentsUi = function(globalUiEventManager, factory) {
-        this.globalUiEventManager = globalUiEventManager;
+export default class ComponentsUi {
+    constructor(factory) {
+        this.globalUiEm = GlobalUiBus;
         this.factory = factory;
         this.game = factory.getGame();
         this.lastSelectedComponentId = null;
-        this.currentlySelectedComponentId = null;
-    };
+        this.selectedComponentId = null;
+    }
 
-    /**
-     * Display the component selection UI
-     */
-    ComponentsUi.prototype.display = function(container) {
-        var self = this;
+    display(container) {
         this.container = container;
 
-        // Build component selection data from game metadata
-        var componentGroups = this._buildComponentSelectionData();
+        const components = this.game.getMeta().componentsSelection.map(row => {
+            return {
+                sub: row.map(id => {
+                    const meta = this.game.getMeta().componentsById[id];
+                    if (meta && BuyComponentAction.possibleToBuy(this.factory, meta)) {
+                        return { id: meta.id, name: meta.name, style: `background-position: -${26 * meta.iconX}px -${26 * meta.iconY}px` };
+                    } else if (id === "noComponent") {
+                        return { name: "No component", style: "background-position: 0px 0px" };
+                    }
+                    return {};
+                })
+            };
+        });
 
-        var compiledTemplate = Handlebars.compile(componentsTemplate)({ components: componentGroups });
-        
-        this.container.html(compiledTemplate);
+        this.container.html(Handlebars.compile(componentsTemplate)({ components }));
 
-        // Set up event listeners for user interactions
-        this._setupInteractionHandlers();
+        // Event listeners
+        this.factory.getEventManager().addListener("componentsUi", FactoryEvent.COMPONENT_META_SELECTED, e => {
+            if (this.selectedComponentId !== e) this.lastSelectedComponentId = this.selectedComponentId;
+            this.selectedComponentId = e;
+            this.container.find(".button").removeClass("buttonSelected");
+            this.container.find(".but" + (e || "")).addClass("buttonSelected");
+        });
 
-        // Initialize with no component selected
+        this.container.find(".button").click(e => {
+            const id = $(e.target).attr("data-id");
+            this.factory.getEventManager().invokeEvent(FactoryEvent.COMPONENT_META_SELECTED, id || null);
+        });
+
+        this.container.find(".button").mouseenter(e => {
+            const id = $(e.target).attr("data-id");
+            this.factory.getEventManager().invokeEvent(FactoryEvent.HOVER_COMPONENT_META, id || null);
+        });
+
+        this.container.find(".button").mouseleave(() => {
+            this.factory.getEventManager().invokeEvent(FactoryEvent.HOVER_COMPONENT_META, null);
+        });
+
+        this.globalUiEm.addListener("componentsUi", GlobalUiEvent.KEY_PRESS, e => {
+            const keyCode = e.charCode ?? e.keyCode;
+            if (keyCode === 0 || keyCode === 32) {
+                this.factory.getEventManager().invokeEvent(
+                    FactoryEvent.COMPONENT_META_SELECTED,
+                    this.selectedComponentId ? null : this.lastSelectedComponentId
+                );
+                e.preventDefault();
+            }
+        });
+
+        this.container.find("#makeScreenShotButton").click(() => {
+            this.globalUiEm.invokeEvent(FactoryEvent.OPEN_SCREENSHOT_VIEW);
+        });
+
         this.factory.getEventManager().invokeEvent(FactoryEvent.COMPONENT_META_SELECTED, null);
-    };
+    }
 
-    /**
-     * Build component selection data from game metadata
-     */
-    ComponentsUi.prototype._buildComponentSelectionData = function() {
-        var components = [];
-        var componentSelectionLayout = this.game.getMeta().componentsSelection;
-
-        // Process each row of components
-        for (var rowIndex = 0; rowIndex < componentSelectionLayout.length; rowIndex++) {
-            components[rowIndex] = { sub: [] };
-
-            // Process each component in the current row
-            for (var colIndex = 0; colIndex < componentSelectionLayout[rowIndex].length; colIndex++) {
-                var componentId = componentSelectionLayout[rowIndex][colIndex];
-                var componentMetadata = this.game.getMeta().componentsById[componentId];
-
-                components[rowIndex].sub[colIndex] = {};
-
-                // Check if component is available for purchase
-                if (componentMetadata && this._isComponentAvailableForPurchase(componentMetadata)) {
-                    components[rowIndex].sub[colIndex] = {
-                        id: componentMetadata.id,
-                        name: componentMetadata.name,
-                        style: "background-position: -" + (26 * (componentMetadata.iconX || 0)) + "px -" + (26 * (componentMetadata.iconY || 0)) + "px"
-                    };
-                } else if (componentId === "noComponent") {
-                    // Special case for "no component" selection
-                    components[rowIndex].sub[colIndex] = {
-                        name: "No component",
-                        style: "background-position: 0px 0px"
-                    };
-                }
-            }
-        }
-        
-        return components;
-    };
-
-    /**
-     * Check if a component is available for purchase (respects research requirements)
-     */
-    ComponentsUi.prototype._isComponentAvailableForPurchase = function(componentMetadata) {
-        // Check research requirements
-        if (componentMetadata && componentMetadata.requiresResearch) {
-            var researchManager = this.game.getResearchManager && this.game.getResearchManager();
-            if (!researchManager || !researchManager.getResearch) {
-                return false; // Hide locked components if research manager not available
-            }
-            return researchManager.getResearch(componentMetadata.requiresResearch) > 0;
-        }
-        return true; // No research requirements, component is available
-    };
-
-    /**
-     * Set up event handlers for user interactions
-     */
-    ComponentsUi.prototype._setupInteractionHandlers = function() {
-        var self = this;
-
-        // Handle component meta selection events from MouseLayer
-        this.factory.getEventManager().addListener(
-            "componentsUi",
-            FactoryEvent.COMPONENT_META_SELECTED,
-            function(selectedComponentId) {
-                // Update selection state if component changed
-                if (self.currentlySelectedComponentId !== selectedComponentId) {
-                    self.lastSelectedComponentId = self.currentlySelectedComponentId;
-                }
-
-                self.currentlySelectedComponentId = selectedComponentId;
-
-                // Update visual selection state
-                self.container.find(".button").removeClass("buttonSelected");
-                self.container.find(".but" + (selectedComponentId || "")).addClass("buttonSelected");
-            }
-        );
-
-        // Handle component button clicks
-        this.container.on("click", ".button", function(event) {
-            var clickedElement = $(event.target);
-            var selectedComponentId = clickedElement.attr("data-id");
-                                    
-
-            // Notify MouseLayer of component selection
-            self.factory.getEventManager().invokeEvent(
-                FactoryEvent.COMPONENT_META_SELECTED,
-                selectedComponentId || null
-            );
-        });
-
-        this.container.on("mouseenter mouseleave", ".button", function (event) {
-            var componentId = (event.type === "mouseenter")
-                ? $(event.target).attr("data-id")
-                : null;
-        
-            self.factory.getEventManager().invokeEvent(
-                FactoryEvent.HOVER_COMPONENT_META,
-                componentId
-            );
-        });
-
-        // Handle keyboard shortcuts (spacebar toggles selection)
-        this.globalUiEventManager.addListener(
-            "componentsUi",
-            GlobalUiEvent.KEY_PRESS,
-            function(keyboardEvent) {
-                var keyCode = keyboardEvent.charCode !== undefined ? keyboardEvent.charCode : keyboardEvent.keyCode;
-
-                if (keyCode === 0 || keyCode === 32) { // Spacebar pressed
-                    var componentIdToSelect = self.currentlySelectedComponentId ? null : self.lastSelectedComponentId;
-                    self.factory.getEventManager().invokeEvent(FactoryEvent.COMPONENT_META_SELECTED, componentIdToSelect);
-                    keyboardEvent.preventDefault();
-                }
-            }
-        );
-
-        // Handle screenshot/map view button
-        this.container.on("click", "#makeScreenShotButton", function() {
-            self.globalUiEventManager.invokeEvent(FactoryEvent.OPEN_SCREENSHOT_VIEW);
-        });
-    };
-
-    /**
-     * Clean up resources and event listeners
-     */
-    ComponentsUi.prototype.destroy = function() {
-        // Remove all event listeners
+    destroy() {
         this.factory.getEventManager().removeListenerForType("componentsUi");
         this.game.getEventManager().removeListenerForType("componentsUi");
-        this.globalUiEventManager.removeListenerForType("componentsUi");
-
-        // Clear container
-        if (this.container) {
-            this.container.off(); // Remove all event handlers
-            this.container.html("");
-            this.container = null;
-        }
-    };
-
-    return ComponentsUi;
-});
+        this.globalUiEm.removeListenerForType("componentsUi");
+        this.container.html("");
+        this.container = null;
+    }
+}

@@ -19,7 +19,8 @@
   },
   "homepage": "https://github.com/DavidJamesPugh/HexaForge#readme",
   "devDependencies": {
-    "vite": "^7.1.5"
+    "vite": "^7.1.5",
+    "vite-plugin-string": "^1.2.3"
   },
   "dependencies": {
     "handlebars": "^4.7.8"

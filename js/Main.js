@@ -21,19 +21,32 @@ export default class Main {
    * @param {boolean} [isDevMode=false]
    */
   async init(isDevMode = false) {
-    // Load all images (already configured in gameAssets.js)
-    await this.imageMap.loadAllAsync();
+    try {
+      console.log("Main: Starting initialization...");
+      
+      // Load all images (already configured in gameAssets.js)
+      console.log("Main: Loading images...");
+      await this.imageMap.loadAllAsync();
+      console.log("Main: Images loaded successfully");
 
-    // Initialize Play
-    this.play = new Play();
-    await new Promise((resolve) => this.play.init(isDevMode, resolve));
+      // Initialize Play
+      console.log("Main: Initializing Play...");
+      this.play = new Play();
+      await new Promise((resolve) => this.play.init(isDevMode, resolve));
+      console.log("Main: Play initialized successfully");
 
-    // Optional dev mode check
-    this.play.isDevMode?.();
+      // Optional dev mode check
+      this.play.isDevMode?.();
 
-    // Initialize UI
-    this.mainUi = new MainUi();
-    this.mainUi.display(document.getElementById("gameArea"));
+      // Initialize UI
+      console.log("Main: Initializing UI...");
+      this.mainUi = new MainUi(this.play);
+      this.mainUi.display(document.getElementById("gameArea"));
+      console.log("Main: UI initialized successfully");
+    } catch (error) {
+      console.error("Main: Initialization failed:", error);
+      throw error;
+    }
   }
 
   destroy() {

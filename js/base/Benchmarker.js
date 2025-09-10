@@ -1,4 +1,6 @@
 // Benchmarker.js
+import logger from "./Logger.js";
+
 export default class Benchmarker {
     name;
     timeSpent = 0;
