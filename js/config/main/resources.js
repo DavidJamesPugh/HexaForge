@@ -1,5 +1,4 @@
-define("config/main/resources", [], function () {
-    return [
+const resources = [
         { id: "ironOre", idNum: 1, name: "Iron ore", nameShort: "Iron ore", spriteX: 0, spriteY: 0 },
         { id: "iron", idNum: 2, name: "Iron", nameShort: "Iron", spriteX: 1, spriteY: 0 },
         { id: "coal", idNum: 3, name: "Coal", nameShort: "Coal", spriteX: 2, spriteY: 0 },
@@ -30,4 +29,4 @@ define("config/main/resources", [], function () {
         { id: "report3", idNum: 26, name: "Big report", nameShort: "Big report", spriteX: 2, spriteY: 3 },
         { id: "report4", idNum: 29, name: "Quality report", nameShort: "Quality report", spriteX: 3, spriteY: 3 },
     ];
-});
+export default resources;

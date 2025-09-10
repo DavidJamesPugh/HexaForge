@@ -1,13 +1,36 @@
-// TODO: Implement main game configuration module
-define("config/config", [], function() {
-    // Placeholder - implement when ready
-    // This basic structure prevents the Main.js error
-   
-    return {
-        userHash: { key: "FactoryIdleUserHash" },
-        imageMap: { path: "" },
-        api: { server: { url: "/api/games" }, armorGames: { gameKey: "" }, local: { storageKey: "FactoryIdleLocal" } },
-        saveManager: { cloudSaveIntervalMs: 9e5, localSaveIntervalMs: 5e3 },
-        main: { warnToStoreUserHashAfterTicks: { 1e4: !0, 1e5: !0, 1e6: !0 } },
-    };
-});
+// config.js - central game config
+import mainModule from "./main/main.js";
+
+export default {
+  userHash: { key: "FactoryIdleUserHash" },
+  imageMap: { path: "img/",
+    files: {
+      yellowSelection: "mouse/yellow.png",
+      greenSelection: "mouse/green.png",
+      redSelection: "mouse/red.png",
+      blueSelection: "mouse/selected.png",
+      cantPlace: "mouse/cantPlace.png",
+      terrains: "terrains.png",
+      components: "components.png",
+      componentIcons: "componentIcons.png",
+      transportLine: "transportLine.png",
+      resources: "resources.png",
+    } },
+  api: {
+    server: { url: "/api/games" },
+    armorGames: { gameKey: "" },
+    local: { storageKey: "FactoryIdleLocal" }
+  },
+  saveManager: {
+    cloudSaveIntervalMs: 900000, // 15 min
+    localSaveIntervalMs: 5000
+  },
+  main: {
+    ...mainModule,
+    warnToStoreUserHashAfterTicks: {
+      10000: true,
+      100000: true,
+      1000000: true
+    }
+  }
+};

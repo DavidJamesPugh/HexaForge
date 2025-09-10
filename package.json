@@ -1,17 +1,12 @@
 {
   "name": "hexaforge",
   "version": "1.0.0",
-  "description": "This folder contains the unminified version of the game's frontend, extracted from `dist/app.js`.",
-  "main": "index.html",
+  "private": true,
+  "description": "Unminified version of the game's frontend, modernized with Vite.",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "server": "json-server -p3001 --watch db.json",
-    "build:ui": "rimraf ..\\IncBackEnd\\dist && cd ../HexaForge && npm run build && xcopy dist ..\\IncBackEnd\\dist /E /I",
-    "deploy:full": "npm run build:ui && git add .",
-    "dev": "http-server -p 8080 --cors -c-1",
-    "start": "http-server -p 8080 --cors -c-1",
-    "serve": "node server.js",
-    "serve:dev": "nodemon server.js"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "repository": {
     "type": "git",
@@ -24,9 +19,7 @@
   },
   "homepage": "https://github.com/DavidJamesPugh/HexaForge#readme",
   "devDependencies": {
-    "express": "^4.18.2",
-    "http-server": "^14.1.1",
-    "nodemon": "^3.1.10"
+    "vite": "^7.1.5"
   },
   "dependencies": {
     "handlebars": "^4.7.8"

@@ -1,6 +1,6 @@
-define("config/main/components", ["./helper/ProductionCostCalculator"], function (e) {
-    
-    const scale = (base, exponent) => base * Math.pow(1000, exponent);
+import ProductionCostCalculator from "./helper/ProductionCostCalculator.js";
+
+const scale = (base, exponent) => base * Math.pow(1000, exponent);
 
     const config = {
             selection: [
@@ -891,10 +891,10 @@ define("config/main/components", ["./helper/ProductionCostCalculator"], function
             for (const comp of config.components) {
                 componentsById[comp.id] = comp;
             }
-    
-            // Create cost calculator (example)
-            const calculator = new e(componentsById, config.productionTree);
-    
+        
+            // Create cost calculator
+            const calculator = new ProductionCostCalculator(componentsById, config.productionTree);
+        
             for (const comp of config.components) {
                 if (comp.strategy?.type === "seller") {
                     for (const resourceKey in comp.strategy.resources) {
@@ -903,7 +903,7 @@ define("config/main/components", ["./helper/ProductionCostCalculator"], function
                         if (cost > 0) comp.strategy.resources[resourceKey].sellPrice = Math.ceil(cost);
                     }
                 }
-    
+        
                 // Set max values for buyers/converters/sellers
                 if (comp.strategy?.type === "buyer") {
                     for (const key in comp.strategy.purchaseResources) {
@@ -923,6 +923,5 @@ define("config/main/components", ["./helper/ProductionCostCalculator"], function
                 }
             }
         })();
-    
-        return config;
-});
+        
+        export default config;

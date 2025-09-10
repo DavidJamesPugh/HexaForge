@@ -1,5 +1,4 @@
-define("config/main/factories", [], function () {
-    return [
+const factories = [
         {
             id: "level1",
             idNum: 1,
@@ -170,4 +169,5 @@ define("config/main/factories", [], function () {
             areas: [],
         },
     ];
-});
+
+export default factories;

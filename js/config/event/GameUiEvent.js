@@ -1,9 +1,5 @@
-/**
- * GameUiEvent constants - defines all game UI-related event types
- * Extracted from original_app.js
- */
-define("config/event/GameUiEvent", [], function() {
-    return {
+const GameUiEvent = {
+
         SHOW_FACTORY: "SHOW_FACTORY",
         SHOW_FACTORIES: "SHOW_FACTORIES",
         SHOW_RESEARCH: "SHOW_RESEARCH",
@@ -15,4 +11,5 @@ define("config/event/GameUiEvent", [], function() {
         SHOW_SETTINGS: "SHOW_SETTINGS",
         SHOW_TIME_TRAVEL: "SHOW_TIME_TRAVEL"
     };
-});
+
+    export default GameUiEvent;

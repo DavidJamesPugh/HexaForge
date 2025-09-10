@@ -1,56 +1,79 @@
-define("config/main/helper/ProductionCostCalculator", [], function () {
-    var e = {
-            getSumOfProduction: function (e) {
-                var t = 0;
-                for (var n in e) "waste" == n || e[n].bonus || (t += e[n].amount);
-                return t;
-            },
+// ProductionCostCalculator.js
+
+class ProductionCostCalculator {
+    constructor(componentsById, sourceBuildings) {
+      this.componentsById = componentsById;
+      this.sourceBuildings = sourceBuildings;
+  
+      this.strategies = {
+        buyer: {
+          selfCost: (component, resourceKey) =>
+            (component.strategy.interval * component.runningCostPerTick) /
+              ProductionCostCalculator.getSumOfProduction(component.strategy.purchaseResources) +
+            component.strategy.purchaseResources[resourceKey].price,
+  
+          inputCost: (component, resourceKey) => 1,
         },
-        t = function (t, n) {
-            (this.componentsById = t),
-                (this.sourceBuildings = n),
-                (this.strategies = {
-                    buyer: {
-                        selfCost: function (t, n) {
-                            return (t.strategy.interval * t.runningCostPerTick) / e.getSumOfProduction(t.strategy.purchaseResources) + t.strategy.purchaseResources[n].price;
-                        },
-                        inputCost: function (e, t) {
-                            return 1;
-                        },
-                    },
-                    converter: {
-                        selfCost: function (t) {
-                            return (t.strategy.interval * t.runningCostPerTick) / e.getSumOfProduction(t.strategy.production);
-                        },
-                        inputCost: function (t, n) {
-                            var i = e.getSumOfProduction(t.strategy.production);
-                            if (!t.strategy.inputResources[n]) throw new Error(t.id + " can't handle resources: " + n);
-                            return t.strategy.inputResources[n].perOutputResource / i;
-                        },
-                    },
-                    seller: {
-                        selfCost: function (t) {
-                            return (t.strategy.interval * t.runningCostPerTick) / e.getSumOfProduction(t.strategy.resources);
-                        },
-                        inputCost: function (e, t) {
-                            return 1;
-                        },
-                    },
-                });
-        };
-    return (
-        (t.prototype.calculateCostFor = function (e, t, n) {
-            var i = this.componentsById[e],
-                r = this.sourceBuildings[e];
-            r || (r = []);
-            var o = this.strategies[i.strategy.type],
-                s = 0,
-                a = o.selfCost(i, t);
-            if ("seller" == i.strategy.type) (s += this.calculateCostFor(r[t], t, n)), i.strategy.resources[t].bonus && (a = 0);
-            else for (var u in r) s += this.calculateCostFor(r[u], u, n) * o.inputCost(i, u);
-            var c = a + s;
-            return (n[e + "-" + t] = { self: a, input: s, total: c }), c;
-        }),
-        t
-    );
-});
+        converter: {
+          selfCost: (component) =>
+            (component.strategy.interval * component.runningCostPerTick) /
+            ProductionCostCalculator.getSumOfProduction(component.strategy.production),
+  
+          inputCost: (component, resourceKey) => {
+            const totalProduction = ProductionCostCalculator.getSumOfProduction(component.strategy.production);
+            if (!component.strategy.inputResources[resourceKey]) {
+              throw new Error(`${component.id} can't handle resources: ${resourceKey}`);
+            }
+            return component.strategy.inputResources[resourceKey].perOutputResource / totalProduction;
+          },
+        },
+        seller: {
+          selfCost: (component) =>
+            (component.strategy.interval * component.runningCostPerTick) /
+            ProductionCostCalculator.getSumOfProduction(component.strategy.resources),
+  
+          inputCost: (component, resourceKey) => 1,
+        },
+      };
+    }
+  
+    static getSumOfProduction(resources) {
+      let sum = 0;
+      for (const key in resources) {
+        if (key === "waste" || resources[key].bonus) continue;
+        sum += resources[key].amount;
+      }
+      return sum;
+    }
+  
+    calculateCostFor(componentId, resourceKey, costData) {
+      const component = this.componentsById[componentId];
+      let sourceBuildings = this.sourceBuildings[componentId] || {};
+
+      const strategy = this.strategies[component.strategy.type];
+      let inputCostSum = 0;
+      const selfCost = strategy.selfCost(component, resourceKey);
+
+      if (component.strategy.type === "seller") {
+        // Recursively calculate cost for source components
+        inputCostSum += this.calculateCostFor(sourceBuildings[resourceKey], resourceKey, costData);
+        if (component.strategy.resources[resourceKey].bonus) {
+          // Bonus resources have 0 cost
+          costData[`${componentId}-${resourceKey}`] = { self: 0, input: inputCostSum, total: inputCostSum };
+          return inputCostSum;
+        }
+      } else {
+        // For buyers/converters, sum all input costs recursively
+        for (const [resourceKey, srcKey] of Object.entries(sourceBuildings)) {
+          inputCostSum += this.calculateCostFor(srcKey, resourceKey, costData) * strategy.inputCost(component, resourceKey);
+        }
+      }
+
+      const totalCost = selfCost + inputCostSum;
+      costData[`${componentId}-${resourceKey}`] = { self: selfCost, input: inputCostSum, total: totalCost };
+      return totalCost;
+    }
+  }
+  
+  export default ProductionCostCalculator;
+  

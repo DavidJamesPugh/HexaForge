@@ -1,14 +1,13 @@
-define("config/main/research", [], function () {
-    var e = function (e, t) {
-        return e * Math.pow(1e3, t);
-    };
-    return [
+
+
+    const scale = (base, exponent) => base * Math.pow(1000, exponent);
+    const research = [
         { id: "researchCenter", idNum: 13, name: "Research center", iconX: 0, iconY: 0, description: "Allows researching more technologies", price: 900, priceIncrease: 1, max: 1, requiresResearch: "" },
         { id: "chronometer", idNum: 1, name: "Chronometer", iconX: 1, iconY: 0, description: "Each level gives +1 tick/sec", priceResearchPoints: 50, priceIncrease: 50, max: 10, requiresResearch: "researchCenter" },
         { id: "steelComponents", idNum: 2, name: "Steel components", iconX: 2, iconY: 0, description: "Allows steel production", priceResearchPoints: 200, priceIncrease: 1, max: 1, requiresResearch: "researchCenter" },
         { id: "metalsLab", idNum: 14, name: "Metals lab", iconX: 3, iconY: 0, description: "Allows researching metals", priceResearchPoints: 2e3, priceIncrease: 1, max: 1, requiresResearch: "steelComponents" },
-        { id: "plasticComponents", idNum: 3, name: "Plastic components", iconX: 4, iconY: 0, description: "Allows plastic production", priceResearchPoints: e(160, 1), priceIncrease: 1, max: 1, requiresResearch: "steelComponents" },
-        { id: "sorter", idNum: 16, name: "Sorter", iconX: 5, iconY: 0, description: "Sorts resources on lines to different paths", priceResearchPoints: e(120, 1), priceIncrease: 1, max: 1, requiresResearch: "plasticComponents" },
+        { id: "plasticComponents", idNum: 3, name: "Plastic components", iconX: 4, iconY: 0, description: "Allows plastic production", priceResearchPoints: scale(160, 1), priceIncrease: 1, max: 1, requiresResearch: "steelComponents" },
+        { id: "sorter", idNum: 16, name: "Sorter", iconX: 5, iconY: 0, description: "Sorts resources on lines to different paths", priceResearchPoints: scale(120, 1), priceIncrease: 1, max: 1, requiresResearch: "plasticComponents" },
         {
             id: "electronicsComponents",
             idNum: 4,
@@ -16,13 +15,13 @@ define("config/main/research", [], function () {
             iconX: 6,
             iconY: 0,
             description: "Allows electronics production",
-            priceResearchPoints: e(20, 2),
+            priceResearchPoints: scale(20, 2),
             priceIncrease: 1,
             max: 1,
             requiresResearch: "plasticComponents",
         },
-        { id: "gasAndOilLab", idNum: 15, name: "Gas&Oil lab", iconX: 7, iconY: 0, description: "Allows researching gas and oil", priceResearchPoints: e(300, 1), priceIncrease: 1, max: 1, requiresResearch: "plasticComponents" },
-        { id: "gunComponents", idNum: 8, name: "Gun components", iconX: 0, iconY: 1, description: "Allows guns production", priceResearchPoints: e(150, 2), priceIncrease: 1, max: 1, requiresResearch: "electronicsComponents" },
+        { id: "gasAndOilLab", idNum: 15, name: "Gas&Oil lab", iconX: 7, iconY: 0, description: "Allows researching gas and oil", priceResearchPoints: scale(300, 1), priceIncrease: 1, max: 1, requiresResearch: "plasticComponents" },
+        { id: "gunComponents", idNum: 8, name: "Gun components", iconX: 0, iconY: 1, description: "Allows guns production", priceResearchPoints: scale(150, 2), priceIncrease: 1, max: 1, requiresResearch: "electronicsComponents" },
         {
             id: "cleanPlastic",
             idNum: 5,
@@ -30,14 +29,14 @@ define("config/main/research", [], function () {
             iconX: 1,
             iconY: 1,
             description: "Plastic production will not produce waste",
-            priceResearchPoints: e(15, 2),
+            priceResearchPoints: scale(15, 2),
             priceIncrease: 1,
             max: 1,
             requiresResearch: "electronicsComponents",
         },
-        { id: "engineComponents", idNum: 6, name: "Engine components", iconX: 2, iconY: 1, description: "Allows engines production", priceResearchPoints: e(2.5, 3), priceIncrease: 1, max: 1, requiresResearch: "gunComponents" },
-        { id: "analystCenter", idNum: 17, name: "Analytics center", iconX: 3, iconY: 0, description: "Provides higher quality research", priceResearchPoints: e(250, 2), priceIncrease: 1, max: 1, requiresResearch: "gunComponents" },
-        { id: "tankComponents", idNum: 9, name: "Tank components", iconX: 4, iconY: 1, description: "Allows tanks production", priceResearchPoints: e(20, 3), priceIncrease: 1, max: 1, requiresResearch: "engineComponents" },
+        { id: "engineComponents", idNum: 6, name: "Engine components", iconX: 2, iconY: 1, description: "Allows engines production", priceResearchPoints: scale(2.5, 3), priceIncrease: 1, max: 1, requiresResearch: "gunComponents" },
+        { id: "analystCenter", idNum: 17, name: "Analytics center", iconX: 3, iconY: 0, description: "Provides higher quality research", priceResearchPoints: scale(250, 2), priceIncrease: 1, max: 1, requiresResearch: "gunComponents" },
+        { id: "tankComponents", idNum: 9, name: "Tank components", iconX: 4, iconY: 1, description: "Allows tanks production", priceResearchPoints: scale(20, 3), priceIncrease: 1, max: 1, requiresResearch: "engineComponents" },
         {
             id: "cleanElectronics",
             idNum: 7,
@@ -45,14 +44,14 @@ define("config/main/research", [], function () {
             iconX: 5,
             iconY: 1,
             description: "Electronics production will not produce waste",
-            priceResearchPoints: e(700, 2),
+            priceResearchPoints: scale(700, 2),
             priceIncrease: 1,
             max: 1,
             requiresResearch: "engineComponents",
         },
-        { id: "dieselRefinery", idNum: 10, name: "Diesel refinery", iconX: 5, iconY: 1, description: "Diesel increases tanks value.", priceResearchPoints: e(75, 3), priceIncrease: 1, max: 1, requiresResearch: "tankComponents" },
-        { id: "rocketComponents", idNum: 11, name: "Rocket components", iconX: 6, iconY: 1, description: "Allows producing rockets", priceResearchPoints: e(1, 4), priceIncrease: 1, max: 1, requiresResearch: "dieselRefinery" },
-        { id: "qualityCenter", idNum: 19, name: "Quality center", iconX: 9, iconY: 1, description: "Provides higher quality research", priceResearchPoints: e(2, 4), priceIncrease: 1, max: 1, requiresResearch: "rocketComponents" },
+        { id: "dieselRefinery", idNum: 10, name: "Diesel refinery", iconX: 5, iconY: 1, description: "Diesel increases tanks value.", priceResearchPoints: scale(75, 3), priceIncrease: 1, max: 1, requiresResearch: "tankComponents" },
+        { id: "rocketComponents", idNum: 11, name: "Rocket components", iconX: 6, iconY: 1, description: "Allows producing rockets", priceResearchPoints: scale(1, 4), priceIncrease: 1, max: 1, requiresResearch: "dieselRefinery" },
+        { id: "qualityCenter", idNum: 19, name: "Quality center", iconX: 9, iconY: 1, description: "Provides higher quality research", priceResearchPoints: scale(2, 4), priceIncrease: 1, max: 1, requiresResearch: "rocketComponents" },
         {
             id: "cleanEngines",
             idNum: 12,
@@ -60,11 +59,11 @@ define("config/main/research", [], function () {
             iconX: 7,
             iconY: 1,
             description: "Engine makers production will not produce waste",
-            priceResearchPoints: e(1, 4),
+            priceResearchPoints: scale(1, 4),
             priceIncrease: 1,
             max: 1,
             requiresResearch: "rocketComponents",
         },
-        { id: "droneComponents", idNum: 18, name: "Drone components", iconX: 8, iconY: 1, description: "Allows producing drones", priceResearchPoints: e(99, 4), priceIncrease: 1, max: 1, requiresResearch: "rocketComponents" },
+        { id: "droneComponents", idNum: 18, name: "Drone components", iconX: 8, iconY: 1, description: "Allows producing drones", priceResearchPoints: scale(99, 4), priceIncrease: 1, max: 1, requiresResearch: "rocketComponents" },
     ];
-});
+    export default research;

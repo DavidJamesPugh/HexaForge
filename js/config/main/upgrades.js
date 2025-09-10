@@ -1,8 +1,6 @@
-define("config/main/upgrades", [], function () {
-    var e = function (e, t) {
-        return e * Math.pow(10, t);
-    };
-    return {
+
+const scale = (base, exponent) => base * Math.pow(1000, exponent);
+    const upgrades = {
         layout: [
             { name: "Conveyor", iconX: 1, iconY: 0, items: ["packageSize"] },
             { name: "Research center", iconX: 3, iconY: 3, items: ["analystCenterConvertMore", "researchCenterBonus", "researchCenterMaxStock"] },
@@ -53,9 +51,9 @@ define("config/main/upgrades", [], function () {
                 type: "packageSize",
                 refund: 0.8,
                 levels: [
-                    { price: e(1, 12), bonus: 1 },
-                    { price: e(1, 14), bonus: 1 },
-                    { price: e(1, 16), bonus: 1 },
+                    { price: scale(1, 12), bonus: 1 },
+                    { price: scale(1, 14), bonus: 1 },
+                    { price: scale(1, 16), bonus: 1 },
                 ],
             },
             {
@@ -68,15 +66,15 @@ define("config/main/upgrades", [], function () {
                 refund: 0.8,
                 noRunningCost: !0,
                 levels: [
-                    { price: e(8, 2), bonus: 1 },
-                    { price: e(8, 3), bonus: 2 },
-                    { price: e(8, 4), bonus: 4 },
-                    { price: e(5, 5), bonus: 4 },
-                    { price: e(12, 9), bonus: 12 },
-                    { price: e(1.5, 11), bonus: 12 },
-                    { price: e(4, 13), bonus: 12 },
-                    { price: e(60, 13), bonus: 16 },
-                    { price: e(10, 14), bonus: 32 },
+                    { price: scale(8, 2), bonus: 1 },
+                    { price: scale(8, 3), bonus: 2 },
+                    { price: scale(8, 4), bonus: 4 },
+                    { price: scale(5, 5), bonus: 4 },
+                    { price: scale(12, 9), bonus: 12 },
+                    { price: scale(1.5, 11), bonus: 12 },
+                    { price: scale(4, 13), bonus: 12 },
+                    { price: scale(60, 13), bonus: 16 },
+                    { price: scale(10, 14), bonus: 32 },
                 ],
             },
             {
@@ -89,14 +87,14 @@ define("config/main/upgrades", [], function () {
                 refund: 0.8,
                 noRunningCost: !0,
                 levels: [
-                    { price: e(8, 2), bonus: 1 },
-                    { price: e(8, 4), bonus: 2 },
-                    { price: e(8, 5), bonus: 2 },
-                    { price: e(7, 9), bonus: 6 },
-                    { price: e(2, 11), bonus: 6 },
-                    { price: e(6, 13), bonus: 6 },
-                    { price: e(60, 13), bonus: 24 },
-                    { price: e(20, 14), bonus: 48 },
+                    { price: scale(8, 2), bonus: 1 },
+                    { price: scale(8, 4), bonus: 2 },
+                    { price: scale(8, 5), bonus: 2 },
+                    { price: scale(7, 9), bonus: 6 },
+                    { price: scale(2, 11), bonus: 6 },
+                    { price: scale(6, 13), bonus: 6 },
+                    { price: scale(60, 13), bonus: 24 },
+                    { price: scale(20, 14), bonus: 48 },
                 ],
             },
             {
@@ -109,8 +107,8 @@ define("config/main/upgrades", [], function () {
                 refund: 0.8,
                 noRunningCost: !0,
                 levels: [
-                    { price: e(5, 2), bonus: 1 },
-                    { price: e(2, 3), bonus: 2 },
+                    { price: scale(5, 2), bonus: 1 },
+                    { price: scale(2, 3), bonus: 2 },
                 ],
             },
             {
@@ -121,8 +119,8 @@ define("config/main/upgrades", [], function () {
                 type: "sellerSellPrice",
                 componentId: "ironSeller",
                 levels: [
-                    { price: e(5, 2), bonus: 0.25 },
-                    { price: e(4, 3), bonus: 0.25 },
+                    { price: scale(5, 2), bonus: 0.25 },
+                    { price: scale(4, 3), bonus: 0.25 },
                 ],
             },
             {
@@ -135,12 +133,12 @@ define("config/main/upgrades", [], function () {
                 componentId: "coalBuyer",
                 refund: 0.8,
                 levels: [
-                    { price: e(4, 4), bonus: 1 },
-                    { price: e(18, 5), bonus: 2 },
-                    { price: e(1, 9), bonus: 4 },
-                    { price: e(6, 9), bonus: 4 },
-                    { price: e(3, 11), bonus: 6 },
-                    { price: e(12.5, 13), bonus: 6 },
+                    { price: scale(4, 4), bonus: 1 },
+                    { price: scale(18, 5), bonus: 2 },
+                    { price: scale(1, 9), bonus: 4 },
+                    { price: scale(6, 9), bonus: 4 },
+                    { price: scale(3, 11), bonus: 6 },
+                    { price: scale(12.5, 13), bonus: 6 },
                 ],
             },
             {
@@ -153,11 +151,11 @@ define("config/main/upgrades", [], function () {
                 componentId: "steelFoundry",
                 refund: 0.8,
                 levels: [
-                    { price: e(15, 4), bonus: 1 },
-                    { price: e(9, 5), bonus: 1 },
-                    { price: e(6, 11), bonus: 3 },
-                    { price: e(15, 13), bonus: 6 },
-                    { price: e(25, 14), bonus: 12 },
+                    { price: scale(15, 4), bonus: 1 },
+                    { price: scale(9, 5), bonus: 1 },
+                    { price: scale(6, 11), bonus: 3 },
+                    { price: scale(15, 13), bonus: 6 },
+                    { price: scale(25, 14), bonus: 12 },
                 ],
             },
             {
@@ -170,8 +168,8 @@ define("config/main/upgrades", [], function () {
                 componentId: "steelFoundry",
                 refund: 0.8,
                 levels: [
-                    { price: e(4, 11), bonus: 1 },
-                    { price: e(90, 13), bonus: 2 },
+                    { price: scale(4, 11), bonus: 1 },
+                    { price: scale(90, 13), bonus: 2 },
                 ],
             },
             {
@@ -184,8 +182,8 @@ define("config/main/upgrades", [], function () {
                 componentId: "steelSeller",
                 refund: 0.8,
                 levels: [
-                    { price: e(5, 4), bonus: 1 },
-                    { price: e(3, 5), bonus: 1 },
+                    { price: scale(5, 4), bonus: 1 },
+                    { price: scale(3, 5), bonus: 1 },
                 ],
             },
             {
@@ -197,8 +195,8 @@ define("config/main/upgrades", [], function () {
                 type: "runningCost",
                 componentId: "coalBuyer",
                 levels: [
-                    { price: e(2, 4), bonus: 0.05 },
-                    { price: e(9, 4), bonus: 0.1 },
+                    { price: scale(2, 4), bonus: 0.05 },
+                    { price: scale(9, 4), bonus: 0.1 },
                 ],
             },
             {
@@ -210,8 +208,8 @@ define("config/main/upgrades", [], function () {
                 type: "runningCost",
                 componentId: "steelFoundry",
                 levels: [
-                    { price: e(3, 4), bonus: 0.05 },
-                    { price: e(1, 5), bonus: 0.1 },
+                    { price: scale(3, 4), bonus: 0.05 },
+                    { price: scale(1, 5), bonus: 0.1 },
                 ],
             },
             {
@@ -223,8 +221,8 @@ define("config/main/upgrades", [], function () {
                 type: "runningCost",
                 componentId: "steelSeller",
                 levels: [
-                    { price: e(10, 4), bonus: 0.05 },
-                    { price: e(50, 4), bonus: 0.1 },
+                    { price: scale(10, 4), bonus: 0.05 },
+                    { price: scale(50, 4), bonus: 0.1 },
                 ],
             },
             {
@@ -236,8 +234,8 @@ define("config/main/upgrades", [], function () {
                 type: "sellerSellPrice",
                 componentId: "steelSeller",
                 levels: [
-                    { price: e(9, 4), bonus: 0.1 },
-                    { price: e(4, 5), bonus: 0.1 },
+                    { price: scale(9, 4), bonus: 0.1 },
+                    { price: scale(4, 5), bonus: 0.1 },
                 ],
             },
             {
@@ -250,10 +248,10 @@ define("config/main/upgrades", [], function () {
                 componentId: "oilBuyer",
                 refund: 0.8,
                 levels: [
-                    { price: e(9, 5), bonus: 1 },
-                    { price: e(3, 8), bonus: 6 },
-                    { price: e(4, 9), bonus: 4 },
-                    { price: e(3, 11), bonus: 12 },
+                    { price: scale(9, 5), bonus: 1 },
+                    { price: scale(3, 8), bonus: 6 },
+                    { price: scale(4, 9), bonus: 4 },
+                    { price: scale(3, 11), bonus: 12 },
                 ],
             },
             {
@@ -266,11 +264,11 @@ define("config/main/upgrades", [], function () {
                 componentId: "gasBuyer",
                 refund: 0.8,
                 levels: [
-                    { price: e(1.2, 6), bonus: 1 },
-                    { price: e(4, 8), bonus: 2 },
-                    { price: e(8, 8), bonus: 4 },
-                    { price: e(2, 9), bonus: 4 },
-                    { price: e(2, 11), bonus: 12 },
+                    { price: scale(1.2, 6), bonus: 1 },
+                    { price: scale(4, 8), bonus: 2 },
+                    { price: scale(8, 8), bonus: 4 },
+                    { price: scale(2, 9), bonus: 4 },
+                    { price: scale(2, 11), bonus: 12 },
                 ],
             },
             {
@@ -283,9 +281,9 @@ define("config/main/upgrades", [], function () {
                 componentId: "plasticMaker",
                 refund: 0.8,
                 levels: [
-                    { price: e(12, 6), bonus: 1 },
-                    { price: e(5, 9), bonus: 1 },
-                    { price: e(6, 11), bonus: 3 },
+                    { price: scale(12, 6), bonus: 1 },
+                    { price: scale(5, 9), bonus: 1 },
+                    { price: scale(6, 11), bonus: 3 },
                 ],
             },
             {
@@ -297,7 +295,7 @@ define("config/main/upgrades", [], function () {
                 type: "converterProduceMore",
                 componentId: "plasticMaker",
                 refund: 0.8,
-                levels: [{ price: e(1, 12), bonus: 1 }],
+                levels: [{ price: scale(1, 12), bonus: 1 }],
             },
             {
                 id: "plasticSellerSellAmount",
@@ -309,8 +307,8 @@ define("config/main/upgrades", [], function () {
                 componentId: "plasticSeller",
                 refund: 0.8,
                 levels: [
-                    { price: e(1.2, 7), bonus: 3 },
-                    { price: e(9.5, 9), bonus: 2 },
+                    { price: scale(1.2, 7), bonus: 3 },
+                    { price: scale(9.5, 9), bonus: 2 },
                 ],
             },
             {
@@ -322,8 +320,8 @@ define("config/main/upgrades", [], function () {
                 type: "runningCost",
                 componentId: "oilBuyer",
                 levels: [
-                    { price: e(6, 5), bonus: 0.05 },
-                    { price: e(5, 8), bonus: 0.05 },
+                    { price: scale(6, 5), bonus: 0.05 },
+                    { price: scale(5, 8), bonus: 0.05 },
                 ],
             },
             {
@@ -335,8 +333,8 @@ define("config/main/upgrades", [], function () {
                 type: "runningCost",
                 componentId: "gasBuyer",
                 levels: [
-                    { price: e(4, 5), bonus: 0.05 },
-                    { price: e(1, 8), bonus: 0.1 },
+                    { price: scale(4, 5), bonus: 0.05 },
+                    { price: scale(1, 8), bonus: 0.1 },
                 ],
             },
             {
@@ -348,8 +346,8 @@ define("config/main/upgrades", [], function () {
                 type: "runningCost",
                 componentId: "plasticMaker",
                 levels: [
-                    { price: e(9, 5), bonus: 0.05 },
-                    { price: e(6, 8), bonus: 0.1 },
+                    { price: scale(9, 5), bonus: 0.05 },
+                    { price: scale(6, 8), bonus: 0.1 },
                 ],
             },
             {
@@ -361,8 +359,8 @@ define("config/main/upgrades", [], function () {
                 type: "runningCost",
                 componentId: "plasticSeller",
                 levels: [
-                    { price: e(7, 5), bonus: 0.05 },
-                    { price: e(3, 8), bonus: 0.05 },
+                    { price: scale(7, 5), bonus: 0.05 },
+                    { price: scale(3, 8), bonus: 0.05 },
                 ],
             },
             {
@@ -374,8 +372,8 @@ define("config/main/upgrades", [], function () {
                 type: "sellerSellPrice",
                 componentId: "plasticSeller",
                 levels: [
-                    { price: e(9, 6), bonus: 0.1 },
-                    { price: e(1, 9), bonus: 0.05 },
+                    { price: scale(9, 6), bonus: 0.1 },
+                    { price: scale(1, 9), bonus: 0.05 },
                 ],
             },
             {
@@ -388,10 +386,10 @@ define("config/main/upgrades", [], function () {
                 componentId: "siliconBuyer",
                 refund: 0.8,
                 levels: [
-                    { price: e(8, 8), bonus: 1 },
-                    { price: e(1, 9), bonus: 1 },
-                    { price: e(5, 11), bonus: 3 },
-                    { price: e(3, 13), bonus: 6 },
+                    { price: scale(8, 8), bonus: 1 },
+                    { price: scale(1, 9), bonus: 1 },
+                    { price: scale(5, 11), bonus: 3 },
+                    { price: scale(3, 13), bonus: 6 },
                 ],
             },
             {
@@ -404,8 +402,8 @@ define("config/main/upgrades", [], function () {
                 componentId: "electronicsMaker",
                 refund: 0.8,
                 levels: [
-                    { price: e(4, 8), bonus: 1 },
-                    { price: e(3, 9), bonus: 1 },
+                    { price: scale(4, 8), bonus: 1 },
+                    { price: scale(3, 9), bonus: 1 },
                 ],
             },
             {
@@ -417,7 +415,7 @@ define("config/main/upgrades", [], function () {
                 type: "converterProduceMore",
                 componentId: "electronicsMaker",
                 refund: 0.8,
-                levels: [{ price: e(1.5, 12), bonus: 1 }],
+                levels: [{ price: scale(1.5, 12), bonus: 1 }],
             },
             {
                 id: "electronicsSellerSellAmount",
@@ -429,13 +427,13 @@ define("config/main/upgrades", [], function () {
                 componentId: "electronicsSeller",
                 refund: 0.8,
                 levels: [
-                    { price: e(2, 8), bonus: 1 },
-                    { price: e(2, 9), bonus: 1 },
+                    { price: scale(2, 8), bonus: 1 },
+                    { price: scale(2, 9), bonus: 1 },
                 ],
             },
-            { id: "siliconBuyerRunningCost", idNum: 22, iconX: 4, iconY: 0, requiresResearch: "electronicsComponents", type: "runningCost", componentId: "siliconBuyer", levels: [{ price: e(8, 8), bonus: 0.05 }] },
-            { id: "electronicsMakerRunningCost", idNum: 24, iconX: 4, iconY: 0, requiresResearch: "electronicsComponents", type: "runningCost", componentId: "electronicsMaker", levels: [{ price: e(8, 8), bonus: 0.05 }] },
-            { id: "electronicsSellerRunningCost", idNum: 26, iconX: 4, iconY: 0, requiresResearch: "electronicsComponents", type: "runningCost", componentId: "electronicsSeller", levels: [{ price: e(12, 8), bonus: 0.05 }] },
+            { id: "siliconBuyerRunningCost", idNum: 22, iconX: 4, iconY: 0, requiresResearch: "electronicsComponents", type: "runningCost", componentId: "siliconBuyer", levels: [{ price: scale(8, 8), bonus: 0.05 }] },
+            { id: "electronicsMakerRunningCost", idNum: 24, iconX: 4, iconY: 0, requiresResearch: "electronicsComponents", type: "runningCost", componentId: "electronicsMaker", levels: [{ price: scale(8, 8), bonus: 0.05 }] },
+            { id: "electronicsSellerRunningCost", idNum: 26, iconX: 4, iconY: 0, requiresResearch: "electronicsComponents", type: "runningCost", componentId: "electronicsSeller", levels: [{ price: scale(12, 8), bonus: 0.05 }] },
             {
                 id: "electronicsSellerSellPrice",
                 idNum: 27,
@@ -445,10 +443,10 @@ define("config/main/upgrades", [], function () {
                 type: "sellerSellPrice",
                 componentId: "electronicsSeller",
                 levels: [
-                    { price: e(2, 8), bonus: 0.05 },
-                    { price: e(4, 8), bonus: 0.05 },
-                    { price: e(6, 8), bonus: 0.05 },
-                    { price: e(1, 10), bonus: 0.05 },
+                    { price: scale(2, 8), bonus: 0.05 },
+                    { price: scale(4, 8), bonus: 0.05 },
+                    { price: scale(6, 8), bonus: 0.05 },
+                    { price: scale(1, 10), bonus: 0.05 },
                 ],
             },
             {
@@ -461,10 +459,10 @@ define("config/main/upgrades", [], function () {
                 componentId: "explosivesBuyer",
                 refund: 0.8,
                 levels: [
-                    { price: e(99, 9), bonus: 1 },
-                    { price: e(500, 9), bonus: 2 },
-                    { price: e(80, 13), bonus: 4 },
-                    { price: e(120, 14), bonus: 8 },
+                    { price: scale(99, 9), bonus: 1 },
+                    { price: scale(500, 9), bonus: 2 },
+                    { price: scale(80, 13), bonus: 4 },
+                    { price: scale(120, 14), bonus: 8 },
                 ],
             },
             {
@@ -477,9 +475,9 @@ define("config/main/upgrades", [], function () {
                 componentId: "bulletMaker",
                 refund: 0.8,
                 levels: [
-                    { price: e(220, 9), bonus: 1 },
-                    { price: e(600, 9), bonus: 2 },
-                    { price: e(35, 13), bonus: 4 },
+                    { price: scale(220, 9), bonus: 1 },
+                    { price: scale(600, 9), bonus: 2 },
+                    { price: scale(35, 13), bonus: 4 },
                 ],
             },
             {
@@ -492,17 +490,17 @@ define("config/main/upgrades", [], function () {
                 componentId: "gunMaker",
                 refund: 0.8,
                 levels: [
-                    { price: e(450, 9), bonus: 1 },
-                    { price: e(250, 10), bonus: 6 },
-                    { price: e(90, 13), bonus: 8 },
+                    { price: scale(450, 9), bonus: 1 },
+                    { price: scale(250, 10), bonus: 6 },
+                    { price: scale(90, 13), bonus: 8 },
                 ],
             },
-            { id: "gunSellerSellAmount", idNum: 41, iconX: 2, iconY: 0, requiresResearch: "gunComponents", type: "sellerSellAmount", componentId: "gunSeller", refund: 0.8, levels: [{ price: e(120, 9), bonus: 1 }] },
-            { id: "explosivesBuyerRunningCost", idNum: 36, iconX: 4, iconY: 0, requiresResearch: "gunComponents", type: "runningCost", componentId: "explosivesBuyer", levels: [{ price: e(15, 9), bonus: 0.05 }] },
-            { id: "bulletMakerRunningCost", idNum: 38, iconX: 4, iconY: 0, requiresResearch: "gunComponents", type: "runningCost", componentId: "bulletMaker", levels: [{ price: e(20, 9), bonus: 0.1 }] },
-            { id: "gunMakerRunningCost", idNum: 40, iconX: 4, iconY: 0, requiresResearch: "gunComponents", type: "runningCost", componentId: "gunMaker", levels: [{ price: e(25, 9), bonus: 0.1 }] },
-            { id: "gunSellerRunningCost", idNum: 42, iconX: 4, iconY: 0, requiresResearch: "gunComponents", type: "runningCost", componentId: "gunSeller", levels: [{ price: e(15, 9), bonus: 0.1 }] },
-            { id: "gunSellerSellPrice", idNum: 43, iconX: 3, iconY: 0, requiresResearch: "gunComponents", type: "sellerSellPrice", componentId: "gunSeller", levels: [{ price: e(15, 9), bonus: 0.05 }] },
+            { id: "gunSellerSellAmount", idNum: 41, iconX: 2, iconY: 0, requiresResearch: "gunComponents", type: "sellerSellAmount", componentId: "gunSeller", refund: 0.8, levels: [{ price: scale(120, 9), bonus: 1 }] },
+            { id: "explosivesBuyerRunningCost", idNum: 36, iconX: 4, iconY: 0, requiresResearch: "gunComponents", type: "runningCost", componentId: "explosivesBuyer", levels: [{ price: scale(15, 9), bonus: 0.05 }] },
+            { id: "bulletMakerRunningCost", idNum: 38, iconX: 4, iconY: 0, requiresResearch: "gunComponents", type: "runningCost", componentId: "bulletMaker", levels: [{ price: scale(20, 9), bonus: 0.1 }] },
+            { id: "gunMakerRunningCost", idNum: 40, iconX: 4, iconY: 0, requiresResearch: "gunComponents", type: "runningCost", componentId: "gunMaker", levels: [{ price: scale(25, 9), bonus: 0.1 }] },
+            { id: "gunSellerRunningCost", idNum: 42, iconX: 4, iconY: 0, requiresResearch: "gunComponents", type: "runningCost", componentId: "gunSeller", levels: [{ price: scale(15, 9), bonus: 0.1 }] },
+            { id: "gunSellerSellPrice", idNum: 43, iconX: 3, iconY: 0, requiresResearch: "gunComponents", type: "sellerSellPrice", componentId: "gunSeller", levels: [{ price: scale(15, 9), bonus: 0.05 }] },
             {
                 id: "aluminiumBuyerBuyAmount",
                 idNum: 28,
@@ -513,11 +511,11 @@ define("config/main/upgrades", [], function () {
                 componentId: "aluminiumBuyer",
                 refund: 0.8,
                 levels: [
-                    { price: e(300, 9), bonus: 1 },
-                    { price: e(600, 9), bonus: 2 },
-                    { price: e(150, 10), bonus: 4 },
-                    { price: e(1, 14), bonus: 24 },
-                    { price: e(60, 14), bonus: 32 },
+                    { price: scale(300, 9), bonus: 1 },
+                    { price: scale(600, 9), bonus: 2 },
+                    { price: scale(150, 10), bonus: 4 },
+                    { price: scale(1, 14), bonus: 24 },
+                    { price: scale(60, 14), bonus: 32 },
                 ],
             },
             {
@@ -530,11 +528,11 @@ define("config/main/upgrades", [], function () {
                 componentId: "engineMaker",
                 refund: 0.8,
                 levels: [
-                    { price: e(1300, 9), bonus: 1 },
-                    { price: e(40, 14), bonus: 2 },
+                    { price: scale(1300, 9), bonus: 1 },
+                    { price: scale(40, 14), bonus: 2 },
                 ],
             },
-            { id: "engineSellerSellAmount", idNum: 32, iconX: 2, iconY: 0, requiresResearch: "engineComponents", type: "sellerSellAmount", componentId: "engineSeller", refund: 0.8, levels: [{ price: e(800, 9), bonus: 1 }] },
+            { id: "engineSellerSellAmount", idNum: 32, iconX: 2, iconY: 0, requiresResearch: "engineComponents", type: "sellerSellAmount", componentId: "engineSeller", refund: 0.8, levels: [{ price: scale(800, 9), bonus: 1 }] },
             {
                 id: "aluminiumBuyerRunningCost",
                 idNum: 29,
@@ -544,8 +542,8 @@ define("config/main/upgrades", [], function () {
                 type: "runningCost",
                 componentId: "aluminiumBuyer",
                 levels: [
-                    { price: e(150, 9), bonus: 0.05 },
-                    { price: e(450, 9), bonus: 0.05 },
+                    { price: scale(150, 9), bonus: 0.05 },
+                    { price: scale(450, 9), bonus: 0.05 },
                 ],
             },
             {
@@ -557,8 +555,8 @@ define("config/main/upgrades", [], function () {
                 type: "runningCost",
                 componentId: "engineMaker",
                 levels: [
-                    { price: e(100, 9), bonus: 0.1 },
-                    { price: e(200, 9), bonus: 0.1 },
+                    { price: scale(100, 9), bonus: 0.1 },
+                    { price: scale(200, 9), bonus: 0.1 },
                 ],
             },
             {
@@ -570,8 +568,8 @@ define("config/main/upgrades", [], function () {
                 type: "runningCost",
                 componentId: "engineSeller",
                 levels: [
-                    { price: e(50, 9), bonus: 0.1 },
-                    { price: e(150, 9), bonus: 0.1 },
+                    { price: scale(50, 9), bonus: 0.1 },
+                    { price: scale(150, 9), bonus: 0.1 },
                 ],
             },
             {
@@ -583,9 +581,9 @@ define("config/main/upgrades", [], function () {
                 type: "sellerSellPrice",
                 componentId: "engineSeller",
                 levels: [
-                    { price: e(150, 9), bonus: 0.05 },
-                    { price: e(250, 9), bonus: 0.05 },
-                    { price: e(450, 9), bonus: 0.05 },
+                    { price: scale(150, 9), bonus: 0.05 },
+                    { price: scale(250, 9), bonus: 0.05 },
+                    { price: scale(450, 9), bonus: 0.05 },
                 ],
             },
             {
@@ -598,8 +596,8 @@ define("config/main/upgrades", [], function () {
                 componentId: "tankHullMaker",
                 refund: 0.8,
                 levels: [
-                    { price: e(600, 9), bonus: 3 },
-                    { price: e(150, 10), bonus: 4 },
+                    { price: scale(600, 9), bonus: 3 },
+                    { price: scale(150, 10), bonus: 4 },
                 ],
             },
             {
@@ -612,8 +610,8 @@ define("config/main/upgrades", [], function () {
                 componentId: "tankTurretMaker",
                 refund: 0.8,
                 levels: [
-                    { price: e(450, 9), bonus: 3 },
-                    { price: e(100, 10), bonus: 4 },
+                    { price: scale(450, 9), bonus: 3 },
+                    { price: scale(100, 10), bonus: 4 },
                 ],
             },
             {
@@ -626,8 +624,8 @@ define("config/main/upgrades", [], function () {
                 componentId: "tankAssembler",
                 refund: 0.8,
                 levels: [
-                    { price: e(300, 9), bonus: 1 },
-                    { price: e(200, 10), bonus: 2 },
+                    { price: scale(300, 9), bonus: 1 },
+                    { price: scale(200, 10), bonus: 2 },
                 ],
             },
             {
@@ -640,8 +638,8 @@ define("config/main/upgrades", [], function () {
                 componentId: "tankSeller",
                 refund: 0.8,
                 levels: [
-                    { price: e(400, 9), bonus: 3 },
-                    { price: e(620, 10), bonus: 4 },
+                    { price: scale(400, 9), bonus: 3 },
+                    { price: scale(620, 10), bonus: 4 },
                 ],
             },
             {
@@ -653,8 +651,8 @@ define("config/main/upgrades", [], function () {
                 type: "runningCost",
                 componentId: "tankHullMaker",
                 levels: [
-                    { price: e(400, 9), bonus: 0.05 },
-                    { price: e(200, 10), bonus: 0.05 },
+                    { price: scale(400, 9), bonus: 0.05 },
+                    { price: scale(200, 10), bonus: 0.05 },
                 ],
             },
             {
@@ -666,8 +664,8 @@ define("config/main/upgrades", [], function () {
                 type: "runningCost",
                 componentId: "tankTurretMaker",
                 levels: [
-                    { price: e(300, 9), bonus: 0.05 },
-                    { price: e(200, 10), bonus: 0.05 },
+                    { price: scale(300, 9), bonus: 0.05 },
+                    { price: scale(200, 10), bonus: 0.05 },
                 ],
             },
             {
@@ -679,8 +677,8 @@ define("config/main/upgrades", [], function () {
                 type: "runningCost",
                 componentId: "tankAssembler",
                 levels: [
-                    { price: e(500, 9), bonus: 0.05 },
-                    { price: e(100, 10), bonus: 0.05 },
+                    { price: scale(500, 9), bonus: 0.05 },
+                    { price: scale(100, 10), bonus: 0.05 },
                 ],
             },
             {
@@ -692,8 +690,8 @@ define("config/main/upgrades", [], function () {
                 type: "runningCost",
                 componentId: "tankSeller",
                 levels: [
-                    { price: e(350, 9), bonus: 0.05 },
-                    { price: e(150, 10), bonus: 0.05 },
+                    { price: scale(350, 9), bonus: 0.05 },
+                    { price: scale(150, 10), bonus: 0.05 },
                 ],
             },
             {
@@ -705,14 +703,14 @@ define("config/main/upgrades", [], function () {
                 type: "sellerSellPrice",
                 componentId: "tankSeller",
                 levels: [
-                    { price: e(400, 9), bonus: 0.1 },
-                    { price: e(240, 10), bonus: 0.1 },
+                    { price: scale(400, 9), bonus: 0.1 },
+                    { price: scale(240, 10), bonus: 0.1 },
                 ],
             },
-            { id: "dieselRefineryConvertAmount", idNum: 53, iconX: 1, iconY: 0, requiresResearch: "dieselRefinery", type: "converter", componentId: "dieselRefinery", refund: 0.8, levels: [{ price: e(700, 9), bonus: 1 }] },
-            { id: "dieselRefineryRunningCost", idNum: 54, iconX: 4, iconY: 0, requiresResearch: "dieselRefinery", type: "runningCost", componentId: "dieselRefinery", levels: [{ price: e(900, 9), bonus: 0.05 }] },
-            { id: "jetFuelRefineryConvertAmount", idNum: 55, iconX: 1, iconY: 0, requiresResearch: "rocketComponents", type: "converter", componentId: "jetFuelRefinery", refund: 0.8, levels: [{ price: e(100, 10), bonus: 1 }] },
-            { id: "rocketHullMakerConvertAmount", idNum: 57, iconX: 1, iconY: 0, requiresResearch: "rocketComponents", type: "converter", componentId: "rocketHullMaker", refund: 0.8, levels: [{ price: e(150, 10), bonus: 1 }] },
+            { id: "dieselRefineryConvertAmount", idNum: 53, iconX: 1, iconY: 0, requiresResearch: "dieselRefinery", type: "converter", componentId: "dieselRefinery", refund: 0.8, levels: [{ price: scale(700, 9), bonus: 1 }] },
+            { id: "dieselRefineryRunningCost", idNum: 54, iconX: 4, iconY: 0, requiresResearch: "dieselRefinery", type: "runningCost", componentId: "dieselRefinery", levels: [{ price: scale(900, 9), bonus: 0.05 }] },
+            { id: "jetFuelRefineryConvertAmount", idNum: 55, iconX: 1, iconY: 0, requiresResearch: "rocketComponents", type: "converter", componentId: "jetFuelRefinery", refund: 0.8, levels: [{ price: scale(100, 10), bonus: 1 }] },
+            { id: "rocketHullMakerConvertAmount", idNum: 57, iconX: 1, iconY: 0, requiresResearch: "rocketComponents", type: "converter", componentId: "rocketHullMaker", refund: 0.8, levels: [{ price: scale(150, 10), bonus: 1 }] },
             {
                 id: "rocketWarheadMakerConvertAmount",
                 idNum: 59,
@@ -722,13 +720,13 @@ define("config/main/upgrades", [], function () {
                 type: "converter",
                 componentId: "rocketWarheadMaker",
                 refund: 0.8,
-                levels: [{ price: e(200, 10), bonus: 1 }],
+                levels: [{ price: scale(200, 10), bonus: 1 }],
             },
-            { id: "rocketAssemblerConvertAmount", idNum: 61, iconX: 1, iconY: 0, requiresResearch: "rocketComponents", type: "converter", componentId: "rocketAssembler", refund: 0.8, levels: [{ price: e(250, 10), bonus: 1 }] },
-            { id: "jetFuelRefineryRunningCost", idNum: 56, iconX: 4, iconY: 0, requiresResearch: "rocketComponents", type: "runningCost", componentId: "jetFuelRefinery", levels: [{ price: e(300, 10), bonus: 0.05 }] },
-            { id: "rocketHullMakerRunningCost", idNum: 58, iconX: 4, iconY: 0, requiresResearch: "rocketComponents", type: "runningCost", componentId: "rocketHullMaker", levels: [{ price: e(350, 10), bonus: 0.05 }] },
-            { id: "rocketWarheadMakerRunningCost", idNum: 60, iconX: 4, iconY: 0, requiresResearch: "rocketComponents", type: "runningCost", componentId: "rocketWarheadMaker", levels: [{ price: e(250, 10), bonus: 0.05 }] },
-            { id: "rocketAssemblerRunningCost", idNum: 62, iconX: 4, iconY: 0, requiresResearch: "rocketComponents", type: "runningCost", componentId: "rocketAssembler", levels: [{ price: e(300, 10), bonus: 0.05 }] },
+            { id: "rocketAssemblerConvertAmount", idNum: 61, iconX: 1, iconY: 0, requiresResearch: "rocketComponents", type: "converter", componentId: "rocketAssembler", refund: 0.8, levels: [{ price: scale(250, 10), bonus: 1 }] },
+            { id: "jetFuelRefineryRunningCost", idNum: 56, iconX: 4, iconY: 0, requiresResearch: "rocketComponents", type: "runningCost", componentId: "jetFuelRefinery", levels: [{ price: scale(300, 10), bonus: 0.05 }] },
+            { id: "rocketHullMakerRunningCost", idNum: 58, iconX: 4, iconY: 0, requiresResearch: "rocketComponents", type: "runningCost", componentId: "rocketHullMaker", levels: [{ price: scale(350, 10), bonus: 0.05 }] },
+            { id: "rocketWarheadMakerRunningCost", idNum: 60, iconX: 4, iconY: 0, requiresResearch: "rocketComponents", type: "runningCost", componentId: "rocketWarheadMaker", levels: [{ price: scale(250, 10), bonus: 0.05 }] },
+            { id: "rocketAssemblerRunningCost", idNum: 62, iconX: 4, iconY: 0, requiresResearch: "rocketComponents", type: "runningCost", componentId: "rocketAssembler", levels: [{ price: scale(300, 10), bonus: 0.05 }] },
             {
                 id: "garbageRemoveAmount",
                 idNum: 99,
@@ -739,8 +737,8 @@ define("config/main/upgrades", [], function () {
                 type: "garbage",
                 componentId: "garbageCollector",
                 levels: [
-                    { price: e(5, 4), bonus: 1 },
-                    { price: e(3, 9), bonus: 2 },
+                    { price: scale(5, 4), bonus: 1 },
+                    { price: scale(3, 9), bonus: 2 },
                 ],
             },
             {
@@ -753,16 +751,16 @@ define("config/main/upgrades", [], function () {
                 type: "researchCenterBonus",
                 componentId: "researchCenter",
                 levels: [
-                    { price: e(5, 5), bonus: 0.1 },
-                    { price: e(5, 7), bonus: 0.2 },
-                    { price: e(5, 8), bonus: 0.2 },
-                    { price: e(1.1, 10), bonus: 0.25 },
-                    { price: e(2.8, 10), bonus: 0.25 },
-                    { price: e(1.2, 11), bonus: 0.5 },
-                    { price: e(9.4, 11), bonus: 0.5 },
-                    { price: e(200, 12), bonus: 1.5 },
-                    { price: e(100, 13), bonus: 1.5 },
-                    { price: e(10, 14), bonus: 6 },
+                    { price: scale(5, 5), bonus: 0.1 },
+                    { price: scale(5, 7), bonus: 0.2 },
+                    { price: scale(5, 8), bonus: 0.2 },
+                    { price: scale(1.1, 10), bonus: 0.25 },
+                    { price: scale(2.8, 10), bonus: 0.25 },
+                    { price: scale(1.2, 11), bonus: 0.5 },
+                    { price: scale(9.4, 11), bonus: 0.5 },
+                    { price: scale(200, 12), bonus: 1.5 },
+                    { price: scale(100, 13), bonus: 1.5 },
+                    { price: scale(10, 14), bonus: 6 },
                 ],
             },
             {
@@ -775,14 +773,14 @@ define("config/main/upgrades", [], function () {
                 type: "researchCenterMaxStock",
                 componentId: "researchCenter",
                 levels: [
-                    { price: e(5, 5), bonus: 1 },
-                    { price: e(1, 8), bonus: 1 },
-                    { price: e(1, 9), bonus: 1 },
-                    { price: e(3, 9), bonus: 2 },
-                    { price: e(9, 9), bonus: 2 },
-                    { price: e(4, 11), bonus: 4 },
-                    { price: e(5, 13), bonus: 3 },
-                    { price: e(6, 14), bonus: 5 },
+                    { price: scale(5, 5), bonus: 1 },
+                    { price: scale(1, 8), bonus: 1 },
+                    { price: scale(1, 9), bonus: 1 },
+                    { price: scale(3, 9), bonus: 2 },
+                    { price: scale(9, 9), bonus: 2 },
+                    { price: scale(4, 11), bonus: 4 },
+                    { price: scale(5, 13), bonus: 3 },
+                    { price: scale(6, 14), bonus: 5 },
                 ],
             },
             {
@@ -795,10 +793,11 @@ define("config/main/upgrades", [], function () {
                 componentId: "analystCenter",
                 refund: 0.8,
                 levels: [
-                    { price: e(2, 11), bonus: 1 },
-                    { price: e(400, 13), bonus: 2 },
+                    { price: scale(2, 11), bonus: 1 },
+                    { price: scale(400, 13), bonus: 2 },
                 ],
             },
         ],
     };
-});
+
+    export default upgrades;

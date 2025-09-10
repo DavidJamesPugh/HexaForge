@@ -1,125 +1,98 @@
 /**
- * ImageMap module - handles loading and managing game images
- * Extracted from original_app.js
+ * ImageMap class - handles loading and managing game images
  */
-define("base/ImageMap", [], function() {
-    
+export default class ImageMap {
     /**
-     * ImageMap class for loading and managing images
      * @param {string} path - Base path for images
-     * @constructor
      */
-    var ImageMap = function(path) {
-        this.path = path;
-        this.noOfImages = 0;
-        this.noOfImagesLoaded = 0;
-        this.imagesData = {};
-        this.images = {};
-    };
-
+    constructor(path) {
+      this.path = path;
+      this.imagesData = {};   // imageName -> URL
+      this.images = {};       // imageName -> HTMLImageElement
+      this.noOfImagesLoaded = 0;
+    }
+  
     /**
      * Add images to be loaded
-     * @param {Object} imageConfig - Object with image names as keys and paths as values
+     * @param {Object} imageConfig - { imageName: relativePath }
      * @returns {ImageMap} This instance for chaining
      */
-    ImageMap.prototype.addImages = function(imageConfig) {
-        for (var imageName in imageConfig) {
-            if (!this.imagesData[imageName]) {
-                this.noOfImages++;
-                this.imagesData[imageName] = this.path + imageConfig[imageName];
-            }
+    addImages(imageConfig) {
+      for (const [name, relativePath] of Object.entries(imageConfig)) {
+        if (!this.imagesData[name]) {
+          this.imagesData[name] = this.path + relativePath;
         }
-        return this;
-    };
-
+      }
+      return this;
+    }
+  
     /**
      * Load all registered images
-     * @param {Function} callback - Callback function to call when all images are loaded
+     * @returns {Promise<void>} Resolves when all images are loaded (or failed)
      */
-    ImageMap.prototype.loadAll = function(callback) {
-       // console.log("ImageMap: Start loading " + this.noOfImages + " images");
-        
-        var self = this;
-        
-        for (var imageName in this.imagesData) {
-            var img = new Image();
-            
-            img.onload = function() {
-                self.noOfImagesLoaded++;
-                if (self.noOfImagesLoaded === self.noOfImages) {
-                    //console.log("ImageMap: Loaded " + self.noOfImagesLoaded + " images");
-                    if (callback) {
-                        callback();
-                    }
-                }
-            };
-            
-            img.onerror = function() {
-                console.warn("ImageMap: Failed to load image:", this.src);
-                self.noOfImagesLoaded++;
-                if (self.noOfImagesLoaded === self.noOfImages) {
-                    //console.log("ImageMap: Finished loading process (" + self.noOfImagesLoaded + " total, some may have failed)");
-                    if (callback) {
-                        callback();
-                    }
-                }
-            };
-            
-            // Add cache busting parameter to prevent caching issues
-            img.src = this.imagesData[imageName] + "?x=" + Math.random();
-            this.images[imageName] = img;
-        }
-        
-        // Handle case where no images need to be loaded
-        if (this.noOfImages === 0) {
-           // console.log("ImageMap: No images to load");
-            if (callback) {
-                setTimeout(callback, 0);
-            }
-        }
-    };
-
+    async loadAllAsync() {
+      const imageEntries = Object.entries(this.imagesData);
+  
+      if (imageEntries.length === 0) return;
+  
+      this.noOfImagesLoaded = 0;
+  
+      await Promise.all(imageEntries.map(([name, src]) => new Promise((resolve) => {
+        const img = new Image();
+  
+        img.onload = () => {
+          this.noOfImagesLoaded++;
+          resolve();
+        };
+  
+        img.onerror = () => {
+          console.warn(`ImageMap: Failed to load image: ${src}`);
+          this.noOfImagesLoaded++;
+          resolve();
+        };
+  
+        // Cache-busting
+        img.src = `${src}?x=${Math.random()}`;
+        this.images[name] = img;
+      })));
+    }
+  
     /**
      * Get a loaded image by name
-     * @param {string} imageName - Name of the image to retrieve
-     * @returns {Image|null} The loaded image element or null if not found
+     * @param {string} name
+     * @returns {HTMLImageElement|null}
      */
-    ImageMap.prototype.getImage = function(imageName) {
-        return this.images[imageName] || null;
-    };
-
+    getImage(name) {
+      return this.images[name] || null;
+    }
+  
     /**
-     * Get the number of images registered for loading
-     * @returns {number} Total number of images
+     * Total number of images registered
      */
-    ImageMap.prototype.getTotalImageCount = function() {
-        return this.noOfImages;
-    };
-
+    get totalImages() {
+      return Object.keys(this.imagesData).length;
+    }
+  
     /**
-     * Get the number of images successfully loaded
-     * @returns {number} Number of loaded images
+     * Number of images loaded successfully (or failed)
      */
-    ImageMap.prototype.getLoadedImageCount = function() {
-        return this.noOfImagesLoaded;
-    };
-
+    get loadedImages() {
+      return this.noOfImagesLoaded;
+    }
+  
     /**
-     * Check if all images have been loaded
-     * @returns {boolean} True if all images are loaded
+     * Check if all images have finished loading
      */
-    ImageMap.prototype.isAllLoaded = function() {
-        return this.noOfImagesLoaded === this.noOfImages;
-    };
-
+    get isAllLoaded() {
+      return this.noOfImagesLoaded === this.totalImages;
+    }
+  
     /**
-     * Get loading progress as a percentage
-     * @returns {number} Loading progress (0-100)
+     * Loading progress percentage (0-100)
      */
-    ImageMap.prototype.getLoadingProgress = function() {
-        if (this.noOfImages === 0) return 100;
-        return Math.round((this.noOfImagesLoaded / this.noOfImages) * 100);
-    };
-
-    return ImageMap;
-});
+    get loadingProgress() {
+      if (this.totalImages === 0) return 100;
+      return Math.round((this.noOfImagesLoaded / this.totalImages) * 100);
+    }
+  }
+  

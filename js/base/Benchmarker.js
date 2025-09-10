@@ -1,50 +1,51 @@
-/**
- * Benchmarker module - tracks performance metrics
- * Placeholder implementation
- */
-define("base/Benchmarker", [], function() {
-    
-    /**
-     * Benchmarker class
-     * @constructor
-     * @param {string} gameId - Game identifier
-     */
-    var Benchmarker = function(gameId) {
-        this.gameId = gameId;
-        this.startTime = null;
-    };
-    
-    /**
-     * Initialize the benchmarker
-     */
-    Benchmarker.prototype.init = function() {
-        // Placeholder initialization
-    };
-    
-    /**
-     * Destroy the benchmarker
-     */
-    Benchmarker.prototype.destroy = function() {
-        // Placeholder cleanup
-    };
-    
-    /**
-     * Start benchmarking
-     */
-    Benchmarker.prototype.start = function() {
-        this.startTime = Date.now();
-    };
-    
-    /**
-     * Stop benchmarking
-     * @param {number} runs - Number of runs completed
-     */
-    Benchmarker.prototype.stop = function(runs) {
-        if (this.startTime) {
-            var duration = Date.now() - this.startTime;
-            //console.log("Benchmarker: Completed", runs, "runs in", duration, "ms");
-        }
-    };
-    
-    return Benchmarker;
-});
+// Benchmarker.js
+export default class Benchmarker {
+    name;
+    timeSpent = 0;
+    count = 0;
+    weightSum = 0;
+    lastStartTime = null;
+    firstStartTime = null;
+    interval = null;
+    intervalValue = 2000; // 2 seconds
+
+    constructor(name) {
+        this.name = name;
+    }
+
+    init() {
+        this.firstStartTime = Date.now();
+        this.interval = setInterval(() => {
+            const now = Date.now();
+            const elapsed = now - this.firstStartTime;
+            const avgRunTime = this.weightSum ? Math.round((this.timeSpent / this.weightSum) * 10) / 10 : 0;
+            const cpuUsage = Math.round((100 * this.timeSpent / elapsed) * 100) / 100;
+
+            logger.info(
+                `Bench:${this.name}`,
+                `AVG: ${this.timeSpent}ms / ${elapsed}ms (Runs: ${this.weightSum}, Avg run time: ${avgRunTime}ms) CPU time spent: ${cpuUsage}%`
+            );
+
+            // reset counters
+            this.timeSpent = 0;
+            this.count = 0;
+            this.weightSum = 0;
+            this.firstStartTime = Date.now();
+        }, this.intervalValue);
+    }
+
+    destroy() {
+        if (this.interval) clearInterval(this.interval);
+    }
+
+    start() {
+        this.lastStartTime = Date.now();
+    }
+
+    stop(weight = 1) {
+        if (!this.lastStartTime) return;
+        this.timeSpent += Date.now() - this.lastStartTime;
+        this.count++;
+        this.weightSum += weight;
+    }
+}

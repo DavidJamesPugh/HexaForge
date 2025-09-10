@@ -1,238 +1,118 @@
-/**
- * Buyer strategy class - handles resource buying logic for components
- * Extracted from original_app.js
- */
-define("game/strategy/Buyer", [
-    // TODO: These dependencies will need to be implemented as we extract more modules
-    // "game/strategy/helper/ResourceOutput",
-    // "game/strategy/helper/DelayedAction"
-], function() {
-    
-    /**
-     * Buyer strategy constructor
-     * @param {Object} component - Component instance
-     * @param {Object} meta - Strategy metadata
-     */
-    var Buyer = function(component, meta) {
-        this.component = component;
-        this.game = this.component.getFactory().getGame();
-        this.meta = meta;
-        
-        // TODO: Initialize managers when their modules are extracted
-        // this.outResourcesManager = new ResourceOutput(component, meta.purchaseResources, meta.outputResourcesOrder);
-        // this.producer = new DelayedAction(this.meta.interval);
-        
-        // TODO: Set up producer callbacks when DelayedAction is available
-        // this.producer.canStart = this.canBuy.bind(this);
-        // this.producer.start = this.preparePurchase.bind(this);
-        // this.producer.finished = this.finishPurchase.bind(this);
-    };
+import ResourceOutput from "./helper/ResourceOutput.js";
+import DelayedAction from "./helper/DelayedAction.js";
 
-    /**
-     * Get meta buy price for a resource
-     * @param {Object} meta - Component metadata
-     * @param {string} resourceId - Resource identifier
-     * @param {Object} factory - Factory instance
-     * @returns {number} Buy price for the resource
-     */
-    Buyer.getMetaBuyPrice = function(meta, resourceId, factory) {
-        var basePrice = meta.strategy.purchaseResources[resourceId].price;
-        var profitMultiplier = factory.getGame().getProfitMultiplier();
-        return basePrice * profitMultiplier;
-    };
+export default class Buyer {
+  constructor(component, meta) {
+    this.component = component;
+    this.game = this.component.getFactory().getGame();
+    this.meta = meta;
 
-    /**
-     * Get buy price for a specific resource
-     * @param {string} resourceId - Resource identifier
-     * @returns {number} Buy price for the resource
-     */
-    Buyer.prototype.getBuyPrice = function(resourceId) {
-        return Buyer.getMetaBuyPrice(this.component.getMeta(), resourceId, this.component.getFactory());
-    };
+    this.outResourcesManager = new ResourceOutput(component, meta.purchaseResources, meta.outputResourcesOrder);
 
-    /**
-     * Get meta buy amount for a resource
-     * @param {Object} meta - Component metadata
-     * @param {string} resourceId - Resource identifier
-     * @param {Object} factory - Factory instance
-     * @returns {number} Buy amount for the resource
-     */
-    Buyer.getMetaBuyAmount = function(meta, resourceId, factory) {
-        var baseAmount = meta.strategy.purchaseResources[resourceId].amount;
-        // TODO: Get from upgrades manager when available
-        var buyAmountBonus = 1; // factory.getUpgradesManager().getComponentBonuses(meta.id).buyAmountBonus;
-        return baseAmount * buyAmountBonus;
-    };
+    this.producer = new DelayedAction(meta.interval);
+    this.producer.canStart = this.canBuy.bind(this);
+    this.producer.start = this.preparePurchase.bind(this);
+    this.producer.finished = this.finishPurchase.bind(this);
+  }
 
-    /**
-     * Get buy amount for a specific resource
-     * @param {string} resourceId - Resource identifier
-     * @returns {number} Buy amount for the resource
-     */
-    Buyer.prototype.getBuyAmount = function(resourceId) {
-        return Buyer.getMetaBuyAmount(this.component.getMeta(), resourceId, this.component.getFactory());
-    };
+  // Static helpers for meta calculations
+  static getMetaBuyPrice(meta, resourceId, factory) {
+    return meta.strategy.purchaseResources[resourceId].price * factory.getGame().getProfitMultiplier();
+  }
 
-    /**
-     * Get meta description data for buyer strategy
-     * @param {Object} meta - Component metadata
-     * @param {Object} factory - Factory instance
-     * @param {Object} strategy - Strategy instance
-     * @returns {Object} Description data object
-     */
-    Buyer.getMetaDescriptionData = function(meta, factory, strategy) {
-        var strategyMeta = meta.strategy;
-        var purchaseResources = [];
-        var totalPrice = 0;
-        var resourcesById = factory.getGame().getMeta().resourcesById || {};
-        var maxAmount = 0;
-        
-        for (var resourceId in strategyMeta.purchaseResources) {
-            var amount = Buyer.getMetaBuyAmount(meta, resourceId, factory);
-            var price = Buyer.getMetaBuyPrice(meta, resourceId, factory);
-            totalPrice += amount * price;
-            
-            var resourceName = resourcesById[resourceId] ? resourcesById[resourceId].name : resourceId;
-            purchaseResources.push("<span class='" + resourceId + "'><b>" + amount + "</b> " + resourceName + "</span>");
-            maxAmount = Math.max(maxAmount, amount);
-        }
-        
-        // TODO: Calculate output amount when ResourceOutput is available
-        var outputAmount = 1; // strategy.getMetaOutputAmount(meta, factory);
-        var noOfOutputs = Math.ceil(maxAmount / strategyMeta.interval / outputAmount);
-        
-        return {
-            interval: strategyMeta.interval,
-            purchasePrice: totalPrice.toFixed(2),
-            buyStr: purchaseResources.join(", "),
-            noOfOutputs: noOfOutputs
-        };
-    };
+  static getMetaBuyAmount(meta, resourceId, factory) {
+    const bonuses = factory.getUpgradesManager().getComponentBonuses(meta.id);
+    return meta.strategy.purchaseResources[resourceId].amount * bonuses.buyAmountBonus;
+  }
 
-    /**
-     * Get description data for this buyer strategy
-     * @returns {Object} Description data object
-     */
-    Buyer.prototype.getDescriptionData = function() {
-        var data = Buyer.getMetaDescriptionData(this.component.getMeta(), this.component.getFactory(), this);
-        
-        // TODO: Update managers when they are available
-        // this.producer.updateWithDescriptionData(data);
-        // this.outResourcesManager.updateWithDescriptionData(data);
-        
-        return data;
-    };
+  static getMetaDescriptionData(meta, factory, buyerInstance) {
+    const strategy = meta.strategy;
+    const resourcesMeta = factory.getGame().getMeta().resourcesById;
 
-    /**
-     * Clear all contents and reset state
-     */
-    Buyer.prototype.clearContents = function() {
-        // TODO: Reset managers when they are available
-        // this.outResourcesManager.reset();
-        // this.producer.reset();
-    };
+    let buyStrings = [];
+    let totalCost = 0;
+    let maxAmount = 0;
 
-    /**
-     * Calculate output for a game tick
-     * @param {Object} tickData - Tick data object
-     */
-    Buyer.prototype.calculateOutputTick = function(tickData) {
-        // TODO: Calculate when managers are available
-        // this.producer.calculate(tickData);
-        // this.outResourcesManager.distribute();
-    };
+    for (const resId in strategy.purchaseResources) {
+      const amount = Buyer.getMetaBuyAmount(meta, resId, factory);
+      const price = Buyer.getMetaBuyPrice(meta, resId, factory);
+      totalCost += amount * price;
+      buyStrings.push(`<span class='${resId}'><b>${amount}</b> ${resourcesMeta[resId].name.lcFirst()}</span>`);
+      maxAmount = Math.max(maxAmount, amount);
+    }
 
-    /**
-     * Calculate the total purchase price for all resources
-     * @returns {number} Total purchase price
-     */
-    Buyer.prototype.calculatePurchasePrice = function() {
-        var totalPrice = 0;
-        
-        for (var resourceId in this.meta.purchaseResources) {
-            var amount = this.getBuyAmount(resourceId);
-            var price = this.getBuyPrice(resourceId);
-            totalPrice += amount * price;
-        }
-        
-        return totalPrice;
+    return {
+      interval: strategy.interval,
+      purchasePrice: nf(totalCost),
+      buyStr: arrayToHumanStr(buyStrings),
+      noOfOutputs: Math.ceil(maxAmount / strategy.interval / ResourceOutput.getMetaOutputAmount(meta, factory)),
     };
+  }
 
-    /**
-     * Check if the component can buy resources
-     * @returns {boolean} True if buying is possible
-     */
-    Buyer.prototype.canBuy = function() {
-        // TODO: Implement when ResourceOutput is available
-        // for (var resourceId in this.meta.purchaseResources) {
-        //     var currentAmount = this.outResourcesManager.getResource(resourceId);
-        //     var buyAmount = this.getBuyAmount(resourceId);
-        //     var maxAmount = this.outResourcesManager.getMax(resourceId);
-        //     
-        //     if (currentAmount + buyAmount > maxAmount) {
-        //         return false;
-        //     }
-        // }
-        
-        return true;
-    };
+  // Instance helpers
+  getBuyPrice(resId) {
+    return Buyer.getMetaBuyPrice(this.component.getMeta(), resId, this.component.getFactory());
+  }
 
-    /**
-     * Prepare for a purchase (calculate costs)
-     * @param {Object} tickData - Tick data object
-     */
-    Buyer.prototype.preparePurchase = function(tickData) {
-        tickData.resourceCosts += this.calculatePurchasePrice();
-    };
+  getBuyAmount(resId) {
+    return Buyer.getMetaBuyAmount(this.component.getMeta(), resId, this.component.getFactory());
+  }
 
-    /**
-     * Finish a purchase (add resources)
-     * @param {Object} tickData - Tick data object
-     */
-    Buyer.prototype.finishPurchase = function(tickData) {
-        // TODO: Add resources when ResourceOutput is available
-        // for (var resourceId in this.meta.purchaseResources) {
-        //     var amount = this.getBuyAmount(resourceId);
-        //     this.outResourcesManager.addResource(resourceId, amount);
-        // }
-    };
+  getDescriptionData() {
+    const desc = Buyer.getMetaDescriptionData(this.component.getMeta(), this.component.getFactory(), this);
+    this.producer.updateWithDescriptionData(desc);
+    this.outResourcesManager.updateWithDescriptionData(desc);
+    return desc;
+  }
 
-    /**
-     * Get string representation of the buyer strategy
-     * @returns {string} String representation
-     */
-    Buyer.prototype.toString = function() {
-        var result = "";
-        
-        // TODO: Add manager strings when they are available
-        // result += this.outResourcesManager.toString() + "<br />";
-        // result += this.producer.toString() + "<br />";
-        
-        return result;
-    };
+  clearContents() {
+    this.outResourcesManager.reset();
+    this.producer.reset();
+  }
 
-    /**
-     * Export buyer strategy data to writer
-     * @param {Object} writer - BinaryArrayWriter instance
-     */
-    Buyer.prototype.exportToWriter = function(writer) {
-        // TODO: Export managers when they are available
-        // this.outResourcesManager.exportToWriter(writer);
-        // this.producer.exportToWriter(writer);
-        console.log("Buyer.exportToWriter - TODO: Implement manager export");
-    };
+  calculateOutputTick(state) {
+    this.producer.calculate(state);
+    this.outResourcesManager.distribute();
+  }
 
-    /**
-     * Import buyer strategy data from reader
-     * @param {Object} reader - BinaryArrayReader instance
-     * @param {number} version - Save file version
-     */
-    Buyer.prototype.importFromReader = function(reader, version) {
-        // TODO: Import managers when they are available
-        // this.outResourcesManager.importFromReader(reader, version);
-        // this.producer.importFromReader(reader, version);
-        console.log("Buyer.importFromReader - TODO: Implement manager import");
-    };
+  calculatePurchasePrice() {
+    let total = 0;
+    for (const resId in this.meta.purchaseResources) {
+      total += this.getBuyAmount(resId) * this.getBuyPrice(resId);
+    }
+    return total;
+  }
 
-    return Buyer;
-});
+  canBuy() {
+    for (const resId in this.meta.purchaseResources) {
+      if (this.outResourcesManager.getResource(resId) + this.getBuyAmount(resId) > this.outResourcesManager.getMax(resId)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  preparePurchase(state) {
+    state.resourceCosts += this.calculatePurchasePrice();
+  }
+
+  finishPurchase(state) {
+    for (const resId in this.meta.purchaseResources) {
+      this.outResourcesManager.addResource(resId, this.getBuyAmount(resId));
+    }
+  }
+
+  toString() {
+    return `${this.outResourcesManager.toString()}<br />${this.producer.toString()}<br />`;
+  }
+
+  exportToWriter(writer) {
+    this.outResourcesManager.exportToWriter(writer);
+    this.producer.exportToWriter(writer);
+  }
+
+  importFromReader(reader) {
+    this.outResourcesManager.importFromReader(reader);
+    this.producer.importFromReader(reader);
+  }
+}

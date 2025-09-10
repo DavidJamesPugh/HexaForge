@@ -1,244 +1,132 @@
-/**
- * MainUi module - handles the main user interface and navigation
- * Extracted from original_app.js
- */
-define("ui/MainUi", [
-    "config/Meta",
-    "config/config",
-    "config/event/GlobalUiEvent",
-    "base/EventManager",
-    "ui/GameUi",
-    "ui/SettingsUi"
-    // Note: These dependencies will need to be implemented as we extract more modules
-    // "game/Game", 
-    // "ui/MissionsUi",
-    // "ui/RunningInBackgroundInfoUi",
-    // "ui/helper/AlertUi",
-    // "ui/GoogleAddsUi",
-    // "ui/IntroUi"
-], function(meta, config, GlobalUiEvent, EventManager, GameUi, SettingsUi) {
-    
-    /**
-     * Main UI controller class
-     * @param {Object} play - The Play controller instance  
-     * @param {Object} imageMap - The ImageMap instance
-     * @constructor
-     */
-    var MainUi = function(play, imageMap) {
-        // Create event manager for global UI events
-        this.globalUiEm = new EventManager(GlobalUiEvent, "MainUi");
-        
+// MainUi.js
+import meta from "../config/Meta.js";
+import gameConfig from "../config/config.js";
+import EventManager from "../base/EventManager.js";
+import GameUi from "./GameUi.js";
+import GlobalUiEvent from "../config/event/GlobalUiEvent.js";
+import globalUiBus from "../base/GlobalUiBus.js";
+//import MissionsUi from "./MissionsUi.js";
+//import RunningInBackgroundInfoUi from "./RunningInBackgroundInfoUi.js";
+//import AlertUi from "./helper/AlertUi.js";
+//import GoogleAddsUi from "./GoogleAddsUi.js";
+//import IntroUi from "./IntroUi.js";
+
+export default class MainUi {
+    constructor(play, imageMap) {
         this.play = play;
         this.imageMap = imageMap;
-        this.container = null;
-        this.currentUi = null;
-        this.runningInBackgroundInfoUi = null;
-        this.focusInterval = null;
-    };
+        this.globalUiEm = globalUiBus; // shared singleton
+    }
 
-    /**
-     * Setup focus checker to detect when window gains/loses focus
-     */
-    MainUi.prototype.setupFocusChecker = function() {
-        var hasFocus = document.hasFocus();
-        this.focusInterval = setInterval(function() {
-            var currentFocus = document.hasFocus();
+    setupFocusChecker() {
+        let hasFocus = document.hasFocus();
+        this.focusInterval = setInterval(() => {
+            const currentFocus = document.hasFocus();
             if (hasFocus !== currentFocus) {
                 hasFocus = currentFocus;
-                if (hasFocus) {
-                    this.globalUiEm.invokeEvent(GlobalUiEvent.FOCUS);
-                } else {
-                    this.globalUiEm.invokeEvent(GlobalUiEvent.BLUR);
-                }
+                hasFocus
+                    ? this.globalUiEm.invokeEvent(GlobalUiEvent.FOCUS)
+                    : this.globalUiEm.invokeEvent(GlobalUiEvent.BLUR);
             }
-        }.bind(this), 200);
-    };
+        }, 200);
+    }
 
-    /**
-     * Display the main UI in the specified container
-     * @param {jQuery} container - The container element to display the UI in
-     */
-    MainUi.prototype.display = function(container) {
-        console.log("MainUi.display called with container:", container);
-        
+    display(container) {
         this.container = container;
-        
-        // TODO: Implement when RunningInBackgroundInfoUi is available
-        // this.runningInBackgroundInfoUi = new RunningInBackgroundInfoUi(this.globalUiEm);
-        // this.runningInBackgroundInfoUi.init();
-        
-        // TODO: Implement when game state is available
-        // if (this.play.getGame().getTicker().getNoOfTicks() < 1000) {
-        //     new IntroUi().display();
-        // }
-        
+
+        // Initialize background info UI
+        this.runningInBackgroundInfoUi = new RunningInBackgroundInfoUi(this.globalUiEm);
+        this.runningInBackgroundInfoUi.init();
+
+        // Intro UI if first time
+        if (this.play.getGame().getTicker().getNoOfTicks() < 1000) {
+            new IntroUi().display();
+        }
+
         this.setupFocusChecker();
-        
-        // TODO: Implement when premium check is available  
-        // if (this.play.getGame().getIsPremium()) {
-        //     console.log("MainUi", "Premium version, skipping loading ads");
-        // } else {
-        //     GoogleAdsUi();
-        // }
-        
-        var self = this;
-        
-        // Setup global event listeners
-        window.addEventListener("keypress", function(event) {
-            self.globalUiEm.invokeEvent(GlobalUiEvent.KEY_PRESS, event);
-        }, false);
-        
-        window.addEventListener("beforeunload", function(event) {
-            // TODO: Implement when SaveManager is available
-            // this.play.getSaveManager().saveAuto();
-            console.log("Window unloading - would save game here");
-        }.bind(this));
-        
-        // Setup UI navigation event listeners
-        this.globalUiEm.addListener("MainUi", GlobalUiEvent.SHOW_MAIN_GAME, function() {
-            this._showUi("mainGame");
-        }.bind(this));
-        
-        this.globalUiEm.addListener("MainUi", GlobalUiEvent.SHOW_MISSIONS, function() {
-            this._showUi("missions");
-        }.bind(this));
-        
-        this.globalUiEm.addListener("MainUi", GlobalUiEvent.SHOW_MISSION, function(missionData) {
-            this._showUi("mission", missionData);
-        }.bind(this));
-        
-        // Settings UI is now handled by GameUi to avoid duplicate modals
-        // this.globalUiEm.addListener("MainUi", GlobalUiEvent.SHOW_SETTINGS, function() {
-        //     this._showSettings();
-        // }.bind(this));
-        
-        // TODO: Implement when Game events are available
-        // this.play.getGame().getEventManager().addListener("MainUi", GameEvent.GAME_TICK, function() {
-        //     if (config.main.warnToStoreUserHashAfterTicks[this.play.getGame().getTicker().getNoOfTicks()]) {
-        //         var alertId = "userHashTmpAlert" + Math.round(Math.random() * 10000000000);
-        //         var alertMessage = 'You seem to be enjoying the game! Here is a good tip that maybe will save the day once!<br />Make a copy of your user hash. User hash is used to find your save game and purchases if you have any. <br />Your user hash: <br /><input type="text" readonly="readonly" id="' +
-        //             alertId +
-        //             '" name="' +
-        //             alertId +
-        //             '" value="' +
-        //             this.play.getUserHash().toString() +
-        //             '" style="border: 1px solid red; background:black; color:red; font-weight:bold; padding: 4px; margin: 3px; width:280px; font-size:0.9em; text-align:center;"/><br /> If you lose this, there is pretty much no way to restore your game. Play safe and keep a backup!<br />You can find your user hash also in the settings. <br /><br />Ignore this reminder if you already did and have fun!<br />';
-        //         new AlertUi("SAVE USER HASH TO A SAFE PLACE!", alertMessage).display();
-        //         $("#" + alertId).click(function() {
-        //             $(this).get(0).setSelectionRange(0, $(this).val().length);
-        //         });
-        //     }
-        // }.bind(this));
-        
-        // Show the main game UI by default
-        this._showUi("mainGame");
-    };
 
-    /**
-     * Show a specific UI component
-     * @param {string} uiType - The type of UI to show ("mainGame", "missions", "mission")
-     * @param {*} data - Optional data to pass to the UI component
-     * @private
-     */
-    MainUi.prototype._showUi = function(uiType, data) {
-        console.log("MainUi._showUi called:", uiType, data);
-        
-        this._destroyCurrentUi();
-        
-        if (uiType === "mainGame") {
-            // Create and display the main game UI
-            this.currentUi = new GameUi(this.globalUiEm, this.play.getGame(), this.play, this.imageMap);
-            this.currentUi.display(this.container);
-            
-        } else if (uiType === "missions") {
-            // TODO: Implement when MissionsUi is available
-            // this.currentUi = new MissionsUi(this.globalUiEm, meta.missions);
-            console.log("Would show missions UI");
-            
-        } else if (uiType === "mission") {
-            // TODO: Implement when GameUi is available for mission mode
-            // this.currentUi = new GameUi(this.globalUiEm, this.play.getMission(data), this.play, this.imageMap);
-            console.log("Would show mission UI:", data);
-        }
-        
-        // TODO: Remove this placeholder when actual UI components are implemented
-        // if (this.currentUi) {
-        //     this.currentUi.display(this.container);
-        // }
-    };
-
-    /**
-     * Show the settings UI
-     * @private
-     */
-    MainUi.prototype._showSettings = function() {
-        console.log("MainUi._showSettings called");
-        
-        // Create and display the settings UI
-        if (this.play && this.play.getSaveManager) {
-            var saveManager = this.play.getSaveManager();
-            if (saveManager) {
-                console.log("SaveManager found, creating SettingsUi");
-                // Create SettingsUi instance
-                var settingsUi = new SettingsUi(
-                    this.globalUiEm, 
-                    this.play, 
-                    this.play.getGame(), 
-                    this.play.getUserHash(), 
-                    saveManager
-                );
-                settingsUi.init();
-                settingsUi.display();
-            } else {
-                console.log("SaveManager not available");
-                
-            }
+        // Google Ads
+        if (this.play.getGame().getIsPremium()) {
+            console.info("MainUi: Premium version, skipping loading ads");
         } else {
-            console.log("Play or getSaveManager not available");
+            GoogleAddsUi();
         }
-    };
 
-    /**
-     * Destroy the current UI component
-     * @private
-     */
-    MainUi.prototype._destroyCurrentUi = function() {
-        if (this.currentUi) {
-            if (this.currentUi.destroy) {
-                this.currentUi.destroy();
+        // Key press listener
+        window.addEventListener("keypress", (e) => {
+            this.globalUiEm.invokeEvent(GlobalUiEvent.KEY_PRESS, e);
+        });
+
+        // Save on unload
+        window.addEventListener("beforeunload", () => {
+            this.play.getSaveManager().saveAuto();
+        });
+
+        // Global UI events
+        this.globalUiEm.addListener("MainUi", GlobalUiEvent.SHOW_MAIN_GAME, () => {
+            this._showUi("mainGame");
+        });
+
+        this.globalUiEm.addListener("MainUi", GlobalUiEvent.SHOW_MISSIONS, () => {
+            this._showUi("missions");
+        });
+
+        this.globalUiEm.addListener("MainUi", GlobalUiEvent.SHOW_MISSION, (mission) => {
+            this._showUi("mission", mission);
+        });
+
+        // Periodic user hash alert
+        this.play.getGame().getEventManager().addListener("MainUi", window.GameEvent.GAME_TICK, () => {
+            const tickCount = this.play.getGame().getTicker().getNoOfTicks();
+            if (gameConfig.main.warnToStoreUserHashAfterTicks[tickCount]) {
+                const inputId = `userHashTmpAlert${Math.round(1e10 * Math.random())}`;
+                const html = `
+                    You seem to be enjoying the game! Here is a good tip that maybe will save the day once!<br/>
+                    Make a copy of your user hash. User hash is used to find your save game and purchases if you have any.<br/>
+                    Your user hash: 
+                    <input type="text" readonly id="${inputId}" value="${this.play.getUserHash()}" 
+                        style="border:1px solid red; background:black; color:red; font-weight:bold; padding:4px; margin:3px; width:280px; font-size:0.9em; text-align:center;"/><br/>
+                    Ignore this reminder if you already did and have fun!<br/>
+                `;
+                new AlertUi("SAVE USER HASH TO A SAFE PLACE!", html).display();
+
+                const inputEl = document.getElementById(inputId);
+                inputEl.addEventListener("click", () => {
+                    inputEl.setSelectionRange(0, inputEl.value.length);
+                });
             }
+        });
+
+        // Show main game UI by default
+        this._showUi("mainGame");
+    }
+
+    _showUi(type, mission) {
+        this._destroyCurrentUi();
+
+        if (type === "mainGame") {
+            this.currentUi = new GameUi(this.globalUiEm, this.play.getGame(), this.play, this.imageMap);
+        } else if (type === "missions") {
+            this.currentUi = new MissionsUi(this.globalUiEm, meta.missions);
+        } else if (type === "mission") {
+            this.currentUi = new GameUi(this.globalUiEm, this.play.getMission(mission), this.play, this.imageMap);
+        }
+
+        this.currentUi.display(this.container);
+    }
+
+    _destroyCurrentUi() {
+        if (this.currentUi) {
+            this.currentUi.destroy();
             this.currentUi = null;
         }
-    };
+    }
 
-    /**
-     * Destroy the MainUi and clean up resources
-     */
-    MainUi.prototype.destroy = function() {
-        console.log("MainUi.destroy called");
-        
-        // Cleanup background info UI
-        if (this.runningInBackgroundInfoUi) {
-            this.runningInBackgroundInfoUi.destroy();
-        }
-        
-        // Cleanup current UI
-        this._destroyCurrentUi();
-        
-        // Cleanup event listeners
+    destroy() {
+        this.runningInBackgroundInfoUi.destroy();
         this.globalUiEm.removeListenerForType("MainUi");
-        
-        // TODO: Implement when Game events are available
-        // this.play.getGame().getEventManager().removeListenerForType("MainUi");
-        
-        // Cleanup focus checker
-        if (this.focusInterval) {
-            clearInterval(this.focusInterval);
-            this.focusInterval = null;
-        }
-        
+        this.play.getGame().getEventManager().removeListenerForType("MainUi");
         this.container = null;
-    };
-
-    return MainUi;
-});
+        clearInterval(this.focusInterval);
+    }
+}

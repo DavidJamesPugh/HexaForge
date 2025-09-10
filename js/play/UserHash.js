@@ -1,54 +1,40 @@
-/**
- * UserHash - Manages user identification and hash generation
- * Based on the original Factory Idle implementation
- */
+import logger from "../base/Logger.js";
 
-define("play/UserHash", [], function() {
-    
-    var UserHash = function(storageKey) {
-        this.storageKey = storageKey || "HexaForgeUserHash";
-        this.hashLength = 40;
-        this.userHash = null;
-    };
-    
-    UserHash.prototype.init = function() {
-        // Load from localStorage first
-        this.userHash = localStorage[this.storageKey];
-        
-        // If not found, generate a new one
+
+// UserHash.js
+export default class UserHash {
+    storageKey;
+    hashLength = 40;
+    userHash = null;
+
+    constructor(storageKey) {
+        this.storageKey = storageKey;
+    }
+
+    init() {
+        this.userHash = localStorage.getItem(this.storageKey);
         if (!this.userHash) {
             this.userHash = this._generateUserHash(this.hashLength);
+            this.updateUserHash(this.userHash);
         }
-        
-        // Save to localStorage
-        this.updateUserHash(this.userHash);
-        
-        console.log("UserHash: User hash loaded " + this.userHash);
+        logger.info("UserHash", `User hash loaded ${this.userHash}`);
         return this;
-    };
-    
-    UserHash.prototype.updateUserHash = function(newHash) {
-        this.userHash = newHash;
-        localStorage[this.storageKey] = newHash;
-        console.log("UserHash: Updated user hash to " + newHash);
-    };
-    
-    UserHash.prototype.getUserHash = function() {
+    }
+
+    updateUserHash(hash) {
+        localStorage.setItem(this.storageKey, hash);
+    }
+
+    getUserHash() {
         return this.userHash;
-    };
-    
-    UserHash.prototype.toString = function() {
+    }
+
+    toString() {
         return this.userHash;
-    };
-    
-    UserHash.prototype._generateUserHash = function(length) {
-        var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        var hash = '';
-        for (var i = 0; i < length; i++) {
-            hash += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        return hash;
-    };
-    
-    return UserHash;
-});
+    }
+
+    _generateUserHash(length) {
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        return Array.from({ length }, () => chars.charAt(Math.floor(Math.random() * chars.length))).join("");
+    }
+}

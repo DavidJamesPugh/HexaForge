@@ -1,105 +1,78 @@
-/**
- * Statistics module - tracks game statistics
- * Based on the original Factory Idle implementation
- */
-define("game/statistics/Statistics", [], function() {
+// Statistics.js
+import StatisticsCollector from "./StatisticsCollector.js";
 
-    /**
-     * Statistics class
-     * @constructor
-     * @param {Object} game - Game instance
-     */
-    var Statistics = function(game) {
+export default class Statistics {
+    game;
+    gameCollector;
+    factoryCollectors = {};
+
+    constructor(game) {
         this.game = game;
-        this.stats = {};
-        this.avgProfit = 0;
-        this.avgResearchPointsProduction = 0;
-    };
 
-    /**
-     * Initialize the statistics
-     */
-    Statistics.prototype.init = function() {
-        // Initialize statistics tracking
-        this.updateAverages();
-    };
+        this.gameCollector = new StatisticsCollector({
+            max_values_length: 80,
+            sample_interval: 10,
+            fields: ["profit", "researchProduction"]
+        });
 
-    /**
-     * Destroy the statistics
-     */
-    Statistics.prototype.destroy = function() {
-        // Cleanup
-    };
+        for (const factory of this.game.getMeta().factories) {
+            this.factoryCollectors[factory.id] = new StatisticsCollector({
+                max_values_length: 80,
+                sample_interval: 10,
+                fields: ["profit", "researchProduction"]
+            });
+        }
+    }
 
-    /**
-     * Reset statistics
-     */
-    Statistics.prototype.reset = function() {
-        this.avgProfit = 0;
-        this.avgResearchPointsProduction = 0;
-        this.stats = {};
-    };
+    init() {
+        this.game.getEventManager().addListener("Statistics", GameEvent.GAME_TICK, (tickData) => {
+            let data = { profit: tickData.profit, researchProduction: tickData.researchProduction };
+            this.gameCollector.handleInput(data);
 
-    /**
-     * Update average profit calculation
-     */
-    Statistics.prototype.updateAverages = function() {
-        // Calculate average profit per tick from all factories
-        var totalProfit = 0;
-        var factoryCount = 0;
-
-        if (this.game && this.game.getFactories) {
-            var factories = this.game.getFactories();
-            for (var i = 0; i < factories.length; i++) {
-                var factory = factories[i];
-                if (factory && factory.getStatistics) {
-                    var factoryStats = factory.getStatistics();
-                    if (factoryStats && typeof factoryStats.getAvgProfit === 'function') {
-                        totalProfit += factoryStats.getAvgProfit();
-                        factoryCount++;
-                    }
+            for (const factory of this.game.getMeta().factories) {
+                const result = tickData.factory_results[factory.id];
+                if (result && !result.isPaused) {
+                    data = { profit: result.profit, researchProduction: result.researchProduction };
+                    this.factoryCollectors[factory.id].handleInput(data);
                 }
             }
+        });
+
+        return this;
+    }
+
+    destroy() {
+        this.game.getEventManager().removeListenerForType("Statistics");
+    }
+
+    reset() {
+        this.gameCollector.reset();
+        for (const collector of Object.values(this.factoryCollectors)) {
+            collector.reset();
         }
+    }
 
-        this.avgProfit = factoryCount > 0 ? totalProfit / factoryCount : 0;
+    getAvgProfit() {
+        return this.gameCollector.getData().variables.profit.sample;
+    }
 
-        // Calculate average research points production
-        var totalResearchPoints = 0;
-        factoryCount = 0;
+    getAvgResearchPointsProduction() {
+        return this.gameCollector.getData().variables.researchProduction.sample;
+    }
 
-        if (this.game && this.game.getFactories) {
-            var factories = this.game.getFactories();
-            for (var i = 0; i < factories.length; i++) {
-                var factory = factories[i];
-                if (factory && factory.getStatistics) {
-                    var factoryStats = factory.getStatistics();
-                    if (factoryStats && typeof factoryStats.getAvgResearchPointsProduction === 'function') {
-                        totalResearchPoints += factoryStats.getAvgResearchPointsProduction();
-                        factoryCount++;
-                    }
-                }
-            }
-        }
+    getFactoryAvgProfit(factoryId) {
+        return this.factoryCollectors[factoryId]?.getData().variables.profit.sample;
+    }
 
-        this.avgResearchPointsProduction = factoryCount > 0 ? totalResearchPoints / factoryCount : 0;
-    };
+    getFactoryAvgResearchPointsProduction(factoryId) {
+        return this.factoryCollectors[factoryId]?.getData().variables.researchProduction.sample;
+    }
 
-    /**
-     * Get average profit per tick
-     * @returns {number} Average profit per tick
-     */
-    Statistics.prototype.getAvgProfit = function() {
-        return this.avgProfit;
-    };
+    exportToWriter() {
+        return new BinaryArrayWriter();
+    }
 
-    /**
-     * Get average research points production per tick
-     * @returns {number} Average research points production per tick
-     */
-    Statistics.prototype.getAvgResearchPointsProduction = function() {
-        return this.avgResearchPointsProduction;
-    };
-
-    return Statistics;
-});
+    importFromReader(reader, version) {
+        // Implement as needed
+    }
+}
