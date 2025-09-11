@@ -1,4 +1,6 @@
 // ResearchManager.js
+import BinaryArrayWriter from "../base/BinaryArrayWriter.js";
+
 export default class ResearchManager {
     game;
     research = {};

@@ -1,148 +1,166 @@
-define("ui/factory/mapLayers/helper/MouseInfoHelper", ["game/action/BuyComponentAction", "ui/helper/TipUi"], function(BuyComponentAction, TipUi) {
-    var MouseInfoHelper = function(factory, imageMap, tileSize) {
-        this.factory = factory;
-        this.game = factory.getGame();
-        this.imageMap = imageMap;
-        this.tileSize = tileSize;
-        this.lastTip = null;
-    };
+// src/ui/factory/mapLayers/helper/MouseInfoHelper.js
+import BuyComponentAction from "../../../../game/action/BuyComponentAction.js";
+import TipUi from "../../../../ui/helper/TipUi.js";
 
-    MouseInfoHelper.prototype.display = function(container) {
-        this.container = container;
-    };
+class MouseInfoHelper {
+  constructor(factory, imageMap, tileSize) {
+    this.factory = factory;
+    this.game = factory.getGame();
+    this.imageMap = imageMap;
+    this.tileSize = tileSize;
+    this.lastTip = null;
+  }
 
-    MouseInfoHelper.prototype.destroy = function() {
-        this.container = null;
-    };
+  display(container) {
+    this.container = container;
+  }
 
-    MouseInfoHelper.prototype.updateMouseInformationModes = function(componentId, mousePosition) {
-        if (!mousePosition || !componentId) {
-            this.turnOffBuildMode();
-            this.turnOffCantBuildMode();
-            this.turnOffNotEnoughMoneyTip();
-            return;
-        }
+  destroy() {
+    this.container = null;
+  }
 
-        var componentMetadata = this.game.getMeta().componentsById[componentId];
-        var canBuildOnTerrain = this.factory.isPossibleToBuildOnTypeWithSize(mousePosition.x, mousePosition.y, componentMetadata.width, componentMetadata.height, componentMetadata);
-        var canBuildInArea = this.factory.getAreasManager().canBuildAt(mousePosition.x, mousePosition.y, componentMetadata.width, componentMetadata.height);
-        var isOutsideMap = !this.factory.isOnMap(mousePosition.x, mousePosition.y, componentMetadata.width, componentMetadata.height);
-        var targetTile = this.factory.getTile(mousePosition.x, mousePosition.y);
-        var buyAction = new BuyComponentAction(targetTile, componentMetadata);
+  updateMouseInformationModes(componentId, pos) {
+    if (!pos || !componentId) {
+      this.turnOffBuildMode();
+      this.turnOffCantBuildMode();
+      this.turnOffNotEnoughMoneyTip();
+      return;
+    }
 
-        if (isOutsideMap) {
-            this.turnOffBuildMode();
-        } else {
-            this.updateBuildMode(componentId, mousePosition);
-        }
+    const compMeta = this.game.getMeta().componentsById[componentId];
+    const canBuildType = this.factory.isPossibleToBuildOnTypeWithSize(
+      pos.x,
+      pos.y,
+      compMeta.width,
+      compMeta.height,
+      compMeta
+    );
+    const canBuildArea = this.factory
+      .getAreasManager()
+      .canBuildAt(pos.x, pos.y, compMeta.width, compMeta.height);
+    const isOutOfMap = !this.factory.isOnMap(
+      pos.x,
+      pos.y,
+      compMeta.width,
+      compMeta.height
+    );
 
-        if ((canBuildOnTerrain && canBuildInArea) || isOutsideMap) {
-            if (buyAction.canBuy()) {
-                this.turnOffCantBuildMode();
-                this.turnOffNotEnoughMoneyTip();
-            } else {
-                this.updateCantBuildMode(componentId, mousePosition);
-                this.updateNotEnoughMoneyTip();
-            }
-        } else {
-            this.updateCantBuildMode(componentId, mousePosition);
-        }
-    };
+    const tile = this.factory.getTile(pos.x, pos.y);
+    const buyAction = new BuyComponentAction(tile, compMeta);
 
-    MouseInfoHelper.prototype.updateComponentSelected = function(component) {
-        if (!component) {
-            this.turnOffComponentSelected();
-            return;
-        }
+    if (isOutOfMap) {
+      this.turnOffBuildMode();
+    } else {
+      this.updateBuildMode(componentId, pos);
+    }
 
-        var componentMetadata = component.getMeta();
+    if ((canBuildType && canBuildArea) || isOutOfMap) {
+      if (buyAction.canBuy()) {
+        this.turnOffCantBuildMode();
+        this.turnOffNotEnoughMoneyTip();
+      } else {
+        this.updateCantBuildMode(componentId, pos);
+        this.updateNotEnoughMoneyTip();
+      }
+    } else {
+      this.updateCantBuildMode(componentId, pos);
+    }
+  }
 
-        if (!this.componentSelectedElement) {
-            this.componentSelectedElement = $(this.imageMap.getImage("blueSelection"));
-            this.container.append(this.componentSelectedElement);
-        }
+  updateComponentSelected(component) {
+    if (!component) {
+      this.turnOffComponentSelected();
+      return;
+    }
 
-        this.componentSelectedElement
-            .css("position", "absolute")
-            .css("opacity", 0.5)
-            .css("pointer-events", "none")
-            .css("left", component.getX() * this.tileSize)
-            .css("top", component.getY() * this.tileSize)
-            .css("width", this.tileSize * componentMetadata.width)
-            .css("height", this.tileSize * componentMetadata.height);
-    };
+    const meta = component.getMeta();
+    if (!this.componentSelectedElement) {
+      this.componentSelectedElement = $(this.imageMap.getImage("blueSelection"));
+      this.container.append(this.componentSelectedElement);
+    }
 
-    MouseInfoHelper.prototype.turnOffComponentSelected = function() {
-        if (this.componentSelectedElement) {
-            this.componentSelectedElement.remove();
-            this.componentSelectedElement = null;
-        }
-    };
+    this.componentSelectedElement
+      .css("position", "absolute")
+      .css("opacity", 0.5)
+      .css("pointer-events", "none")
+      .css("left", component.getX() * this.tileSize)
+      .css("top", component.getY() * this.tileSize)
+      .css("width", this.tileSize * meta.width)
+      .css("height", this.tileSize * meta.height);
+  }
 
-    MouseInfoHelper.prototype.updateBuildMode = function(componentId, mousePosition) {
-        var componentMetadata = this.game.getMeta().componentsById[componentId];
+  turnOffComponentSelected() {
+    if (this.componentSelectedElement) {
+      this.componentSelectedElement.remove();
+      this.componentSelectedElement = null;
+    }
+  }
 
-        if (!this.mouseSelectionElement) {
-            this.mouseSelectionElement = $(this.imageMap.getImage("yellowSelection"));
-            this.container.append(this.mouseSelectionElement);
-        }
+  updateBuildMode(componentId, pos) {
+    const meta = this.game.getMeta().componentsById[componentId];
+    if (!this.mouseSelectionElement) {
+      this.mouseSelectionElement = $(this.imageMap.getImage("yellowSelection"));
+      this.container.append(this.mouseSelectionElement);
+    }
 
-        this.mouseSelectionElement
-            .css("position", "absolute")
-            .css("opacity", 0.5)
-            .css("pointer-events", "none")
-            .css("left", mousePosition.x * this.tileSize)
-            .css("top", mousePosition.y * this.tileSize)
-            .css("width", this.tileSize * componentMetadata.width)
-            .css("height", this.tileSize * componentMetadata.height);
-    };
+    this.mouseSelectionElement
+      .css("position", "absolute")
+      .css("opacity", 0.5)
+      .css("pointer-events", "none")
+      .css("left", pos.x * this.tileSize)
+      .css("top", pos.y * this.tileSize)
+      .css("width", this.tileSize * meta.width)
+      .css("height", this.tileSize * meta.height);
+  }
 
-    MouseInfoHelper.prototype.turnOffBuildMode = function() {
-        if (this.mouseSelectionElement) {
-            this.mouseSelectionElement.remove();
-            this.mouseSelectionElement = null;
-        }
-    };
+  turnOffBuildMode() {
+    if (this.mouseSelectionElement) {
+      this.mouseSelectionElement.remove();
+      this.mouseSelectionElement = null;
+    }
+  }
 
-    MouseInfoHelper.prototype.updateCantBuildMode = function(componentId, mousePosition) {
-        var componentMetadata = this.game.getMeta().componentsById[componentId];
+  updateCantBuildMode(componentId, pos) {
+    const meta = this.game.getMeta().componentsById[componentId];
+    if (!this.cantPlaceElement) {
+      this.cantPlaceElement = $(this.imageMap.getImage("cantPlace"));
+      this.container.append(this.cantPlaceElement);
+    }
 
-        if (!this.cantPlaceElement) {
-            this.cantPlaceElement = $(this.imageMap.getImage("cantPlace"));
-            this.container.append(this.cantPlaceElement);
-        }
+    this.cantPlaceElement
+      .css("position", "absolute")
+      .css("opacity", 0.5)
+      .css("pointer-events", "none")
+      .css("left", pos.x * this.tileSize)
+      .css("top", pos.y * this.tileSize)
+      .css("width", this.tileSize * meta.width)
+      .css("height", this.tileSize * meta.height);
+  }
 
-        this.cantPlaceElement
-            .css("position", "absolute")
-            .css("opacity", 0.5)
-            .css("pointer-events", "none")
-            .css("left", mousePosition.x * this.tileSize)
-            .css("top", mousePosition.y * this.tileSize)
-            .css("width", this.tileSize * componentMetadata.width)
-            .css("height", this.tileSize * componentMetadata.height);
-    };
+  turnOffCantBuildMode() {
+    if (this.cantPlaceElement) {
+      this.cantPlaceElement.remove();
+      this.cantPlaceElement = null;
+    }
+  }
 
-    MouseInfoHelper.prototype.turnOffCantBuildMode = function() {
-        if (this.cantPlaceElement) {
-            this.cantPlaceElement.remove();
-            this.cantPlaceElement = null;
-        }
-    };
+  updateNotEnoughMoneyTip() {
+    if (!this.lastTip) {
+      this.lastTip = new TipUi(
+        this.container,
+        `<span class="red">You don't have enough money!</span>`
+      ).init();
+      $("body").css("cursor", "no-drop");
+    }
+  }
 
-    MouseInfoHelper.prototype.updateNotEnoughMoneyTip = function() {
-        if (!this.lastTip) {
-            this.lastTip = new TipUi(this.container, '<span class="red">You don\'t have enough money!</span>').init();
-            $("body").css("cursor", "no-drop");
-        }
-    };
+  turnOffNotEnoughMoneyTip() {
+    if (this.lastTip) {
+      this.lastTip.destroy();
+      this.lastTip = null;
+      $("body").css("cursor", "");
+    }
+  }
+}
 
-    MouseInfoHelper.prototype.turnOffNotEnoughMoneyTip = function() {
-        if (this.lastTip) {
-            this.lastTip.destroy();
-            this.lastTip = null;
-            $("body").css("cursor", "");
-        }
-    };
-
-    return MouseInfoHelper;
-});
+export default MouseInfoHelper;

@@ -34,10 +34,10 @@ export default class GameUi {
         this.container = container;
         this.setupEvents();
 
-        this.helpUi = new HelpUi(this.gameUiEm, this.game).init();
-        this.purchasesUi = new PurchasesUi(this.gameUiEm, this.play).init();
-        this.settingsUi = new SettingsUi(this.gameUiEm, this.play, this.game, this.play.getUserHash(), this.play.getSaveManager()).init();
-        this.timeTravelUi = new TimeTravelUi(this.gameUiEm, this.play).init();
+        this.helpUi = new HelpUi().init();
+        this.purchasesUi = new PurchasesUi(this.play).init();
+        this.settingsUi = new SettingsUi(this.play, this.play.getUserHash(), this.play.getSaveManager()).init();
+        this.timeTravelUi = new TimeTravelUi(this.play).init();
 
         this._showUi("factories");
 
@@ -78,22 +78,22 @@ export default class GameUi {
 
         switch (type) {
             case "factory":
-                this.currentUi = new FactoryUi(this.globalUiEm, this.gameUiEm, this.game.getFactory(factoryId), this.play, this.imageMap);
+                this.currentUi = new FactoryUi(this.game.getFactory(factoryId), this.play);
                 break;
             case "factories":
-                this.currentUi = new FactoriesUi(this.globalUiEm, this.gameUiEm, this.game);
+                this.currentUi = new FactoriesUi(this.game);
                 break;
             case "research":
-                this.currentUi = new ResearchUi(this.gameUiEm, this.game);
+                this.currentUi = new ResearchUi(this.game);
                 break;
             case "upgrades":
-                this.currentUi = new UpgradesUi(this.gameUiEm, this.game.getFactory(factoryId));
+                this.currentUi = new UpgradesUi(this.game.getFactory(factoryId));
                 break;
             case "achievements":
-                this.currentUi = new AchievementsUi(this.gameUiEm, this.game);
+                this.currentUi = new AchievementsUi(this.game);
                 break;
             case "statistics":
-                this.currentUi = new StatisticsUi(this.gameUiEm, this.game.getFactory(factoryId), this.imageMap);
+                this.currentUi = new StatisticsUi(this.game.getFactory(factoryId), this.imageMap);
                 break;
         }
 

@@ -8,6 +8,7 @@ import Statistics from "./statistics/Statistics.js";
 import Ticker from "./Ticker.js";
 import GameEvent from "../config/event/GameEvent.js";
 import gameContext from "../base/GameContext.js";
+import BinaryArrayWriter from "../base/BinaryArrayWriter.js";
 
 export default class Game {
   constructor(meta, confirmedTimestamp) {

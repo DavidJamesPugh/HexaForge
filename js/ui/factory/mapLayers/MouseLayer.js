@@ -1,167 +1,308 @@
-define("ui/factory/mapLayers/MouseLayer", [
-    "game/action/BuyComponentAction",
-    "game/action/SellComponentAction",
-    "game/action/UpdateComponentInputOutputAction",
-    "game/action/UpdateTileAction",
-    "ui/factory/mapLayers/helper/MouseInfoHelper",
-    "config/event/FactoryEvent"
-], function (e, t, n, i, r, FactoryEvent) {
-    var o = "LayerMouse",
-        s = function (e, t, n) {
-            (this.imageMap = e),
-                (this.factory = t),
-                (this.game = t.getGame()),
-                (this.tileSize = n.tileSize),
-                (this.tilesX = t.getMeta().tilesX),
-                (this.tilesY = t.getMeta().tilesY),
-                (this.selectedComponentMetaId = null),
-                (this.selectedMapToolId = null),
-                (this.clickedComponent = null),
-                (this.mouseInfoHelper = new r(this.factory, e, n.tileSize));
-        };
-    return (
-        (s.prototype.display = function (e) {
-            (this.selectedComponentMetaId = null),
-                (this.container = e),
-                (this.element = $("<div />")
-                    .css("position", "absolute")
-                    .css("width", this.tilesX * this.tileSize)
-                    .css("height", this.tilesY * this.tileSize)),
-                this.container.append(this.element),
-                this._setupNativeMouseEvents(),
-                this._setupMouseListeners(),
-                this.mouseInfoHelper.display(e);
-        }),
-        (s.prototype._setupMouseListeners = function () {
-            var e = null,
-                t = null,
-                n = null;
-            this.factory.getEventManager().addListener(
-                o,
-                FactoryEvent.FACTORY_MOUSE_MOVE,
-                function (n) {
-                    if (e && e.altKeyDown) this.updateTileMeta(e), this.updateTileMeta(n);
-                    else if (this.selectedComponentMetaId) {
-                        this.mouseInfoHelper.updateMouseInformationModes(this.selectedComponentMetaId, n);
-                        var i = this.game.getMeta().componentsById[this.selectedComponentMetaId];
-                        e &&
-                            (n.leftMouseDown && !e.shiftKeyDown && 1 == i.buildByDragging
-                                ? (this.buyComponent(e), this.buyComponent(n), this.connectComponents(t, n))
-                                : ((n.leftMouseDown && e.shiftKeyDown) || n.rightMouseDown) && (this.sellComponent(e), this.sellComponent(n)));
-                    } else e && ((n.leftMouseDown && e.shiftKeyDown) || n.rightMouseDown) && (this.sellComponent(e), this.sellComponent(n));
-                    t = n;
-                }.bind(this)
-            ),
-                this.factory.getEventManager().addListener(
-                    o,
-                    FactoryEvent.FACTORY_MOUSE_OUT,
-                    function () {
-                        this.mouseInfoHelper.turnOffBuildMode(), this.mouseInfoHelper.turnOffCantBuildMode(), (e = null), (t = null);
-                    }.bind(this)
-                ),
-                this.factory.getEventManager().addListener(o, FactoryEvent.FACTORY_MOUSE_DOWN, function (t) {
-                    e = t;
-                }),
-                this.factory.getEventManager().addListener(
-                    o,
-                    FactoryEvent.FACTORY_MOUSE_UP,
-                    function (t) {
-                        if (e && e.x == t.x && e.y == t.y) {
-                            var i = this.factory.getTile(t.x, t.y).getComponent();
-                            e.altKeyDown
-                                ? this.updateTileMeta(t)
-                                : this.selectedComponentMetaId
-                                ? e.leftMouseDown && !e.shiftKeyDown
-                                    ? this.buyComponent(e)
-                                    : ((e.leftMouseDown && e.shiftKeyDown) || e.rightMouseDown) && this.sellComponent(e)
-                                : !this.selectedComponentMetaId && ((e.leftMouseDown && e.shiftKeyDown) || e.rightMouseDown)
-                                ? this.sellComponent(e)
-                                : i && (n == i && (i = null), this.factory.getEventManager().invokeEvent(FactoryEvent.COMPONENT_SELECTED, i), (n = i));
-                        }
-                        e = null;
-                    }.bind(this)
-                ),
-                this.factory.getEventManager().addListener(
-                    o,
-                    FactoryEvent.COMPONENT_META_SELECTED,
-                    function (e) {
-                        this.factory.getEventManager().invokeEvent(FactoryEvent.COMPONENT_SELECTED, null), (this.selectedComponentMetaId = e), this.mouseInfoHelper.updateMouseInformationModes(e, t), (n = null);
-                    }.bind(this)
-                ),
-                this.factory.getEventManager().addListener(
-                    o,
-                    FactoryEvent.MAP_TOOL_SELECTED,
-                    function (e) {
-                        this.factory.getEventManager().invokeEvent(FactoryEvent.COMPONENT_SELECTED, null), (this.selectedMapToolId = e), (n = null);
-                    }.bind(this)
-                ),
-                this.factory.getEventManager().addListener(
-                    o,
-                    FactoryEvent.COMPONENT_SELECTED,
-                    function (e) {
-                        this.mouseInfoHelper.updateComponentSelected(e);
-                    }.bind(this)
-                );
-        }),
-        (s.prototype.updateTileMeta = function (e) {
-            var t = new i(this.factory.getTile(e.x, e.y), this.selectedMapToolId);
-            t.canUpdate() && t.update();
-        }),
-        (s.prototype.buyComponent = function (t) {
-            var n = new e(this.factory.getTile(t.x, t.y), this.game.getMeta().componentsById[this.selectedComponentMetaId]);
-            n.canBuy() && n.buy();
-        }),
-        (s.prototype.sellComponent = function (e) {
-            var n = this.game.getMeta().componentsById[this.selectedComponentMetaId],
-                i = new t(this.factory.getTile(e.x, e.y), n ? n.width : 1, n ? n.height : 1);
-            i.canSell() && i.sell();
-        }),
-        (s.prototype.connectComponents = function (e, t) {
-            var i = new n(this.factory.getTile(e.x, e.y), this.factory.getTile(t.x, t.y));
-            i.canUpdate() && i.update();
-        }),
-        (s.prototype._setupNativeMouseEvents = function () {
-            var e = null,
-                t = this;
-            this.element.get(0).addEventListener(
-                "mouseout",
-                function () {
-                    t.factory.getEventManager().invokeEvent(FactoryEvent.FACTORY_MOUSE_OUT, e), (e = null);
-                },
-                !1
-            ),
-                this.element.get(0).addEventListener(
-                    "mousemove",
-                    function (n) {
-                        var i = t.selectedComponentMetaId ? t.game.getMeta().componentsById[t.selectedComponentMetaId] : { width: 1, height: 1 },
-                            r = t.element.get(0).getBoundingClientRect(),
-                            o = n.clientX - r.left - (t.tileSize * i.width) / 2,
-                            s = n.clientY - r.top - (t.tileSize * i.height) / 2,
-                            a = { x: Math.round(o / t.tileSize), y: Math.round(s / t.tileSize), leftMouseDown: 1 == n.which, rightMouseDown: 3 == n.which, shiftKeyDown: n.shiftKey, altKeyDown: n.altKey };
-                        (a.x = Math.min(t.tilesX - i.width, Math.max(0, a.x))),
-                            (a.y = Math.min(t.tilesY - i.height, Math.max(0, a.y))),
-                            (e && e.x == a.x && e.y == a.y) || (t.factory.getEventManager().invokeEvent(FactoryEvent.FACTORY_MOUSE_MOVE, a), (e = a));
-                    },
-                    !1
-                ),
-                this.element.get(0).addEventListener(
-                    "mousedown",
-                    function (n) {
-                        t.factory.getEventManager().invokeEvent(FactoryEvent.FACTORY_MOUSE_DOWN, { x: e.x, y: e.y, leftMouseDown: 1 == n.which, rightMouseDown: 3 == n.which, shiftKeyDown: n.shiftKey, altKeyDown: n.altKey });
-                    },
-                    !1
-                ),
-                this.element.get(0).addEventListener(
-                    "mouseup",
-                    function () {
-                        t.factory.getEventManager().invokeEvent(FactoryEvent.FACTORY_MOUSE_UP, e);
-                    },
-                    !1
-                );
-        }),
-        (s.prototype.destroy = function () {
-            this.mouseInfoHelper.destroy(), this.factory.getEventManager().removeListenerForType(o), this.container.html(""), (this.container = null);
-        }),
-        s
+// src/ui/factory/mapLayers/MouseLayer.js
+import BuyComponentAction from "../../../game/action/BuyComponentAction.js";
+import SellComponentAction from "../../../game/action/SellComponentAction.js";
+import UpdateComponentInputOutputAction from "../../../game/action/UpdateComponentInputOutputAction.js";
+import UpdateTileAction from "../../../game/action/UpdateTileAction.js";
+import MouseInfoHelper from "./helper/MouseInfoHelper.js";
+
+const LAYER_MOUSE = "LayerMouse";
+
+class MouseLayer {
+  constructor(imageMap, factory, options) {
+    this.imageMap = imageMap;
+    this.factory = factory;
+    this.game = factory.getGame();
+    this.tileSize = options.tileSize;
+    this.tilesX = factory.getMeta().tilesX;
+    this.tilesY = factory.getMeta().tilesY;
+    this.selectedComponentMetaId = null;
+    this.selectedMapToolId = null;
+    this.clickedComponent = null;
+    this.mouseInfoHelper = new MouseInfoHelper(factory, imageMap, options.tileSize);
+  }
+
+  display(container) {
+    this.selectedComponentMetaId = null;
+    this.container = container;
+    this.element = $("<div />")
+      .css("position", "absolute")
+      .css("width", this.tilesX * this.tileSize)
+      .css("height", this.tilesY * this.tileSize);
+
+    this.container.append(this.element);
+    this._setupNativeMouseEvents();
+    this._setupMouseListeners();
+    this.mouseInfoHelper.display(container);
+  }
+
+  _setupMouseListeners() {
+    let downEvent = null;
+    let lastMove = null;
+    let lastClickedComponent = null;
+
+    this.factory.getEventManager().addListener(
+      LAYER_MOUSE,
+      FactoryEvent.FACTORY_MOUSE_MOVE,
+      (event) => {
+        if (downEvent && downEvent.altKeyDown) {
+          this.updateTileMeta(downEvent);
+          this.updateTileMeta(event);
+        } else if (this.selectedComponentMetaId) {
+          this.mouseInfoHelper.updateMouseInformationModes(
+            this.selectedComponentMetaId,
+            event
+          );
+
+          const meta =
+            this.game.getMeta().componentsById[this.selectedComponentMetaId];
+
+          if (
+            downEvent &&
+            event.leftMouseDown &&
+            !downEvent.shiftKeyDown &&
+            meta.buildByDragging === 1
+          ) {
+            this.buyComponent(downEvent);
+            this.buyComponent(event);
+            this.connectComponents(lastMove, event);
+          } else if (
+            downEvent &&
+            ((event.leftMouseDown && downEvent.shiftKeyDown) ||
+              event.rightMouseDown)
+          ) {
+            this.sellComponent(downEvent);
+            this.sellComponent(event);
+          }
+        } else if (
+          downEvent &&
+          ((event.leftMouseDown && downEvent.shiftKeyDown) ||
+            event.rightMouseDown)
+        ) {
+          this.sellComponent(downEvent);
+          this.sellComponent(event);
+        }
+        lastMove = event;
+      }
     );
-});
+
+    this.factory.getEventManager().addListener(
+      LAYER_MOUSE,
+      FactoryEvent.FACTORY_MOUSE_OUT,
+      () => {
+        this.mouseInfoHelper.turnOffBuildMode();
+        this.mouseInfoHelper.turnOffCantBuildMode();
+        downEvent = null;
+        lastMove = null;
+      }
+    );
+
+    this.factory.getEventManager().addListener(
+      LAYER_MOUSE,
+      FactoryEvent.FACTORY_MOUSE_DOWN,
+      (event) => {
+        downEvent = event;
+      }
+    );
+
+    this.factory.getEventManager().addListener(
+      LAYER_MOUSE,
+      FactoryEvent.FACTORY_MOUSE_UP,
+      (event) => {
+        if (downEvent && downEvent.x === event.x && downEvent.y === event.y) {
+          let comp = this.factory.getTile(event.x, event.y).getComponent();
+
+          if (downEvent.altKeyDown) {
+            this.updateTileMeta(event);
+          } else if (this.selectedComponentMetaId) {
+            if (downEvent.leftMouseDown && !downEvent.shiftKeyDown) {
+              this.buyComponent(downEvent);
+            } else if (
+              (downEvent.leftMouseDown && downEvent.shiftKeyDown) ||
+              downEvent.rightMouseDown
+            ) {
+              this.sellComponent(downEvent);
+            }
+          } else if (
+            !this.selectedComponentMetaId &&
+            ((downEvent.leftMouseDown && downEvent.shiftKeyDown) ||
+              downEvent.rightMouseDown)
+          ) {
+            this.sellComponent(downEvent);
+          } else if (comp) {
+            if (lastClickedComponent === comp) comp = null;
+            this.factory.getEventManager().invokeEvent(
+              FactoryEvent.COMPONENT_SELECTED,
+              comp
+            );
+            lastClickedComponent = comp;
+          }
+        }
+        downEvent = null;
+      }
+    );
+
+    this.factory.getEventManager().addListener(
+      LAYER_MOUSE,
+      FactoryEvent.COMPONENT_META_SELECTED,
+      (id) => {
+        this.factory.getEventManager().invokeEvent(
+          FactoryEvent.COMPONENT_SELECTED,
+          null
+        );
+        this.selectedComponentMetaId = id;
+        this.mouseInfoHelper.updateMouseInformationModes(id, lastMove);
+        lastClickedComponent = null;
+      }
+    );
+
+    this.factory.getEventManager().addListener(
+      LAYER_MOUSE,
+      FactoryEvent.MAP_TOOL_SELECTED,
+      (id) => {
+        this.factory.getEventManager().invokeEvent(
+          FactoryEvent.COMPONENT_SELECTED,
+          null
+        );
+        this.selectedMapToolId = id;
+        lastClickedComponent = null;
+      }
+    );
+
+    this.factory.getEventManager().addListener(
+      LAYER_MOUSE,
+      FactoryEvent.COMPONENT_SELECTED,
+      (comp) => {
+        this.mouseInfoHelper.updateComponentSelected(comp);
+      }
+    );
+  }
+
+  updateTileMeta(event) {
+    const action = new UpdateTileAction(
+      this.factory.getTile(event.x, event.y),
+      this.selectedMapToolId
+    );
+    if (action.canUpdate()) action.update();
+  }
+
+  buyComponent(event) {
+    const action = new BuyComponentAction(
+      this.factory.getTile(event.x, event.y),
+      this.game.getMeta().componentsById[this.selectedComponentMetaId]
+    );
+    if (action.canBuy()) action.buy();
+  }
+
+  sellComponent(event) {
+    const meta = this.game.getMeta().componentsById[this.selectedComponentMetaId];
+    const action = new SellComponentAction(
+      this.factory.getTile(event.x, event.y),
+      meta ? meta.width : 1,
+      meta ? meta.height : 1
+    );
+    if (action.canSell()) action.sell();
+  }
+
+  connectComponents(eventA, eventB) {
+    const action = new UpdateComponentInputOutputAction(
+      this.factory.getTile(eventA.x, eventA.y),
+      this.factory.getTile(eventB.x, eventB.y)
+    );
+    if (action.canUpdate()) action.update();
+  }
+
+  _setupNativeMouseEvents() {
+    let lastEvent = null;
+
+    this.element.get(0).addEventListener(
+      "mouseout",
+      () => {
+        this.factory.getEventManager().invokeEvent(
+          FactoryEvent.FACTORY_MOUSE_OUT,
+          lastEvent
+        );
+        lastEvent = null;
+      },
+      false
+    );
+
+    this.element.get(0).addEventListener(
+      "mousemove",
+      (n) => {
+        let size = { width: 1, height: 1 };
+        if (this.selectedComponentMetaId) {
+          size = this.game.getMeta().componentsById[this.selectedComponentMetaId];
+        }
+
+        const rect = this.element.get(0).getBoundingClientRect();
+        const localX = n.clientX - rect.left - (this.tileSize * size.width) / 2;
+        const localY = n.clientY - rect.top - (this.tileSize * size.height) / 2;
+
+        const mouseEvent = {
+          x: Math.round(localX / this.tileSize),
+          y: Math.round(localY / this.tileSize),
+          leftMouseDown: n.which === 1,
+          rightMouseDown: n.which === 3,
+          shiftKeyDown: n.shiftKey,
+          altKeyDown: n.altKey,
+        };
+
+        mouseEvent.x = Math.min(
+          this.tilesX - size.width,
+          Math.max(0, mouseEvent.x)
+        );
+        mouseEvent.y = Math.min(
+          this.tilesY - size.height,
+          Math.max(0, mouseEvent.y)
+        );
+
+        if (!lastEvent || lastEvent.x !== mouseEvent.x || lastEvent.y !== mouseEvent.y) {
+          this.factory.getEventManager().invokeEvent(
+            FactoryEvent.FACTORY_MOUSE_MOVE,
+            mouseEvent
+          );
+          lastEvent = mouseEvent;
+        }
+      },
+      false
+    );
+
+    this.element.get(0).addEventListener(
+      "mousedown",
+      (n) => {
+        this.factory.getEventManager().invokeEvent(
+          FactoryEvent.FACTORY_MOUSE_DOWN,
+          {
+            x: lastEvent.x,
+            y: lastEvent.y,
+            leftMouseDown: n.which === 1,
+            rightMouseDown: n.which === 3,
+            shiftKeyDown: n.shiftKey,
+            altKeyDown: n.altKey,
+          }
+        );
+      },
+      false
+    );
+
+    this.element.get(0).addEventListener(
+      "mouseup",
+      () => {
+        this.factory.getEventManager().invokeEvent(
+          FactoryEvent.FACTORY_MOUSE_UP,
+          lastEvent
+        );
+      },
+      false
+    );
+  }
+
+  destroy() {
+    this.mouseInfoHelper.destroy();
+    this.factory.getEventManager().removeListenerForType(LAYER_MOUSE);
+    this.container.html("");
+    this.container = null;
+  }
+}
+
+export default MouseLayer;

@@ -1,146 +1,84 @@
-/**
- * TimeTravelUi - Displays the time travel modal with ticket usage functionality
- * Based on the original Factory Idle implementation
- */
+// src/ui/TimeTravelUi.js
+import template from "/js/template/timeTravel.html";
+import PassTimeAction from "/js/game/action/PassTimeAction.js";
+import GameUiEvent from "../config/event/GameUiEvent.js";
+import GameContext from "../base/GameContext.js";
 
-define("ui/TimeTravelUi", [
-    //"text!template/timeTravel.html",
-    "game/action/PassTimeAction",
-    "lib/handlebars",
-    "config/event/GameUiEvent"
-], function( PassTimeAction, Handlebars, GameUiEvent) {
+export default class TimeTravelUi {
+  constructor(play) {
+    this.gameUiEm = GameContext.gameUiBus;
+    this.play = play;
+    this.game = play.getGame();
+    this.isVisible = false;
+  }
 
-    /**
-     * TimeTravelUi constructor
-     * @param {Object} gameUiEm - Game UI event manager
-     * @param {Object} play - Play instance
-     */
-    var TimeTravelUi = function(gameUiEm, play) {
-        this.gameUiEm = gameUiEm;
-        this.play = play;
-        this.game = play.getGame();
-        this.isVisible = false;
-    };
+  init() {
+    this.gameUiEm.addListener(
+      "help",
+      GameUiEvent.SHOW_TIME_TRAVEL,
+      () => this.display()
+    );
+    return this;
+  }
 
-    /**
-     * Initialize the time travel UI
-     * @returns {TimeTravelUi} This instance for chaining
-     */
-    TimeTravelUi.prototype.init = function() {
-        this.gameUiEm.addListener("timeTravel", GameUiEvent.SHOW_TIME_TRAVEL, function() {
-            this.display();
-        }.bind(this));
+  display() {
+    if (this.isVisible) return;
 
-        return this;
-    };
+    const passTimeAction = new PassTimeAction(
+      this.game,
+      3600 * this.play.getMeta().timeTravelTicketValue
+    );
 
-    /**
-     * Display the time travel modal
-     */
-    TimeTravelUi.prototype.display = function() {
-        if (!this.isVisible) {
-            this._display();
-        }
-    };
+    $("body").append(
+      Handlebars.compile(template)({
+        tickets: this.game.getTicker().getTimeTravelTickets(),
+        hasTickets: this.game.getTicker().getTimeTravelTickets() > 0,
+        ticks: nf(passTimeAction.getTicks()),
+        profit: nf(passTimeAction.getProfit()),
+        profitPerTick: nf(Math.round(passTimeAction.getProfit() / passTimeAction.getTicks())),
+        researchPoints: nf(passTimeAction.getResearchPoints()),
+        researchPointsPerTick: nf(Math.round(passTimeAction.getResearchPoints() / passTimeAction.getTicks())),
+      })
+    );
 
-    /**
-     * Internal display method
-     * @private
-     */
-    TimeTravelUi.prototype._display = function() {
-        var passTimeAction = new PassTimeAction(this.game, this.play.getMeta().timeTravelTicketValue);
+    this.isVisible = true;
+    const r = $("#timeTravel");
 
-        // Format numbers for display
-        var formatNumber = function(num) {
-            if (num >= 1000000) {
-                return (num / 1000000).toFixed(1) + "M";
-            } else if (num >= 1000) {
-                return (num / 1000).toFixed(1) + "K";
-            }
-            return Math.round(num).toString();
-        };
+    r.css("left", ($("html").width() - r.outerWidth()) / 2);
 
-        var templateData = {
-            ticketValue: this.play.getMeta().timeTravelTicketValue,
-            tickets: this.game.getTicker().getTimeTravelTickets(),
-            hasTickets: this.game.getTicker().getTimeTravelTickets() > 0,
-            ticks: formatNumber(passTimeAction.getTicks()),
-            profit: formatNumber(passTimeAction.getProfit()),
-            profitPerTick: formatNumber(Math.round(passTimeAction.getProfit() / passTimeAction.getTicks())),
-            researchPoints: formatNumber(passTimeAction.getResearchPoints()),
-            researchPointsPerTick: formatNumber(Math.round(passTimeAction.getResearchPoints() / passTimeAction.getTicks()))
-        };
+    r.find(".getMore").click(() => {
+      this.gameUiEm.invokeEvent(GameUiEvent.SHOW_PURCHASES);
+      this.hide();
+    });
 
-        // Use Handlebars to compile the template with data
-        var html = Handlebars.compile(timeTravelTemplate)(templateData);
-        $("body").append(html);
-
-        this.isVisible = true;
-        var self = this;
-        var timeTravelElement = $("#timeTravel");
-
-        // Center the modal
-        timeTravelElement.css("left", ($("html").width() - timeTravelElement.outerWidth()) / 2);
-
-        // Close button
-        timeTravelElement.find(".closeButton").click(function() {
-            self.hide();
-        });
-
-        // Background click to close
-        $("#timeTravelBg").click(function() {
-            self.hide();
-        });
-
-        // Get more tickets button
-        timeTravelElement.find(".getMore").click(function() {
-            self.gameUiEm.invokeEvent(GameUiEvent.SHOW_PURCHASES);
-            self.hide();
-        });
-
-        // Travel button
-        timeTravelElement.find(".travel").click(function() {
-            if (passTimeAction.canPassTime()) {
-                passTimeAction.passTime();
-                self.hide();
-                // Refresh the display with updated values
-                self.display();
-            } else {
-                alert("You don't have a ticket for time travel!");
-            }
-        });
-
-        // Refresh button
-        timeTravelElement.find(".refresh").click(function() {
-            self.hide();
-            self.display();
-        });
-    };
-
-    /**
-     * Hide the time travel modal
-     */
-    TimeTravelUi.prototype.hide = function() {
-        this.isVisible = false;
-        $("#timeTravel").remove();
-        $("#timeTravelBg").remove();
-    };
-
-    /**
-     * Destroy the TimeTravelUi and clean up resources
-     */
-    TimeTravelUi.prototype.destroy = function() {
+    r.find(".travel").click(() => {
+      if (passTimeAction.canPassTime()) {
+        passTimeAction.passTime();
         this.hide();
+        this.display();
+      } else {
+        alert("You don't have a ticket for time travel!");
+      }
+    });
 
-        // Remove event listeners
-        if (this.game.getEventManager) {
-            this.game.getEventManager().removeListenerForType("timeTravel");
-        }
+    r.find(".refresh").click(() => {
+      this.hide();
+      this.display();
+    });
 
-        if (this.gameUiEm) {
-            this.gameUiEm.removeListenerForType("timeTravel");
-        }
-    };
+    r.find(".closeButton").click(() => this.hide());
+    $("#timeTravelBg").click(() => this.hide());
+  }
 
-    return TimeTravelUi;
-});
+  hide() {
+    this.isVisible = false;
+    $("#timeTravel").remove();
+    $("#timeTravelBg").remove();
+  }
+
+  destroy() {
+    this.hide();
+    this.game.getEventManager().removeListenerForType("help");
+    this.gameUiEm.removeListenerForType("help");
+  }
+}

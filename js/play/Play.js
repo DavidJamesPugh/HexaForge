@@ -12,6 +12,7 @@ import IncentivizedAdCompletedAction from "../game/action/IncentivizedAdComplete
 import GameContext from "../base/GameContext.js";
 import ApiEvent from "../config/event/ApiEvent.js";
 import logger from "../base/Logger.js";
+import Base64ArrayBuffer from "../base/Base64ArrayBuffer.js";
 
 export default class Play {
   constructor() {

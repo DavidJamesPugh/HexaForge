@@ -1,10 +1,10 @@
-<div class="headerXX"> You have <span class="money">$<b id="money"></b></span> to spend. Isn't that nice. Average total
-    income <span class="money">$<b id="income"></b></span>.<br /> {{#if researchBought}} You have <span
+<div class="headerXX"> 
+    You have <span class="money"> $ {{money}} </span>  to spend. Isn't that nice. Average total income <span class="money">$ {{income}} </span>.<br /> {{#if researchBought}} You have <span
         class="research"><b id="researchPoints"></b></span> research points. Avg production <span class="research"><b
             id="researchIncome"></b></span> {{/if}}</div>
 <div class="helpXX">
-    <div style="float:right"><span id="ticks"></span> ticks/sec</div> Buy more land to create even bigger empire. Go
-    ahead, buy some!
+    <div style="float:right"><span id="ticks"></span> ticks/sec</div> Buy more land to create even bigger empire.  
+    Go ahead, buy some!
 </div>
 <div id="factorySelection" class="factories"> {{#each factories}} <div class="factoryButton {{design}}"
         data-id="{{id}}">
