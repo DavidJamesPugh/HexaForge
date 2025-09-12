@@ -1,5 +1,5 @@
 // main.js config module
-import * as ComponentsModule from "./components.js";
+import componentsModule from "./components.js";
 import ResourcesModule from "./resources.js";
 import FactoriesModule from "./factories.js";
 import ResearchModule from "./research.js";
@@ -20,9 +20,9 @@ export default {
   offlineSlower: 5,
   incentivizedAdBonusTicks: 1000,
   resources: ResourcesModule,
-  components: ComponentsModule.components,
-  componentsSelection: ComponentsModule.selection,
-  productionTree: ComponentsModule.productionTree,
+  components: componentsModule.components,
+  componentsSelection: componentsModule.selection,
+  productionTree: componentsModule.productionTree,
   factories: FactoriesModule,
   research: ResearchModule,
   upgrades: UpgradesModule.upgrades,

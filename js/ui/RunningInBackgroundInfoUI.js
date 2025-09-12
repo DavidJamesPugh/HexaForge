@@ -1,5 +1,7 @@
 import GlobalUiEvent from "../config/event/GlobalUiEvent.js";
 import globalUiBus from "../base/GlobalUiBus.js";
+import Handlebars from "handlebars";
+import runningInBackgroundInfoUiTemplateHtml from "/js/template/runningInBackgroundInfoUi.html";
 
 export default class RunningInBackgroundInfoUi {
     constructor() {
@@ -11,10 +13,6 @@ export default class RunningInBackgroundInfoUi {
         this.templateHtml = null;
     }
 
-    async loadTemplate(url = "/template/runningInBackgroundInfoUi.html") {
-        const res = await fetch(url);
-        this.templateHtml = await res.text();
-    }
 
     init() {
         this.globalUiEm.addListener("RunningInBackgroundInfoUi", GlobalUiEvent.FOCUS, () => this.hide());
@@ -31,13 +29,9 @@ export default class RunningInBackgroundInfoUi {
     }
 
     display(templateData = {}) {
-        if (!this.templateHtml) {
-            console.error("Template not loaded yet!");
-            return;
-        }
 
         this.container = document.body;
-        const compiled = Handlebars.compile(this.templateHtml)(templateData);
+        const compiled = Handlebars.compile(runningInBackgroundInfoUiTemplateHtml)(templateData);
 
         const wrapper = document.createElement("div");
         wrapper.innerHTML = compiled;

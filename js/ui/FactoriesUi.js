@@ -82,39 +82,50 @@ export default class FactoriesUi {
 
         this.update();
 
-        $("#missionsButton").click(() => this.globalUiEm.invokeEvent(GlobalUiEvent.SHOW_MISSIONS));
-        $("#missionsButton").hide();
+    }
+
+    updateText(selector, value) {
+        const el = this.container.querySelector(selector);
+        if (el) el.textContent = value;
     }
 
     update() {
-        this.container.find("#money").html(NumberFormat.formatNumber(this.game.getMoney()));
-        this.container.find("#researchPoints").html(NumberFormat.formatNumber(this.game.getResearchPoints()));
+        this.updateText("#money", this.game.getMoney());
+        this.updateText("#researchPoints", this.game.getResearchPoints());
+
 
         const avgProfit = this.statistics.getAvgProfit();
-        this.container.find("#income").html(avgProfit ? NumberFormat.formatNumber(avgProfit) : " ? ");
+
+        this.updateText("#income", avgProfit ? NumberFormat.formatNumber(avgProfit) : " ? ");
 
         const avgResearch = this.statistics.getAvgResearchPointsProduction();
-        this.container.find("#researchIncome").html(avgResearch ? NumberFormat.formatNumber(avgResearch) : " ? ");
+        this.updateText("#researchIncome", avgResearch ? NumberFormat.formatNumber(avgResearch) : " ? ");
 
-        this.container.find(".factoryButton").each((_, el) => {
-            const factoryId = $(el).attr("data-id");
+        this.container.querySelectorAll(".factoryButton").forEach(el => {
+            const factoryId = el.getAttribute("data-id");
 
             const avgIncome = this.statistics.getFactoryAvgProfit(factoryId);
-            $(el).find(".money[data-key='income']").html(avgIncome ? NumberFormat.formatNumberPlus(avgIncome) : " ? ");
+            this.updateText(".money[data-key='income']", avgIncome ? NumberFormat.formatNumberPlus(avgIncome) : " ? ");
 
+            // Research production
             const avgResearchPoints = this.statistics.getFactoryAvgResearchPointsProduction(factoryId);
-            $(el).find(".research[data-key='researchProduction']").html(avgResearchPoints ? NumberFormat.formatNumberPlus(avgResearchPoints) : " ? ");
+            this.updateText(".research[data-key='researchProduction']", avgResearchPoints ? NumberFormat.formatNumberPlus(avgResearchPoints) : " ? ");
 
+            // Buy button
             const canBuy = new BuyFactoryAction(this.game, factoryId).canBuy();
-            const buyBtn = $(el).find(".buyButton");
-            if (canBuy) {
-                buyBtn.removeClass("cantBuy").html("BUY");
-            } else {
-                buyBtn.addClass("cantBuy").html("TOO EXPENSIVE");
+            const buyBtn = el.querySelector(".buyButton");
+            if (buyBtn) {
+                if (canBuy) {
+                buyBtn.classList.remove("cantBuy");
+                buyBtn.textContent = "BUY";
+                } else {
+                buyBtn.classList.add("cantBuy");
+                buyBtn.textContent = "TOO EXPENSIVE";
+                }
             }
-        });
+            });
 
-        this.container.find("#ticks").html(NumberFormat.formatNumber(this.game.getTicker().getActualTicksPerSec()));
+        this.updateText("#ticks", NumberFormat.formatNumber(this.game.getTicker().getActualTicksPerSec()));
     }
 
     destroy() {

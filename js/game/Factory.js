@@ -5,6 +5,7 @@ import UpgradesManager from "./UpgradesManager.js";
 import AreasManager from "./AreasManager.js";
 import FactorySetup from "./FactorySetup.js";
 import FactoryEvent from "../config/event/FactoryEvent.js";
+import BinaryArrayWriter from "/js/base/BinaryArrayWriter.js";
 
 export default class Factory {
   constructor(meta, game) {

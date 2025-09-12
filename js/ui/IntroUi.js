@@ -1,4 +1,6 @@
 import globalUiBus from "../base/GlobalUiBus.js"; // if you have a global event bus
+import Handlebars from "handlebars";
+import introTemplateHtml from "../template/intro.html";
 
 export default class IntroUi {
     constructor() {
@@ -8,21 +10,13 @@ export default class IntroUi {
         this.menuMap = {};
     }
 
-    async loadTemplate(url = "/template/intro.html") {
-        const res = await fetch(url);
-        this.templateHtml = await res.text();
-    }
 
     display(templateData = {}) {
-        if (!this.templateHtml) {
-            console.error("Template not loaded yet!");
-            return;
-        }
 
         if (this.isVisible) return;
 
         const wrapper = document.createElement("div");
-        wrapper.innerHTML = Handlebars.compile(this.templateHtml)(templateData);
+        wrapper.innerHTML = Handlebars.compile(introTemplateHtml)(templateData);
         this.container.appendChild(wrapper);
 
         this.isVisible = true;

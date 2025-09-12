@@ -88,7 +88,7 @@ export default class Play {
 
       // Initialize Game instance
       console.log("Play: Initializing Game...");
-      this.game = new Game(gameConfig.main, this.confirmedTimestamp);
+      this.game = new Game(gameConfig.meta.main, this.confirmedTimestamp);
       GameContext.game = this.game; // store in global context
       console.log("Play: Game instance created");
 

@@ -10,6 +10,7 @@ import PurchasesUi from "./PurchasesUi.js";
 import SettingsUi from "./SettingsUi.js";
 import TimeTravelUi from "./TimeTravelUi.js";
 
+import gameConfig from "../config/config.js";
 import GameUiEvent from "../config/event/GameUiEvent.js";
 import GameEvent from "../config/event/GameEvent.js";
 import GlobalUiEvent from "../config/event/GlobalUiEvent.js";

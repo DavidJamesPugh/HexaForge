@@ -1,3 +1,6 @@
+
+import BinaryArrayWriter from "/js/base/BinaryArrayWriter.js";
+
 export default class AreasManager {
     constructor(factory) {
       this.factory = factory;

@@ -1,6 +1,7 @@
 // Statistics.js
 import StatisticsCollector from "./StatisticsCollector.js";
 import GameEvent from "../../config/event/GameEvent.js";
+import BinaryArrayWriter from "/js/base/BinaryArrayWriter.js";
 
 export default class Statistics {
     game;

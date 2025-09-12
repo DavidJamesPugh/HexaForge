@@ -1,3 +1,4 @@
+import BinaryBoolean from "/js/base/BinaryBoolean.js";
 // InputOutputManager.js
 const OPPOSITE = { top: "bottom", bottom: "top", left: "right", right: "left" };
 const DIRECTIONS = ["top", "right", "bottom", "left"];

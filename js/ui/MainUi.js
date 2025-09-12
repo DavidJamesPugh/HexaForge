@@ -68,18 +68,10 @@ export default class MainUi {
             this._showUi("mainGame");
         });
 
-        this.globalUiEm.addListener("MainUi", GlobalUiEvent.SHOW_MISSIONS, () => {
-            this._showUi("missions");
-        });
-
-        this.globalUiEm.addListener("MainUi", GlobalUiEvent.SHOW_MISSION, (mission) => {
-            this._showUi("mission", mission);
-        });
-
         // Periodic user hash alert
         this.play.getGame().getEventManager().addListener("MainUi", GameEvent.GAME_TICK, () => {
             const tickCount = this.play.getGame().getTicker().getNoOfTicks();
-            if (gameConfig.main.warnToStoreUserHashAfterTicks[tickCount]) {
+            if (gameConfig.meta.warnToStoreUserHashAfterTicks[tickCount]) {
                 const inputId = `userHashTmpAlert${Math.round(1e10 * Math.random())}`;
                 const html = `
                     You seem to be enjoying the game! Here is a good tip that maybe will save the day once!<br/>

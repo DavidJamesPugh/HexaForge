@@ -2,6 +2,19 @@
     overflow: hidden
 }
 
+/* Initially hidden */
+.help-section {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  /* Visible with fade-in */
+  .help-section.visible {
+    display: block;
+    opacity: 1;
+  }
+  
 .vis .overlay {
     position: absolute;
     top: 0;

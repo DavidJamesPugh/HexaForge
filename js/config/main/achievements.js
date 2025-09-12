@@ -5,7 +5,7 @@ export default class Achievements {
         const achievements = [
             {
                 id: "makingProfit",
-                idNum: 1,
+                idNum: 0,
                 name: "Making profit!",
                 spriteX: 3,
                 spriteY: 0,
@@ -14,7 +14,7 @@ export default class Achievements {
             },
             {
                 id: "collectingCash",
-                idNum: 2,
+                idNum: 1,
                 name: "Collecting some cash",
                 spriteX: 2,
                 spriteY: 0,
@@ -23,7 +23,7 @@ export default class Achievements {
             },
             {
                 id: "gettingSmarter",
-                idNum: 3,
+                idNum: 2,
                 name: "Getting smarter",
                 spriteX: 2,
                 spriteY: 0,
@@ -35,7 +35,7 @@ export default class Achievements {
         for (let i = 1; i <= 20; i++) {
             achievements.push({
                 id: `money${i}`,
-                idNum: 4 + i,
+                idNum: 2 + i,
                 name: "Getting money",
                 spriteX: 2,
                 spriteY: 0,

@@ -2,6 +2,7 @@
 import Benchmarker from "../base/Benchmarker.js";
 import GameEvent from "../config/event/GameEvent.js";
 import logger from "../base/Logger.js";
+import BinaryArrayWriter from "/js/base/BinaryArrayWriter.js";
 
 export default class Ticker {
     game;

@@ -1,5 +1,5 @@
 // config.js - central game config
-import mainModule from "./main/main.js";
+import Meta from "./Meta.js";
 
 export default {
   userHash: { key: "FactoryIdleUserHash" },
@@ -25,8 +25,8 @@ export default {
     cloudSaveIntervalMs: 900000, // 15 min
     localSaveIntervalMs: 5000
   },
-  main: {
-    ...mainModule,
+  meta: {
+    ...Meta,
     warnToStoreUserHashAfterTicks: {
       10000: true,
       100000: true,

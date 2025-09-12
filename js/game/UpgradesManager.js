@@ -1,4 +1,5 @@
 import UpgradesFactory from "./upgrades/Factory.js";
+import BinaryArrayWriter from "/js/base/BinaryArrayWriter.js";
 
 export default class UpgradesManager {
   constructor(factory) {
