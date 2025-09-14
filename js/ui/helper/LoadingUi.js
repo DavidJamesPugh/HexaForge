@@ -23,27 +23,29 @@ export default class LoadingUi {
     }
 
     display() {
-        this.container = $("body");
 
-        this.container.append(
-            Handlebars.compile(loadingTemplateHtml)({
-                id: this.id,
-                idBg: this.idBg,
-                title: this.title
-            })
-        );
+        document.body.insertAdjacentHTML('beforeend', Handlebars.compile(loadingTemplateHtml)({
+            id: this.id,
+            idBg: this.idBg,
+            title: this.title
+        }));
 
-        this.element = this.container.find(`#${this.id}`);
-        this.bg = this.container.find(`#${this.idBg}`);
+            
+        this.element = document.getElementById(this.id);
+        this.bg = document.getElementById(this.idBg);
+
+        
 
         // Center
         UiUtils.centerElement(this.element);
         // Fade in
-        this.element.hide().fadeIn(200);
-        this.bg.hide().fadeIn(200);
+        requestAnimationFrame(() => {
+            this.element.classList.add('visible');
+            this.bg.classList.add('visible');
+        });
 
         if (this.clickCallback) {
-            this.bg.click(() => {
+            this.bg.addEventListener("click", () => {
                 this.clickCallback();
                 this.hide();
             });
@@ -53,11 +55,19 @@ export default class LoadingUi {
     }
 
     hide() {
-        if (this.element) {
-            this.element.fadeOut(200, () => this.element.remove());
-        }
-        if (this.bg) {
-            this.bg.fadeOut(200, () => this.bg.remove());
-        }
+        if (!this.element || !this.bg) return;
+        // Remove 'visible' class to trigger fade-out
+        this.element.classList.remove('visible');
+        this.bg.classList.remove('visible');
+
+        // Wait for CSS transition to finish before removing elements
+        const removeAfterTransition = (el) => {
+        if (!el) return;
+        const duration = parseFloat(getComputedStyle(el).transitionDuration) * 1000;
+        setTimeout(() => el.remove(), duration);
+        };
+
+        removeAfterTransition(this.element);
+        removeAfterTransition(this.bg);
     }
 }

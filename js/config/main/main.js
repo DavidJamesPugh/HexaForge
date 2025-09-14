@@ -3,7 +3,7 @@ import componentsModule from "./components.js";
 import ResourcesModule from "./resources.js";
 import FactoriesModule from "./factories.js";
 import ResearchModule from "./research.js";
-import * as UpgradesModule from "./upgrades.js";
+import upgradesComponent from "./upgrades.js";
 import AchievementsClass from "./achievements.js";
 
 const achievements = AchievementsClass.generateAll();
@@ -25,7 +25,7 @@ export default {
   productionTree: componentsModule.productionTree,
   factories: FactoriesModule,
   research: ResearchModule,
-  upgrades: UpgradesModule.upgrades,
-  upgradesLayout: UpgradesModule.layout,
+  upgrades: upgradesComponent.upgrades,
+  upgradesLayout: upgradesComponent.layout,
   achievements
 };

@@ -50,29 +50,29 @@ export default class PurchasesUi {
             }
         }
 
-        // Render
-        $("body").append(Handlebars.compile(purchasesTemplateHtml)(context));
-
-        this.bg = $("#purchasesBg");
-        this.element = $("#purchases");
+        document.body.insertAdjacentHTML('beforeend', Handlebars.compile(purchasesTemplateHtml)(context));
+        this.bg = document.getElementById("purchasesBg");
+        this.element = document.getElementById("purchases");
 
         // Center UI horizontally
-        this.element.css("left", ($("html").width() - this.element.outerWidth()) / 2);
+        this.element.style.left = `${(document.documentElement.offsetWidth - this.element.offsetWidth) / 2}px`;
 
         // Events
-        this.element.find(".closeButton").click(() => this.hide());
+        this.element.querySelector(".closeButton").addEventListener("click", () => this.hide());
 
-        this.element.find(".item").click((ev) => {
-            const productId = $(ev.currentTarget).attr("data-id");
+        this.element.querySelectorAll(".item").forEach(el => {
+            el.addEventListener("click", (ev) => {
+            const productId = ev.currentTarget.getAttribute("data-id");
             if (!this.purchasesManager.getIsUnlocked(productId)) {
                 this.purchasesManager.startPurchase(productId, () => {
                     this.hide();
                     this.display(); // re-render updated purchases
                 });
             }
+            });
         });
 
-        this.bg.click(() => this.hide());
+        this.bg.addEventListener("click", () => this.hide());
     }
 
     hide() {

@@ -2,6 +2,55 @@
     overflow: hidden
 }
 
+.hidden { display: none; }
+
+#intro {
+    font-family: sans-serif;
+    line-height: 1.5;
+    color: white;
+    padding: 1em;
+}
+
+#intro b,
+#intro u,
+#intro .title {
+    /* automatically add spacing around inline elements */
+    margin: 0 0.2em;
+}
+
+#intro .title {
+    font-size: 2em;
+    display: block;
+    margin-bottom: 0.5em;
+}
+
+#intro a.closeButton {
+    color: white;
+    font-weight: bold;
+    float: right;
+    display: block;
+    margin-top: 1em;
+}
+
+#intro span.note {
+    color: darkgray;
+    font-size: 0.9em;
+    display: block;
+    margin-top: 0.5em;
+}
+
+.loading-ui,
+.loading-ui-bg {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  display: block; /* ensure block or flex depending on your template */
+}
+
+.loading-ui.visible,
+.loading-ui-bg.visible {
+  opacity: 1;
+}
+
 /* Initially hidden */
 .help-section {
     display: none;
@@ -2756,7 +2805,7 @@ body,html,div,span,td {
 }
 
 #gameArea {
-    width: 898px;
+    width: 950px;
     float: left;
     border-top: 1px solid gray;
 }

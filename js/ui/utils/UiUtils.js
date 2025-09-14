@@ -5,14 +5,14 @@ export default class UiUtils {
      * @param {Object} options { vertical: boolean, horizontal: boolean }
      */
     static centerElement($el, options = { vertical: true, horizontal: true }) {
-        const winW = $(window).width();
-        const winH = $(window).height();
+        const winW = window.innerWidth;
+        const winH = window.innerHeight;
 
         if (options.horizontal) {
-            $el.css("left", Math.round((winW - $el.outerWidth()) / 2));
+            $el.style.left = `${Math.round((winW - $el.offsetWidth) / 2)}px`;
         }
         if (options.vertical) {
-            $el.css("top", Math.round((winH - $el.outerHeight()) / 2));
+            $el.style.top = `${Math.round((winH - $el.offsetHeight) / 2)}px`;
         }
     }
 }

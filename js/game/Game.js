@@ -7,7 +7,7 @@ import Calculator from "./calculator/Calculator.js";
 import Statistics from "./statistics/Statistics.js";
 import Ticker from "./Ticker.js";
 import GameEvent from "../config/event/GameEvent.js";
-import gameContext from "../base/GameContext.js";
+import GameContext from "../base/GameContext.js";
 import BinaryArrayWriter from "../base/BinaryArrayWriter.js";
 
 export default class Game {
@@ -18,7 +18,7 @@ export default class Game {
     this.money = meta.startingMoney;
     this.researchPoints = meta.startingResearchPoints;
 
-    this.em = gameContext.gameUiBus;
+    this.em = GameContext.gameUiBus;
     this.factories = {};
 
     for (const key in meta.factories) {

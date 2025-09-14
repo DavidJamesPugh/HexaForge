@@ -2,62 +2,45 @@
 <div id="settings">
   <a href="javascript:void(0);" class="closeButton" style="float:right; display:block;">Close</a>
   <b class="title">User key</b>
-  <br /> This is your unique user key. Keep it safe and have a backup!<br /> There is no
-  way
-  to restore your game if this key gets lost!
-  <br /> 
-  <input type="text" class="userHash" id="userHash"
-    value="{{userHash}}" name="userHash" readonly="readonly" /> 
-    <a href="javascript:void(0)" id="copyToClipboardButton">Click here to copy to clipboard</a> or select user id and press CTRL+C (windows) or CMD+C
-  (mac) to copy it. <br /> <br /> <b class="title">Save </b>
+  <br /> This is your unique user key. Keep it safe and have a backup! <br /> There is no way to restore your game if this key gets lost! <br />
+  <input type="text" class="userHash" id="userHash" value="{{userHash}}" name="userHash" readonly="readonly" />
+  <a href="javascript:void(0)" id="copyToClipboardButton">Click here to copy to clipboard</a> or select user id and press CTRL+C (windows) or CMD+C (mac) to copy it. <br />
   <br />
-   Use manual save if you want to experiment and might
-  need to get your game back to earlier state. Game <b>auto saves</b> to your computer every {{localSaveInterval}} and
-  to cloud every {{cloudSaveInterval}}.<br /> {{#each saveSlots}} 
-  <div class="saveSlot"> <b>{{name}}</b>
-    <br /> 
-    <input type="button" class="saveToSlot" data-id="{{id}}" value="Save" />
-    <br /> 
+  <b class="title">Save </b>
+  <br /> Use manual save if you want to experiment and might need to get your game back to earlier state. Game <b>auto saves</b> to your computer every {{localSaveInterval}} and to cloud every {{cloudSaveInterval}}. <br /> {{#each saveSlots}}
+    <div class="saveSlot">
+      <b>{{name}}</b>
+      <br />
+      <input type="button" class="saveToSlot" data-id="{{id}}" value="Save" />
+      <br />
+      <br />
+      {{#if hasSave}} {{lastSave}}
+        <br /> Ticks: <b>{{ticks}}</b>
+        <br />
+        <input type="button" class="loadSlot" data-id="{{id}}" value="Load" />
+      {{else}} No save exists on <br /> this slot yet <br />
+      {{/if}}
+    </div>
+  {{/each}}
+  <br style="clear:both" /> {{#if devMode}}
+    <b class="title">Load from data</b>
     <br />
-     {{#if hasSave}} {{lastSave}}
-     <br />
-    Ticks: <b>{{ticks}}</b>
-    <br /> 
-    <input type="button" class="loadSlot" data-id="{{id}}" value="Load" /> {{else}} No
-    save exists on 
-    <br />
-     this slot yet 
-     <br />
-      {{/if}} 
-    </div> {{/each}} 
-    <br style="clear:both" /> {{#if devMode}} <b
-    class="title">Load from data</b>
-    <br /> 
     <input type="text" id="loadData" />
-    <input type="button" id="loadDataButton" value="Load data"> <br style="clear:both" /> {{/if}} 
-    <br /> 
-    <b class="title">Switch user key</b>
-    <br /> If you have
-  existing user key, copy it here and click update. <br /> This will reload the page with new account. 
-  <br /> 
+    <input type="button" id="loadDataButton" value="Load data">
+    <br style="clear:both" /> {{/if}}
   <br />
-  <input type="text" class="updateUserHash" id="updateUserHash" value="" name="updateUserHash" /> 
-  <input type="button" name="updateUserHashButton" id="updateUserHashButton" value="Update" /> 
-    <br /> 
-    <br /> 
-    <b class="title">Reset</b>
-  <br /> 
-  <b class="red">Resets the game</b> You have been warned! 
-  <br /> 
-  Notice that:
+  <b class="title">Switch user key</b>
+  <br /> If you have existing user key, copy it here and click update. <br /> This will reload the page with new account. <br />
   <br />
-   * Manual saves will not
-  be deleted and can be used to restore the game 
+  <input type="text" class="updateUserHash" id="updateUserHash" value="" name="updateUserHash" />
+  <input type="button" name="updateUserHashButton" id="updateUserHashButton" value="Update" />
   <br />
-   * If you have made purchases, you keep unlocks like faster ticks, but lose consumed items like bonus ticks 
-  <br /> 
-  <br /> 
-  <input type="button" name="resetGame" id="resetGame"
-    value="Reset whole game - you lose all progress!" />
-  <div style="float:right">Version 1.07</div> <br />
+  <br />
+  <b class="title">Reset</b>
+  <br />
+  <b class="red">Resets the game. </b> You have been warned! <br /> Notice that: <br /> * Manual saves will not be deleted and can be used to restore the game <br /> * If you have made purchases, you keep unlocks like faster ticks, but lose consumed items like bonus ticks <br />
+  <br />
+  <input type="button" name="resetGame" id="resetGame" value="Reset whole game - you lose all progress!" />
+  <div style="float:right">Version 1.07</div>
+  <br />
 </div>

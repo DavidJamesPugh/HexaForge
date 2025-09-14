@@ -2,7 +2,7 @@ import Handlebars from "handlebars";
 import factoriesTemplateHtml from "../template/factories.html";
 import AlertUi from "./helper/AlertUi.js";
 import BuyFactoryAction from "../game/action/BuyFactoryAction.js";
-import GameUiEvent from "../config/event/GameEvent.js";
+import GameUiEvent from "../config/event/GameUiEvent.js";
 import GlobalUiEvent from "../config/event/GlobalUiEvent.js";
 import GameContext from "../base/GameContext.js";
 import GlobalUiBus from "../base/GlobalUiBus.js";
@@ -40,23 +40,6 @@ export default class FactoriesUi {
             })
         );
 
-        // // Button handlers
-        // this.container.on("click", ".selectButton", (e) => {
-        //     const factoryId = $(e.target).attr("data-id");
-        //     this.gameUiEm.invokeEvent(GameUiEvent.SHOW_FACTORY, factoryId);
-        // });
-
-        // this.container.on("click", ".buyButton", (e) => {
-        //     const factoryId = $(e.target).attr("data-id");
-        //     const action = new BuyFactoryAction(this.game, factoryId);
-        //     if (action.canBuy()) {
-        //         action.buy();
-        //         this.gameUiEm.invokeEvent(GameUiEvent.SHOW_FACTORY, factoryId);
-        //     } else {
-        //         new AlertUi("", "You don't have enough money to buy this factory!").display();
-        //     }
-        // });
-        
         this.container.querySelectorAll(".selectButton").forEach(btn => {
             btn.addEventListener("click", (e) => {
                 const factoryId = e.target.dataset.id;
@@ -133,7 +116,7 @@ export default class FactoriesUi {
         this.gameUiEm.removeListenerForType("factoriesUi");
         this.game.getEventManager().removeListenerForType("factoriesUi");
         if (this.container) {
-            this.container.html("");
+            this.container.textContent = "";
             this.container = null;
         }
     }

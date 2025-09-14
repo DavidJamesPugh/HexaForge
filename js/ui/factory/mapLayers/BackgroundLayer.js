@@ -1,3 +1,6 @@
+
+import FactoryEvent from "/js/config/event/FactoryEvent.js"; // assuming
+
 export default class BackgroundLayer {
     constructor(imageMap, factory, options) {
       this.imageMap = imageMap;

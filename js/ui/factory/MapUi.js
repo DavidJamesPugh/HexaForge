@@ -5,10 +5,13 @@ import PackageLayer from "./mapLayers/PackageLayer.js";
 import MouseLayer from "./mapLayers/MouseLayer.js";
 import AreasLayer from "./mapLayers/AreasLayer.js";
 import ScreenShotUi from "./ScreenShotUi.js";
+import GlobalUiBus from "../../base/GlobalUiBus.js";
+import imageMap from "../../config/gameAssets.js";
+import FactoryEvent from "../../config/event/FactoryEvent.js"; // assuming
 
 export default class MapUi {
-  constructor(globalUiEm, imageMap, factory) {
-    this.globalUiEm = globalUiEm;
+  constructor(factory) {
+    this.globalUiEm = GlobalUiBus;
     this.imageMap = imageMap;
     this.factory = factory;
     this.game = factory.getGame();
@@ -23,26 +26,37 @@ export default class MapUi {
 
   display(container) {
     this.container = container;
-    const containerW = this.container.width();
-    const containerH = this.container.height();
+
+    const containerW = this.container.clientWidth;
+    const containerH = this.container.clientHeight;
     const mapW = this.factory.getMeta().tilesX * this.tileSize;
     const mapH = this.factory.getMeta().tilesY * this.tileSize;
 
-    this.overlay = $("<div />")
-      .css("overflow", "hidden")
-      .css("margin", "0 0 0 0")
-      .css("width", Math.min(containerW, mapW))
-      .css("height", Math.min(containerH, mapH));
+    // Overlay div
+    this.overlay = document.createElement("div");
+    Object.assign(this.overlay.style, {
+      overflow: "hidden",
+      margin: "0",
+      width: `${Math.min(containerW, mapW)}px`,
+      height: `${Math.min(containerH, mapH)}px`,
+      position: "relative",
+    });
 
-    this.element = $("<div />")
-      .css("position", "relative")
-      .css("width", mapW + "px")
-      .css("height", mapH + "px");
+    // Map element div
+    this.element = document.createElement("div");
+    Object.assign(this.element.style, {
+      position: "absolute",
+      width: `${mapW}px`,
+      height: `${mapH}px`,
+      left: "0px",
+      top: "0px",
+    });
 
-    this.overlay.html(this.element);
-    this.container.html(this.overlay);
+    this.overlay.append(this.element);
+    this.container.append(this.overlay);
 
     this.setupMapDragging();
+
     this.backgroundLayer.display(this.element);
     this.componentLayer.display(this.element);
     this.packageLayer.display(this.element);
@@ -68,49 +82,56 @@ export default class MapUi {
       allowDrag = !meta || !meta.buildByDragging;
     });
 
-    this.element.get(0).addEventListener("mousedown", e => {
-      if (e.which === 1 && !e.shiftKey && !e.altKey && allowDrag) {
-        const startX = e.pageX;
-        const startY = e.pageY;
-        const startOffset = this.element.offset();
-        const overlayOffset = this.overlay.offset();
+    let startX, startY, startLeft, startTop;
 
-        const moveHandler = evt => {
-          const dx = evt.pageX - startX;
-          const dy = evt.pageY - startY;
-          this.element.offset(this.clampOffset(startOffset.left + dx, startOffset.top + dy));
-          this.factory.getEventManager().invokeEvent(FactoryEvent.FACTORY_SCROLL_START);
-        };
+    const moveHandler = evt => {
+      const dx = evt.pageX - startX;
+      const dy = evt.pageY - startY;
 
-        const upHandler = () => {
-          $("body").off("mousemove", moveHandler).off("mouseleave", upHandler).off("mouseup", upHandler);
-          this.factory.getEventManager().invokeEvent(FactoryEvent.FACTORY_SCROLL_END);
-        };
+      this.setElementOffset(startLeft + dx, startTop + dy);
+      this.factory.getEventManager().invokeEvent(FactoryEvent.FACTORY_SCROLL_START);
+    };
 
-        $("body").on("mouseup", upHandler).on("mouseleave", upHandler).on("mousemove", moveHandler);
+    const upHandler = () => {
+      document.body.removeEventListener("pointermove", moveHandler);
+      document.body.removeEventListener("pointerup", upHandler);
+      this.factory.getEventManager().invokeEvent(FactoryEvent.FACTORY_SCROLL_END);
+    };
+
+    this.element.addEventListener("pointerdown", e => {
+      if (e.button === 0 && !e.shiftKey && !e.altKey && allowDrag) {
+        startX = e.pageX;
+        startY = e.pageY;
+        const rect = this.element.getBoundingClientRect();
+        startLeft = parseInt(this.element.style.left || "0", 10);
+        startTop = parseInt(this.element.style.top || "0", 10);
+
+        document.body.addEventListener("pointermove", moveHandler);
+        document.body.addEventListener("pointerup", upHandler);
       }
     });
 
     // center view initially
-    const offset = this.overlay.offset();
-    let left = offset.left;
-    let top = offset.top;
-    if (this.overlay.width() < this.element.width()) {
-      left = -this.factory.getMeta().startX * this.tileSize + offset.left;
-    }
-    if (this.overlay.height() < this.element.height()) {
-      top = -this.factory.getMeta().startY * this.tileSize + offset.top;
-    }
-    this.element.offset(this.clampOffset(left, top));
+    const startLeftOffset = -this.factory.getMeta().startX * this.tileSize;
+    const startTopOffset = -this.factory.getMeta().startY * this.tileSize;
+    this.setElementOffset(startLeftOffset, startTopOffset);
+  }
+
+  setElementOffset(left, top) {
+    const clamped = this.clampOffset(left, top);
+    this.element.style.left = `${clamped.left}px`;
+    this.element.style.top = `${clamped.top}px`;
   }
 
   clampOffset(left, top) {
-    const overlayOffset = this.overlay.offset();
-    const maxLeft = overlayOffset.left;
-    const minLeft = overlayOffset.left - this.element.width() + this.overlay.width();
+    const overlayRect = this.overlay.getBoundingClientRect();
+    const elemRect = this.element.getBoundingClientRect();
 
-    const maxTop = overlayOffset.top;
-    const minTop = overlayOffset.top - this.element.height() + this.overlay.height();
+    const maxLeft = 0;
+    const minLeft = this.overlay.clientWidth - this.element.offsetWidth;
+
+    const maxTop = 0;
+    const minTop = this.overlay.clientHeight - this.element.offsetHeight;
 
     return {
       left: Math.min(Math.max(left, minLeft), maxLeft),
@@ -125,7 +146,7 @@ export default class MapUi {
     this.packageLayer.destroy();
     this.mouseLayer.destroy();
     this.areasLayer.destroy();
-    this.container.html("");
+    this.container.innerHTML = "";
     this.container = null;
   }
 }

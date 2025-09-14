@@ -1,6 +1,6 @@
 
 const scale = (base, exponent) => base * Math.pow(1000, exponent);
-    const upgrades = {
+    const upgradesComponent = {
         layout: [
             { name: "Conveyor", iconX: 1, iconY: 0, items: ["packageSize"] },
             { name: "Research center", iconX: 3, iconY: 3, items: ["analystCenterConvertMore", "researchCenterBonus", "researchCenterMaxStock"] },
@@ -800,4 +800,4 @@ const scale = (base, exponent) => base * Math.pow(1000, exponent);
         ],
     };
 
-    export default upgrades;
+    export default upgradesComponent;

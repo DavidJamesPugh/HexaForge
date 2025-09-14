@@ -2,6 +2,8 @@
 import BuyAreaAction from "../../../game/action/BuyAreaAction.js";
 import ConfirmUi from "../../helper/ConfirmUi.js";
 import AlertUi from "../../helper/AlertUi.js";
+import FactoryEvent from "/js/config/event/FactoryEvent.js"; // assuming
+import numberFormat from "/js/base/NumberFormat.js"
 
 export default class AreasLayer {
   constructor(imageMap, factory, { tileSize }) {
@@ -15,7 +17,7 @@ export default class AreasLayer {
 
   display(container) {
     this.container = container;
-    this.container.append('<div id="areasLayer" style="position:absolute"></div>');
+    this.container.insertAdjacentHTML("afterbegin", '<div id="areasLayer" style="position:absolute"></div>');
 
     this.factory.getEventManager().addListener(
       "AreasLayer",
@@ -23,40 +25,50 @@ export default class AreasLayer {
       () => this.redraw()
     );
 
-    this.area = this.container.find("#areasLayer");
+    this.area = this.container.querySelector("#areasLayer");
     this.redraw();
   }
 
   redraw() {
-    this.area.html("");
+    this.area.innerHTML = "";
 
-    this.factory.getMeta().areas.forEach(area => {
-      if (!this.factory.getAreasManager().getIsAreaBought(area.id)) {
-        for (const [index, loc] of area.locations.entries()) {
-          const rect = $(`<div class="mapBuyArea" data-id="${area.id}"></div>`)
-            .css({
-              left: this.tileSize * loc.x,
-              top: this.tileSize * loc.y,
-              width: this.tileSize * loc.width,
-              height: this.tileSize * loc.height,
-            });
+    const meta = this.factory.getMeta();
+    const areasManager = this.factory.getAreasManager();
 
-          let label = "";
+    meta.areas.forEach(area => {
+      if (!areasManager.getIsAreaBought(area.id)) {
+        area.locations.forEach((loc, index) => {
+          const rect = document.createElement("div");
+          rect.className = "mapBuyArea";
+          rect.dataset.id = area.id;
+          
+          Object.assign(rect.style, {
+            left: `${this.tileSize * loc.x}px`,
+            top: `${this.tileSize * loc.y}px`,
+            width: `${this.tileSize * loc.width}px`,
+            height: `${this.tileSize * loc.height}px`,
+            position: "absolute"
+          });
+
+          this.area.appendChild(rect); 
+
           if (index === 0) {
-            label = $(
-              `<div class="mapBuyAreaTitle money">
-                ${area.name}<br />Buy for <br /><b>$${nf(area.price)}</b>
-               </div>`
-            ).css({
-              left: this.tileSize * loc.x,
-              top: this.tileSize * loc.y,
-              width: this.tileSize * loc.width,
-              marginTop: (this.tileSize * loc.height) / 2 - 23,
+            const label = document.createElement("div");
+            label.className = "mapBuyAreaTitle money";
+            label.innerHTML = `
+            ${area.name}<br />
+            Buy for <br />
+            <b>$${numberFormat.formatNumber(area.price)}`;
+            Object.assign(label.style, {
+              left: `${this.tileSize * loc.x}px`,
+              top: `${this.tileSize * loc.y}px`,
+              width: `${this.tileSize * loc.width}px`,
+              marginTop: `${(this.tileSize*loc.height)/2-23}px`,
+              position: "absolute"
             });
-          }
-
-          this.area.append(rect).append(label);
-        }
+            this.area.appendChild(label);
+          };
+        });
       }
     });
 
@@ -71,51 +83,56 @@ export default class AreasLayer {
       setTimeout(() => (scrolling = false), 100);
     });
 
-    this.area.find(".mapBuyArea")
-      .on("mouseover", e => {
-        const id = $(e.currentTarget).attr("data-id");
+    this.area.querySelectorAll(".mapBuyArea").forEach(el => {
+      el.addEventListener("pointerover", e => {
+        const id = e.currentTarget.dataset.id;
         if (hovered !== id) {
-          this.area.find(".mapBuyArea").removeClass("mapBuyAreaOver");
-          this.area.find(`.mapBuyArea[data-id='${id}']`).addClass("mapBuyAreaOver");
+          this.area.querySelectorAll(".mapBuyArea").forEach(
+            div => div.classList.remove("mapBuyAreaOver")
+          );
+          this.area.querySelectorAll(`.mapBuyArea[data-id="${id}"]`).forEach(
+            div => div.classList.add("mapBuyAreaOver")
+          );
         }
         hovered = id;
-      })
-      .on("mouseout", () => {
-        this.area.find(".mapBuyArea").removeClass("mapBuyAreaOver");
+      });
+
+      el.addEventListener("pointerout", () => {
+        this.area.querySelectorAll(".mapBuyArea").forEach(div => div.classList.remove("mapBuyAreaOver"));
         hovered = null;
-      })
-      .on("click", e => {
+      });
+
+      el.addEventListener("click", e => {
         if (scrolling) return;
 
-        const id = $(e.currentTarget).attr("data-id");
-        const meta = this.factory.getMeta().areasById[id];
+        const id = e.currentTarget.dataset.id;
+        const metaArea = meta.areasById[id];
         const action = new BuyAreaAction(this.factory, id);
 
-        if (action.canBuy()) {
+        if (action.canBuy()){
           new ConfirmUi(
             "",
             `<center>Are you sure you want to buy this area for <br />
-              <b class="money" style="font-size:1.1em">$${nf(meta.price)}</b></center>`
-          )
-            .setOkTitle("Yes, buy")
-            .setCancelTitle("No")
-            .setOkCallback(() => {
-              const confirmAction = new BuyAreaAction(this.factory, id);
-              if (confirmAction.canBuy()) {
-                confirmAction.buy();
-                this.redraw();
-              }
-            })
-            .display();
+            <b class="money" style="font-size:1.1em">$${numberFormat.formatNumber(meta.price)}</b></center>`
+          ).setOkTitle("Yes, buy").setCancelTitle("No")
+          .setOkCallback(() => {
+            const confirmAction = new BuyAreaAction(this.factory, id);
+            if(confirmAction.canBuy()) {
+              confirmAction.buy();
+              this.redraw();
+            }
+          }).display();
         } else {
-          new AlertUi("", "<center>You don't have enough money to buy selected area</center>").display();
+          new AlertUi("","<center>You don't have enough money to buy selected area</center>").display();
         }
+
       });
+    });
   }
 
   destroy() {
     this.factory.getEventManager().removeListenerForType("AreasLayer");
-    this.container.html("");
+    this.container.innerHTML = "";
     this.container = null;
     this.canvas = null;
   }

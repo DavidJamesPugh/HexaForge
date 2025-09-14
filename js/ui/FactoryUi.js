@@ -15,18 +15,18 @@ import IncentivizedAdButtonUi from "./IncentivizedAdButtonUi.js";
 export default class FactoryUi {
     constructor(factory, play) {
         this.globalUiEm = GlobalUiBus;
-        this.gameUiEm = GameContext.gameUiBus;
-        this.factory = factory;
         this.play = play;
-        this.imageMap = imageMap;
+        this.factory = factory;
         this.game = factory.getGame();
+        this.gameUiEm = this.game.getEventManager();
         this.statistics = this.game.getStatistics();
+        this.imageMap = imageMap;
 
-        this.menuUi = new MenuUi(globalUiEm, gameUiEm, factory);
-        this.mapUi = new MapUi(globalUiEm, imageMap, factory);
-        this.componentsUi = new ComponentsUi(globalUiEm, factory);
+        this.menuUi = new MenuUi(factory);
+        this.mapUi = new MapUi(factory);
+        this.componentsUi = new ComponentsUi(factory);
         this.mapToolsUi = new MapToolsUi(factory);
-        this.infoUi = new InfoUi(factory, this.statistics, play, imageMap);
+        this.infoUi = new InfoUi(factory, this.statistics, play);
         this.controlsUi = new ControlsUi(factory);
         this.overviewUi = new OverviewUi(factory, this.statistics);
         this.incentivizedAdButtonUi = new IncentivizedAdButtonUi(play);
@@ -34,25 +34,26 @@ export default class FactoryUi {
 
     display(container) {
         this.container = container;
-        this.container.html(Handlebars.compile(factoryTemplateHtml)());
+        this.mainContainer = this.container.querySelector(".main");
+        this.container.insertAdjacentHTML("beforeend", Handlebars.compile(factoryTemplateHtml)());
 
         if (this.game.getIsPremium()) {
-            $(".main").addClass("fullScreen");
-            const mapContainer = this.container.find(".mapContainer");
-            mapContainer.css("width", $(window).width() - 250);
-            mapContainer.css("height", $(window).height() - 150);
+            this.mainContainer.classList.toggle("fullScreen", true);
+            const mapContainer = this.container.querySelector(".mapContainer");
+            mapContainer.style.width = `${window.innerWidth - 250}px`;
+            mapContainer.style.height = `${window.innerHeight - 150}px`;
         }
 
-        this.menuUi.display(this.container.find(".menuContainer"));
-        this.mapUi.display(this.container.find(".mapContainer"));
-        this.componentsUi.display(this.container.find(".componentsContainer"));
-        this.infoUi.display(this.container.find(".infoContainer"));
-        this.controlsUi.display(this.container.find(".controlsContainer"));
-        this.overviewUi.display(this.container.find(".overviewContainer"));
+        this.menuUi.display(this.container.querySelector(".menuContainer"));
+        this.mapUi.display(this.container.querySelector(".mapContainer"));
+        this.componentsUi.display(this.container.querySelector(".componentsContainer"));
+        this.infoUi.display(this.container.querySelector(".infoContainer"));
+        this.controlsUi.display(this.container.querySelector(".controlsContainer"));
+        this.overviewUi.display(this.container.querySelector(".overviewContainer"));
         if (this.play.isDevMode()) {
-            this.mapToolsUi.display(this.container.find(".mapToolsContainer"));
+            this.mapToolsUi.display(this.container.querySelector(".mapToolsContainer"));
         }
-        this.incentivizedAdButtonUi.display(this.container.find(".incentivizedAd"));
+        this.incentivizedAdButtonUi.display(this.container.querySelector(".incentivizedAd"));
     }
 
     destroy() {
@@ -65,9 +66,10 @@ export default class FactoryUi {
         this.incentivizedAdButtonUi.destroy();
 
         this.game.getEventManager().removeListenerForType("FactoryUi");
-        this.container.html("");
+        this.container.innerHTML = ""; 
         this.container = null;
+        this.mainContainer = this.container.querySelector(".main");
 
-        $(".main").removeClass("fullScreen");
+        this.mainContainer.classList.toggle("fullScreen", false);
     }
 }

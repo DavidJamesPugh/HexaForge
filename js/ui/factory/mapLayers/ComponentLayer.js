@@ -1,5 +1,6 @@
 import DefaultStrategy from "./strategy/Default.js";
 import TrackStrategy from "./strategy/Track.js";
+import FactoryEvent from "/js/config/event/FactoryEvent.js"; // assuming
 
 export default class ComponentLayer {
   constructor(imageMap, factory, options) {

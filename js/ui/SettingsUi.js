@@ -54,39 +54,39 @@ export default class SettingsUi {
             });
         }
 
-        $("body").append(
-            Handlebars.compile(settingsTemplateHtml)({
-                userHash: this.userHash.toString(),
-                cloudSaveInterval: Math.ceil(this.saveManager.getCloudSaveInterval() / 60000) + " minutes",
-                localSaveInterval: Math.ceil(this.saveManager.getLocalSaveInterval() / 1000) + " seconds",
-                saveSlots,
-                devMode: this.play.isDevMode()
-            })
-        );
+        document.body.insertAdjacentHTML('beforeend', Handlebars.compile(settingsTemplateHtml)({
+            userHash: this.userHash.toString(),
+            cloudSaveInterval: Math.ceil(this.saveManager.getCloudSaveInterval() / 60000) + " minutes",
+            localSaveInterval: Math.ceil(this.saveManager.getLocalSaveInterval() / 1000) + " seconds",
+            saveSlots,
+            devMode: this.play.isDevMode()
+        }));
+
+        this.bg = document.getElementById("settingsBg");
+        this.element = document.getElementById("settings");
 
         this.isVisible = true;
-        const el = $("#settings");
 
         // Center horizontally
-        el.css("left", ($("html").width() - el.outerWidth()) / 2);
+        this.element.style.left = `${(document.documentElement.offsetWidth - this.element.offsetWidth) / 2}px`;
 
         // Events
-        el.find(".closeButton").click(() => this.hide());
+        this.element.querySelector(".closeButton").addEventListener("click", () => this.hide());
 
-        el.find("#userHash").click(function () {
-            this.setSelectionRange(0, $(this).val().length);
+        this.element.querySelector("#userHash").addEventListener("click", function () {
+            this.setSelectionRange(0, this.value.length);
         });
 
-        el.find("#updateUserHashButton").click(() => {
-            const newHash = el.find("#updateUserHash").val();
+        this.element.querySelector("#updateUserHashButton").addEventListener("click", () => {
+            const newHash = this.element.querySelector("#updateUserHash").value;
             if (newHash) {
                 this.userHash.updateUserHash(newHash);
                 document.location = document.location; // refresh
             }
         });
 
-        el.find("#copyToClipboardButton").click(() => {
-            $("#userHash").get(0).select();
+        this.element.querySelector("#copyToClipboardButton").addEventListener("click", () => {
+            this.element.querySelector("#userHash").select();
             try {
                 const success = document.execCommand("copy");
                 console.log("Copying text command was " + (success ? "successful" : "unsuccessful"));
@@ -95,13 +95,15 @@ export default class SettingsUi {
             }
         });
 
-        el.find(".saveToSlot").click((ev) => {
+        this.element.querySelector(".saveToSlot").addEventListener("click", (ev) => {
             const slotId = $(ev.currentTarget).attr("data-id");
             this.saveManager.saveManual(slotId, () => this.hide());
         });
 
-        el.find(".loadSlot").click((ev) => {
-            const slotId = $(ev.currentTarget).attr("data-id");
+        this.element.addEventListener("click", (ev) => {
+            const slot = ev.target.closest(".loadSlot");
+            if (!slot) return; // ignore clicks outside
+            const slotId = $(slot).attr("data-id");
             new ConfirmUi("Load game", "Are you sure you want to load game?")
                 .setCancelTitle("Yes, load game")
                 .setOkTitle("Nooooo!!!")
@@ -113,15 +115,16 @@ export default class SettingsUi {
                 })
                 .display();
         });
+        
 
-        el.find("#loadDataButton").click(() => {
-            const raw = el.find("#loadData").val();
+        this.element.querySelector("#loadDataButton").addEventListener("click", () => {
+            const raw = this.element.querySelector("#loadData").value;
             this.saveManager.updateGameFromSaveData({ data: raw });
             this.hide();
             this.gameUiEm.invokeEvent(GameUiEvent.SHOW_FACTORIES);
         });
 
-        el.find("#resetGame").click(() => {
+        this.element.querySelector("#resetGame").addEventListener("click", () => {
             new ConfirmUi("Reset game", "Are you sure you want to reset the game?")
                 .setCancelTitle("Yes, RESET GAME")
                 .setOkTitle("Nooooo!!!")
@@ -133,13 +136,13 @@ export default class SettingsUi {
                 .display();
         });
 
-        $("#settingsBg").click(() => this.hide());
+        this.bg.addEventListener("click", () => this.hide());
     }
 
     hide() {
         this.isVisible = false;
-        $("#settings").remove();
-        $("#settingsBg").remove();
+        this.element.remove();
+        this.bg.remove();
     }
 
     destroy() {

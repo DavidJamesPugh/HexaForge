@@ -37,7 +37,7 @@ export default class GameUi {
 
         this.helpUi = new HelpUi().init();
         this.purchasesUi = new PurchasesUi(this.play).init();
-        this.settingsUi = new SettingsUi(this.play, this.play.getUserHash(), this.play.getSaveManager()).init();
+        this.settingsUi = new SettingsUi(this.play, this.game, this.play.getUserHash(), this.play.getSaveManager()).init();
         this.timeTravelUi = new TimeTravelUi(this.play).init();
 
         this._showUi("factories");
