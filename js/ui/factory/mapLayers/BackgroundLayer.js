@@ -162,7 +162,7 @@ export default class BackgroundLayer {
     destroy() {
       this.factory.getEventManager().removeListenerForType("LayerBackground");
       if (this.container) {
-        this.container.html("");
+        this.container.innerHTML = "";
         this.container = null;
       }
     }

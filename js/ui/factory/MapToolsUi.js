@@ -1,5 +1,6 @@
 // ui/factory/MapToolsUi.js
 import mapToolsTemplate from "../../template/factory/mapTools.html";
+import Handlebars from "handlebars";
 
 const EVENT_KEY = "factoryMapToolsUi";
 

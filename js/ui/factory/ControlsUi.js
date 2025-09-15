@@ -3,6 +3,8 @@ import controlsTemplate from "../../template/factory/controls.html";
 import ClearPackagesAction from "../../game/action/ClearPackagesAction.js";
 import ResetFactoryAction from "../../game/action/ResetFactoryAction.js";
 import ConfirmUi from "../helper/ConfirmUi.js";
+import numberFormat from "/js/base/NumberFormat.js"
+import GameEvent from "/js/config/event/GameEvent.js"
 
 const EVENT_KEY = "factoryControlsUi";
 
@@ -23,76 +25,70 @@ export default class ControlsUi {
     updateControlButtons() {
         const ticker = this.game.getTicker();
         if (ticker.getBonusTicks()) {
-            this.bonusTicks.show();
+            this.bonusTicks.style.display = "block";
             if (ticker.getIsFastActive()) {
-                this.playFastButton.hide();
-                this.playNormalButton.show();
+                this.playFastButton.style.display = "none";
+                this.playNormalButton.style.display = "block";
             } else {
-                this.playFastButton.show();
-                this.playNormalButton.hide();
+                this.playFastButton.style.display = "block";
+                this.playNormalButton.style.display = "none";
             }
         } else {
-            this.bonusTicks.hide();
-            this.playFastButton.hide();
-            this.playNormalButton.hide();
+            this.bonusTicks.style.display = "none";
+            this.playFastButton.style.display = "none";
+            this.playNormalButton.style.display = "none";
         }
 
         if (this.factory.getIsPaused()) {
-            this.playButton.show();
-            this.pauseButton.hide();
+            this.playButton.style.display = "block";
+            this.pauseButton.style.display = "none";
         } else {
-            this.playButton.hide();
-            this.pauseButton.show();
+            this.playButton.style.display = "none";
+            this.pauseButton.style.display = "block";
         }
     }
 
     updateBonusTicksValue() {
-        this.bonusTicks.find("span").html(nf(this.game.getTicker().getBonusTicks()));
+        const span = this.bonusTicks.querySelector("span")
+        if(span){
+            span.textContent = numberFormat.formatNumber(this.game.getTicker().getBonusTicks());
+        }
         this.updateControlButtons();
     }
 
     display(container) {
         this.container = container;
-        this.container.html(Handlebars.compile(controlsTemplate)());
+        this.container.insertAdjacentHTML("beforeend",Handlebars.compile(controlsTemplate)());
 
         const ticker = this.game.getTicker();
 
-        this.pauseButton = this.container.find("#stopButton");
-        this.playButton = this.container.find("#playButton");
-        this.playFastButton = this.container.find("#playFastButton");
-        this.playNormalButton = this.container.find("#playNormalButton");
-        this.bonusTicks = this.container.find("#bonusTicks");
-        this.clearPackagesButton = this.container.find("#clearPackages");
-        this.resetFactoryButton = this.container.find("#resetFactory");
+        this.pauseButton = this.container.querySelector("#stopButton");
+        this.playButton = this.container.querySelector("#playButton");
+        this.playFastButton = this.container.querySelector("#playFastButton");
+        this.playNormalButton = this.container.querySelector("#playNormalButton");
+        this.bonusTicks = this.container.querySelector("#bonusTicks");
+        this.clearPackagesButton = this.container.querySelector("#clearPackages");
+        this.resetFactoryButton = this.container.querySelector("#resetFactory");
 
         this.updateControlButtons();
         this.updateBonusTicksValue();
 
-        this.pauseButton.click(() => {
-            ticker.stopFast();
-            this.factory.setIsPaused(true);
-            this.updateControlButtons();
-        });
 
-        this.playButton.click(() => {
-            ticker.stopFast();
-            this.factory.setIsPaused(false);
+        const setPaused = (paused, fast = false) => {
+            if(fast) {
+                ticker.startFast();
+            } else {
+                ticker.stopFast();
+            }
+            this.factory.setIsPaused(paused);
             this.updateControlButtons();
-        });
+        }
+        this.pauseButton.addEventListener("pointerdown", () => setPaused(true));
+        this.playButton.addEventListener("pointerdown", () => setPaused(false));
+        this.playFastButton.addEventListener("pointerdown", () => setPaused(false, true));
+        this.playNormalButton.addEventListener("pointerdown", () => setPaused(false));
 
-        this.playFastButton.click(() => {
-            ticker.startFast();
-            this.factory.setIsPaused(false);
-            this.updateControlButtons();
-        });
-
-        this.playNormalButton.click(() => {
-            ticker.stopFast();
-            this.factory.setIsPaused(false);
-            this.updateControlButtons();
-        });
-
-        this.clearPackagesButton.click(() => {
+        this.clearPackagesButton.addEventListener("pointerdown", () => {
             const action = new ClearPackagesAction(this.factory);
             if (action.canClear()) action.clear();
         });
@@ -113,7 +109,7 @@ export default class ControlsUi {
 
     destroy() {
         this.game.getEventManager().removeListenerForType(EVENT_KEY);
-        if (this.container) this.container.html("");
+        if (this.container) this.container.innerHTML = "";
         this.container = null;
     }
 }

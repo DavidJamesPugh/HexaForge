@@ -1,5 +1,8 @@
 // src/ui/factory/OverviewUi.js
 import template from '../../template/factory/overview.html';
+import Handlebars from "handlebars";
+import numberFormat from "/js/base/NumberFormat.js"
+import GameEvent from "/js/config/event/GameEvent.js"
 
 class OverviewUi {
   constructor(factory, statistics) {
@@ -12,9 +15,9 @@ class OverviewUi {
   display(container) {
     this.container = container;
     // Render the template with initial data
-    this.container.html(
+    this.container.insertAdjacentHTML("beforeend", 
       Handlebars.compile(template)({
-        researchBought: !!this.game.getResearchManager().getResearch('researchCenter'),
+        researchBought: Boolean(this.game.getResearchManager().getResearch('researchCenter')),
       })
     );
 
@@ -27,27 +30,42 @@ class OverviewUi {
   }
 
   update() {
+    if (!this.container) return;
     // Update money and research points
-    $('#money').html(nf(this.game.getMoney()));
-    $('#research').html(nf(this.game.getResearchPoints()));
+    const { game, statistics, factory, container } = this;
+    const money = this.container.querySelector('#money');
+    money.textContent = numberFormat.formatNumber(this.game.getMoney());
+    const research = this.container.querySelector('#research');
+    if (research && game.getResearchPoints()) {
+      research.textContent = numberFormat.formatNumber(game.getResearchPoints());
+    }
 
-    // Update income
-    const avgProfit = this.statistics.getFactoryAvgProfit(this.factory.getMeta().id);
-    const profitPerSec = avgProfit * this.game.getTicker().getTicksPerSec();
-    $('#income').html(nf(avgProfit));
-    $('#incomePerSec').html(nf(profitPerSec));
+    // Income
+    const avgProfit = statistics.getFactoryAvgProfit(factory.getMeta().id);
+    const profitPerSec = avgProfit * game.getTicker().getTicksPerSec();
 
-    // Update research income and ticks
-    const avgResearch = this.statistics.getFactoryAvgResearchPointsProduction(this.factory.getMeta().id);
-    $('#researchIncome').html(nf(avgResearch));
-    $('#ticks').html(nf(this.game.getTicker().getActualTicksPerSec()));
+    const income = container.querySelector("#income");
+    if (income) income.textContent = numberFormat.formatNumber(avgProfit);
+
+    const incomeRate = container.querySelector("#incomePerSec");
+    if (incomeRate) incomeRate.textContent = numberFormat.formatNumber(profitPerSec);
+
+    // Research income + ticks
+    const avgResearch = statistics.getFactoryAvgResearchPointsProduction(factory.getMeta().id);
+    const researchIncome = container.querySelector("#researchIncome");
+    if (researchIncome) researchIncome.textContent = numberFormat.formatNumber(avgResearch);
+
+    const ticks = container.querySelector("#ticks");
+    if (ticks) ticks.textContent = numberFormat.formatNumber(game.getTicker().getActualTicksPerSec());
   }
 
   destroy() {
     this.game.getEventManager().removeListenerForType('factoryOverviewUi');
-    if (this.container) this.container.html('');
-    this.container = null;
+    if (this.container) {
+      this.container.innerHTML = '';
+      this.container = null;
+  
+    }
   }
 }
-
 export default OverviewUi;

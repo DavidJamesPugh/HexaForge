@@ -6,6 +6,9 @@ import Sorter from "../../ui/factory/componentUi/Sorter.js";
 import ProductionGraphUi from "../../game/misc/productionTree2/ProductionGraphUi";
 import ProductionTreeBuilder from "../../game/misc/productionTree2/ProductionTreeBuilder.js";
 import PassTimeAction from "../../game/action/PassTimeAction";
+import Handlebars from "handlebars";
+import FactoryEvent from "../../config/event/FactoryEvent.js";
+import numberFormat from "/js/base/NumberFormat.js"
 
 export default class InfoUi {
   constructor(factory, statistics, play, imageMap) {
@@ -33,9 +36,9 @@ export default class InfoUi {
 
   display(container) {
     this.container = container;
-    this.container.html(Handlebars.compile(infoTemplate)({}));
-    this.infoContainer = this.container.find(".componentInfo");
-    this.controlsContainer = this.container.find(".componentControls");
+    this.container.insertAdjacentHTML("beforeend",Handlebars.compile(infoTemplate)({}));
+    this.infoContainer = this.container.querySelector(".componentInfo");
+    this.controlsContainer = this.container.querySelector(".componentControls");
 
     const em = this.factory.getEventManager();
 
@@ -75,19 +78,16 @@ export default class InfoUi {
   }
 
   checkWhatShouldBeDisplayed(tickUpdate = false) {
-    if (this.hoveredComponentMetaId) {
-      if (!tickUpdate) {
-        this.showComponentMetaInfo(this.hoveredComponentMetaId);
-        this.hideComponentStrategy();
-      }
+    if (this.hoveredComponentMetaId && !tickUpdate) {
+      this.showComponentMetaInfo(this.hoveredComponentMetaId);
+      this.hideComponentStrategy();
     } else if (this.selectedComponent) {
       this.showComponentInfo(this.selectedComponent);
       this.showComponentStrategy(this.selectedComponent);
-    } else if (this.selectedComponentMetaId) {
-      if (!tickUpdate) {
-        this.showComponentMetaInfo(this.selectedComponentMetaId);
-        this.hideComponentStrategy();
-      }
+    } else if (this.selectedComponentMetaId && !tickUpdate) {
+      this.showComponentMetaInfo(this.selectedComponentMetaId);
+      this.hideComponentStrategy();
+      
     } else if (this.selectedPosition) {
       this.showLocationInfo(this.selectedPosition.x, this.selectedPosition.y);
       this.hideComponentStrategy();
@@ -113,7 +113,7 @@ export default class InfoUi {
       component: tile.getComponent() ? tile.getComponent().getDescriptionData() : {}
     };
 
-    this.infoContainer.html(Handlebars.compile(infoDetailsTemplate)(context));
+    this.infoContainer.innerHTML = Handlebars.compile(infoDetailsTemplate)(context);
   }
 
   showComponentStrategy(component) {
@@ -124,7 +124,7 @@ export default class InfoUi {
       this.displayedStrategyComponent = component;
       this.displayedStrategy = new Strategy(component);
       this.displayedStrategy.display(this.controlsContainer);
-      this.controlsContainer.show();
+      this.controlsContainer.style.display = "block";
     } else {
       this.hideComponentStrategy();
     }
@@ -136,7 +136,8 @@ export default class InfoUi {
       this.displayedStrategy = null;
       this.displayedStrategyComponent = null;
     }
-    this.controlsContainer.html("").hide();
+    this.controlsContainer.innerHTML = "";
+    this.controlsContainer.style.display = "none";
   }
 
   showComponentMetaInfo(id) {
@@ -146,22 +147,24 @@ export default class InfoUi {
       component: Component.getMetaDescriptionData(meta, this.factory)
     };
 
-    this.infoContainer.html(Handlebars.compile(infoDetailsTemplate)(context));
+    this.infoContainer.innerHTML = Handlebars.compile(infoDetailsTemplate)(context);
 
     const tree = new ProductionTreeBuilder(this.factory).buildTree(id, 1);
     if (tree.hasChildren()) {
       const graph = new ProductionGraphUi(tree, this.imageMap);
-      const graphContainer = this.infoContainer.find(".componentGraph");
+      const graphContainer = this.infoContainer.querySelector(".componentGraph");
       graph.display(graphContainer);
 
-      const infoArea = this.infoContainer.find(".componentInfoArea");
-      infoArea.width(infoArea.width() - graphContainer.width());
+      const infoArea = this.infoContainer.querySelector(".componentInfoArea");
+      if (infoArea && graphContainer){
+        infoArea.style.width = `${infoArea.offsetWidth - graphContainer.offsetWidth}px`;
+      }
     }
   }
 
   hideInfo() {
     this.hideComponentStrategy();
-    this.infoContainer.html("");
+    this.infoContainer.innerHTML ="";
   }
 
   showDefaultInfo() {
@@ -194,16 +197,16 @@ export default class InfoUi {
           <td width="100"><b>1 week</b></td>
         </tr>
         ${makeRow("Research:", [
-          nf(15 * 60 * researchPerSec),
-          nf(60 * 60 * researchPerSec),
-          nf(24 * 60 * 60 * researchPerSec),
-          nf(7 * 24 * 60 * 60 * researchPerSec)
+          numberFormat.formatNumber(15 * 60 * researchPerSec),
+          numberFormat.formatNumber(60 * 60 * researchPerSec),
+          numberFormat.formatNumber(24 * 60 * 60 * researchPerSec),
+          numberFormat.formatNumber(7 * 24 * 60 * 60 * researchPerSec)
         ], "research")}
         ${makeRow("Money", [
-          `$${nf(15 * 60 * moneyPerSec)}`,
-          `$${nf(60 * 60 * moneyPerSec)}`,
-          `$${nf(24 * 60 * 60 * moneyPerSec)}`,
-          `$${nf(7 * 24 * 60 * 60 * moneyPerSec)}`
+          `$${numberFormat.formatNumber(15 * 60 * moneyPerSec)}`,
+          `$${numberFormat.formatNumber(60 * 60 * moneyPerSec)}`,
+          `$${numberFormat.formatNumber(24 * 60 * 60 * moneyPerSec)}`,
+          `$${numberFormat.formatNumber(7 * 24 * 60 * 60 * moneyPerSec)}`
         ], "money")}
         <tr>
           <td></td>
@@ -214,17 +217,20 @@ export default class InfoUi {
         </tr>
       </table>`;
 
-    this.infoContainer.html(table);
+    this.infoContainer.insertAdjacentHTML("beforeend", table);
 
-    this.infoContainer.find(".passTime").click(e => {
-      const minutes = parseInt($(e.target).attr("data-amount"), 10);
-      new PassTimeAction(this.game, 60 * minutes).passTime();
+    this.infoContainer.querySelectorAll(".passTime").forEach(link => {
+      link.addEventListener("click", e => {
+        e.preventDefault();
+        const minutes = parseInt(e.target.dataset.amount, 10);
+        new PassTimeAction(this.game, 60 * minutes).passTime()
+      });
     });
   }
 
   destroy() {
     this.factory.getEventManager().removeListenerForType(this.listenerKey);
-    this.container.html("");
+    this.container.innerHTML = "";
     this.container = null;
   }
 }
