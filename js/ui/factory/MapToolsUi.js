@@ -1,6 +1,7 @@
 // ui/factory/MapToolsUi.js
 import mapToolsTemplate from "../../template/factory/mapTools.html";
 import Handlebars from "handlebars";
+import FactoryEvent from "/js/config/event/FactoryEvent.js"
 
 const EVENT_KEY = "factoryMapToolsUi";
 
@@ -14,7 +15,6 @@ export default class MapToolsUi {
 
     display(container) {
         this.container = container;
-
         // Build tool list
         const tools = [
             { id: "buildable-road", name: "Partial buildable area", showBreak: false },
@@ -25,15 +25,21 @@ export default class MapToolsUi {
             }))
         ];
 
-        this.container.html(Handlebars.compile(mapToolsTemplate)({ tools }));
+        this.container.insertAdjacentHTML("beforeend", Handlebars.compile(mapToolsTemplate)({ tools }));
 
+        this.locationElement = this.container.querySelector(".location");
+        this.mapDataElement = this.container.querySelector("#mapData");
+        this.buttons = this.container.querySelectorAll(".button");
+        
         this.updateMapData();
 
         const em = this.factory.getEventManager();
 
         // Mouse move → show location
         em.addListener(EVENT_KEY, FactoryEvent.FACTORY_MOUSE_MOVE, e => {
-            this.container.find(".location").html(`${e.x}:${e.y}`);
+            if (this.locationElement) {
+                this.locationElement.textContent = `${e.x}:${e.y}`;
+            }
         });
 
         // Tile change → refresh map data
@@ -44,8 +50,9 @@ export default class MapToolsUi {
         // Tool selected → update UI
         em.addListener(EVENT_KEY, FactoryEvent.MAP_TOOL_SELECTED, toolId => {
             this.selectedToolId = toolId;
-            this.container.find(".button").removeClass("buttonSelected");
-            this.container.find(`.but${toolId || ""}`).addClass("buttonSelected");
+            this.buttons.forEach(element => {
+                element.classList.toggle("buttonSelected", element.dataset.id === toolId);
+            });
         });
 
         // Component selected → clear tool selection
@@ -54,44 +61,46 @@ export default class MapToolsUi {
         });
 
         // Button click → set tool
-        this.container.find(".button").on("click", e => {
-            const toolId = e.target.getAttribute("data-id");
-            em.invokeEvent(FactoryEvent.COMPONENT_META_SELECTED, null);
-            em.invokeEvent(FactoryEvent.MAP_TOOL_SELECTED, toolId || null);
+        this.buttons.forEach(button => {
+            button.addEventListener("pointerdown", e => {
+                const toolId = e.target.dataset.id;
+                
+                em.invokeEvent(FactoryEvent.COMPONENT_META_SELECTED, null);
+                em.invokeEvent(FactoryEvent.MAP_TOOL_SELECTED, toolId ?? null);
+            });
         });
     }
 
     updateMapData() {
-        const tiles = this.factory.getTiles();
-        const meta = this.factory.getMeta();
+        const { tiles } = this.factory;
+        const { terrains } = this.factory.getMeta();
+    
+        const terrainLookup = Object.fromEntries(
+          Object.entries(terrains).map(([k, v]) => [v, k])
+        );
 
-        const terrainLookup = {};
-        for (const [key, value] of Object.entries(meta.terrains)) {
-            terrainLookup[value] = key;
-        }
+        const terrainMap = "terrainMap: '" + 
+            tiles.map(tile => terrainLookup[tile.getTerrain()]).join("") + 
+            "',\r\n";
 
-        let terrainMap = "terrainMap: '";
-        for (let i = 0; i < tiles.length; i++) {
-            terrainMap += terrainLookup[tiles[i].getTerrain()];
-            meta.tilesX; // (was in original, but looks like unused side effect)
-        }
-        terrainMap += "',\r\n";
+        const buildMap = "buildMap: '" + 
+            tiles.map(tile => tile.getBuildableType()).join("") + 
+            "',\r\n";
 
-        let buildMap = "buildMap: '";
-        for (let i = 0; i < tiles.length; i++) {
-            buildMap += tiles[i].getBuildableType();
-            meta.tilesX;
-        }
-        buildMap += "',\r\n";
+            console.log(buildMap);
 
-        this.container.find("#mapData").html(terrainMap + buildMap);
+        this.mapDataElement && (this.mapDataElement.textContent = terrainMap + buildMap);
+
     }
 
     destroy() {
         this.factory.getEventManager().removeListenerForType(EVENT_KEY);
         if (this.container) {
-            this.container.html("");
+            this.container.innerHTML = "";
             this.container = null;
         }
+        this.buttons.forEach(button => {
+            button.replaceWith(button.cloneNode(true));
+        });
     }
 }

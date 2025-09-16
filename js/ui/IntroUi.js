@@ -31,7 +31,7 @@ export default class IntroUi {
 
         // Close button
         const closeBtn = intro.querySelector(".closeButton");
-        if (closeBtn) closeBtn.addEventListener("click", () => this.hide());
+        if (closeBtn) closeBtn.addEventListener("pointerdown", () => this.hide());
 
         // Menu logic
         const menuLinks = intro.querySelectorAll(".menu a");
@@ -41,7 +41,7 @@ export default class IntroUi {
             if (!id || !target) return;
             this.menuMap[id] = target;
 
-            link.addEventListener("click", () => {
+            link.addEventListener("pointerdown", () => {
                 Object.values(this.menuMap).forEach((el) => (el.style.display = "none"));
                 target.style.display = "block";
             });
