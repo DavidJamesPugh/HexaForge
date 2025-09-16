@@ -37,28 +37,30 @@ export default class IncentivizedAdButtonUi {
 
         this.apiEm.invokeEvent(ApiEvent.INCENTIVIZED_AD_CHECK_STATUS);
 
+        this.container.addEventListener("pointerdown", e => {
+            if (e.target.closest(".incentivizedAdBox")) {
+                this.apiEm.invokeEvent(ApiEvent.INCENTIVIZED_AD_SHOW);
+            }
+        });
         this.update();
     }
 
     update() {
-        if (this.isAdAvailable !== null && this.container) {
+        if (this.container && this.isAdAvailable != null) {
             const adAction = new IncentivizedAdCompletedAction(this.play.getGame());
-            this.container.html(
-                Handlebars.compile(incentivizedAdTemplate)({
-                    isAvailable: this.isAdAvailable,
-                    message: adAction.getMessage(),
-                })
-            );
-
-            this.element = this.container.find(".incentivizedAdBox");
-            this.element.click(() => {
-                this.apiEm.invokeEvent(ApiEvent.INCENTIVIZED_AD_SHOW);
-            });
+            this.render(adAction.getMessage());
         }
+    }
+    
+    render(message) {
+        this.container.innerHTML = Handlebars.compile(incentivizedAdTemplate)({
+            isAvailable: this.isAdAvailable,
+            message,
+        });
     }
 
     destroy() {
-        if (this.container) this.container.html("");
+        if (this.container) this.container.innerHTML = "";
         this.apiEm.removeListenerForType("IncentivizedAd");
         if (this.designInterval) clearInterval(this.designInterval);
     }

@@ -1,4 +1,5 @@
 import StrategyFactory from "./strategy/Factory.js";
+import numberFormat from "/js/base/NumberFormat.js";
 
 export default class Component {
   constructor(factory, x, y, meta) {
@@ -27,9 +28,9 @@ export default class Component {
     data.name = meta.name;
     data["is" + meta.strategy.type.charAt(0).toUpperCase() + meta.strategy.type.slice(1)] = true;
     data.description = meta.description;
-    data.priceStr = "$" + nf(meta.price);
+    data.priceStr = "$" + numberFormat.formatNumber(meta.price);
     if (meta.runningCostPerTick) {
-      data.runningCostStr = "$" + nf(this.getMetaRunningCostPerTick(meta, factory)) + "/tick";
+      data.runningCostStr = "$" + numberFormat.formatNumber(this.getMetaRunningCostPerTick(meta, factory)) + "/tick";
     }
   }
 

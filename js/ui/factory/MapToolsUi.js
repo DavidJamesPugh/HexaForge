@@ -87,7 +87,6 @@ export default class MapToolsUi {
             tiles.map(tile => tile.getBuildableType()).join("") + 
             "',\r\n";
 
-            console.log(buildMap);
 
         this.mapDataElement && (this.mapDataElement.textContent = terrainMap + buildMap);
 

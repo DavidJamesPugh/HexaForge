@@ -91,7 +91,7 @@ export default class InfoUi {
     } else if (this.selectedPosition) {
       this.showLocationInfo(this.selectedPosition.x, this.selectedPosition.y);
       this.hideComponentStrategy();
-    } else {
+    } else if (!tickUpdate) {
       this.showDefaultInfo();
     }
   }

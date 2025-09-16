@@ -1,9 +1,8 @@
 <div class="componentGraph"></div>
 <div class="componentInfoArea">
   <span class="title">{{component.name}}</span>
-  <br /> {{#if isMeta}}Price: <b class="money">{{component.priceStr}}</b> &nbsp;&nbsp; {{/if}} {{#if
-  component.runningCostStr}}Costs: <b class="money">{{component.runningCostStr}}</b>{{/if}} {{#if
-  component.effectivenessStr}}
+  <br /> {{#if isMeta}}Price: <b class="money">{{component.priceStr}}</b> &nbsp;&nbsp; {{/if}} {{#if component.runningCostStr}}Costs: 
+  <b class="money">{{component.runningCostStr}}</b>{{/if}} {{#if component.effectivenessStr}}
   <span class="effectiveness">Efficiency: <b class="effectiveness">{{component.effectivenessStr}}</b>
   </span>{{/if}}
   <br />

@@ -1,5 +1,8 @@
 import ResourceOutput from "./helper/ResourceOutput.js";
 import DelayedAction from "./helper/DelayedAction.js";
+import { lcFirst } from "/js/utils/stringHelpers.js";
+import numberFormat from "/js/base/NumberFormat.js";
+import { arrayToHumanStr } from "/js/utils/arrayHelpers.js";
 
 export default class Buyer {
   constructor(component, meta) {
@@ -37,13 +40,13 @@ export default class Buyer {
       const amount = Buyer.getMetaBuyAmount(meta, resId, factory);
       const price = Buyer.getMetaBuyPrice(meta, resId, factory);
       totalCost += amount * price;
-      buyStrings.push(`<span class='${resId}'><b>${amount}</b> ${resourcesMeta[resId].name.lcFirst()}</span>`);
+      buyStrings.push(`<span class='${resId}'><b>${amount}</b> ${lcFirst(resourcesMeta[resId].name)}</span>`);
       maxAmount = Math.max(maxAmount, amount);
     }
 
     return {
       interval: strategy.interval,
-      purchasePrice: nf(totalCost),
+      purchasePrice: numberFormat.formatNumber(totalCost),
       buyStr: arrayToHumanStr(buyStrings),
       noOfOutputs: Math.ceil(maxAmount / strategy.interval / ResourceOutput.getMetaOutputAmount(meta, factory)),
     };
