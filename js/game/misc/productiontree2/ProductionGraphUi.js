@@ -1,3 +1,8 @@
+const ICON_SIZE = 25;
+const ICON_SPACING = 1;
+const NODE_OFFSET_X = ICON_SIZE / 2;
+const NODE_SPACING_Y = 33;
+
 export default class ProductionGraphUi {
     constructor(rootNode, imageMap) {
       this.rootNode = rootNode;
@@ -5,6 +10,7 @@ export default class ProductionGraphUi {
       this.positions = {};
       this.maxLevel = 0;
       this.canvas = null;
+
     }
   
     display(container) {
@@ -13,21 +19,27 @@ export default class ProductionGraphUi {
   
       this.calculateWidths(this.rootNode);
       root.y = 0;
-      root.x = root.width / 2 - 12.5;
+      root.x = root.width / 2 - NODE_OFFSET_X;
       root.sx = 0;
   
       this.calculatePositions(this.rootNode);
   
       const canvas = document.createElement("canvas");
       canvas.style.position = "absolute";
-      canvas.width = root.width + 12.5;
-      canvas.height = 33 * (this.maxLevel + 1);
+      canvas.width = root.width + NODE_OFFSET_X;
+      canvas.height = NODE_SPACING_Y * (this.maxLevel + 1);
   
+      
       this.canvas = canvas;
+      this.ctx = this.canvas.getContext("2d");
       this.drawElements(this.rootNode);
   
-      container.html(canvas);
-      container.width(canvas.width);
+      container.innerHTML = "";
+      container.appendChild(canvas);
+      Object.assign(container.style, {
+        width: `${canvas.width}px`
+      });
+      //container.width(canvas.width);
     }
   
     calculateWidths(node) {
@@ -52,8 +64,8 @@ export default class ProductionGraphUi {
       for (const key in children) {
         const child = children[key];
         const cPos = this.positions[child.getId()];
-        cPos.y = 33 * child.getLevel();
-        cPos.x = sx + cPos.width / 2 - 12.5;
+        cPos.y = NODE_SPACING_Y * child.getLevel();
+        cPos.x = sx + cPos.width / 2 - NODE_OFFSET_X;
         cPos.sx = sx;
         sx += cPos.width;
         this.calculatePositions(child);
@@ -61,15 +73,19 @@ export default class ProductionGraphUi {
     }
   
     drawComponentIcon(node, x, y) {
-      const ctx = this.canvas.getContext("2d");
+      const sprite = this.imageMap.getImage("componentIcons");
+      if (!sprite) {
+        console.warn("ProductionGraphUi: Missing sprite for componentIcons");
+        return;
+      }
       const meta = node.getComponentMeta();
-      ctx.drawImage(
-        this.imageMap.getImage("componentIcons"),
-        26 * meta.iconX,
-        26 * meta.iconY,
-        25, 25,
+      this.ctx.drawImage(
+        sprite,
+        (ICON_SIZE + ICON_SPACING) * meta.iconX,
+        (ICON_SIZE + ICON_SPACING) * meta.iconY,
+        ICON_SIZE, ICON_SIZE,
         x, y,
-        25, 25
+        ICON_SIZE, ICON_SIZE
       );
     }
   
@@ -80,7 +96,8 @@ export default class ProductionGraphUi {
       for (const key in children) {
         const child = children[key];
         const cPos = this.positions[child.getId()];
-        this.drawLine(pos.x + 12.5, pos.y + 12.5, cPos.x + 12.5, cPos.y);
+        this.drawLine(pos.x + NODE_OFFSET_X, pos.y + ICON_SIZE, 
+          cPos.x + NODE_OFFSET_X, cPos.y);
         this.drawElements(child);
       }
   
@@ -89,21 +106,19 @@ export default class ProductionGraphUi {
     }
   
     drawLine(x1, y1, x2, y2) {
-      const ctx = this.canvas.getContext("2d");
-      ctx.beginPath();
-      ctx.strokeStyle = "rgb(201,201,201)";
-      ctx.lineWidth = 1;
-      ctx.moveTo(x1, y1);
-      ctx.lineTo(x2, y2);
-      ctx.stroke();
+      this.ctx.beginPath();
+      this.ctx.strokeStyle = "rgb(201,201,201)";
+      this.ctx.lineWidth = 1;
+      this.ctx.moveTo(x1, y1);
+      this.ctx.lineTo(x2, y2);
+      this.ctx.stroke();
     }
   
     writeToNode(x, y, text) {
-      const ctx = this.canvas.getContext("2d");
-      ctx.font = "11px Arial";
-      ctx.textAlign = "left";
-      ctx.fillStyle = "#FFFFFF";
-      ctx.fillText(text, x, y);
+      this.ctx.font = "11px Arial";
+      this.ctx.textAlign = "left";
+      this.ctx.fillStyle = "#FFFFFF";
+      this.ctx.fillText(text, x, y);
     }
   }
   

@@ -1,5 +1,5 @@
 // src/ui/factory/OverviewUi.js
-import template from '../../template/factory/overview.html';
+import template from '../../template/factory/overview.html?raw';
 import Handlebars from "handlebars";
 import numberFormat from "/js/base/NumberFormat.js"
 import GameEvent from "/js/config/event/GameEvent.js"

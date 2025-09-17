@@ -1,5 +1,5 @@
 import Handlebars from "handlebars";
-import factoriesTemplateHtml from "../template/factories.html";
+import factoriesTemplateHtml from "../template/factories.html?raw";
 import AlertUi from "./helper/AlertUi.js";
 import BuyFactoryAction from "../game/action/BuyFactoryAction.js";
 import GameUiEvent from "../config/event/GameUiEvent.js";

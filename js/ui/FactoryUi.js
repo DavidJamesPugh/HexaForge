@@ -1,6 +1,5 @@
 import Handlebars from "handlebars";
 import factoryTemplateHtml from "../template/factory.html";
-import imageMap from "../config/gameAssets.js";
 import GameContext from "../base/GameContext.js";
 import GlobalUiBus from "../base/GlobalUiBus.js";
 import MenuUi from "./factory/MenuUi.js";
@@ -13,7 +12,7 @@ import OverviewUi from "./factory/OverviewUi.js";
 import IncentivizedAdButtonUi from "./IncentivizedAdButtonUi.js";
 
 export default class FactoryUi {
-    constructor(factory, play) {
+    constructor(factory, play, imageMap) {
         this.globalUiEm = GlobalUiBus;
         this.play = play;
         this.factory = factory;
@@ -26,7 +25,7 @@ export default class FactoryUi {
         this.mapUi = new MapUi(factory);
         this.componentsUi = new ComponentsUi(factory);
         this.mapToolsUi = new MapToolsUi(factory);
-        this.infoUi = new InfoUi(factory, this.statistics, play);
+        this.infoUi = new InfoUi(factory, this.statistics, play, this.imageMap);
         this.controlsUi = new ControlsUi(factory);
         this.overviewUi = new OverviewUi(factory, this.statistics);
         this.incentivizedAdButtonUi = new IncentivizedAdButtonUi(play);

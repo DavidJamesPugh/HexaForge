@@ -1,16 +1,13 @@
 import Handlebars from "handlebars";
-import statisticsTemplateHtml from "../template/statistics.html";
-import Meta from "../config/Meta.js";
-import ProductionIndex from "../game/misc/productionTree/ProductionIndex.js";
+import statisticsTemplateHtml from "../template/statistics.html?raw";
 import ProductionGraphUi from "../game/misc/productionTree2/ProductionGraphUi.js";
 import ProductionTreeBuilder from "../game/misc/productionTree2/ProductionTreeBuilder.js";
 import GameUiEvent from "../config/event/GameUiEvent.js";
 import GameEvent from "../config/event/GameEvent.js";
 import GameContext from "../base/GameContext.js";
-import imageMap from "../config/gameAssets.js";
 
 export default class StatisticsUi {
-    constructor(factory) {
+    constructor(factory, imageMap) {
         this.gameUiEm = GameContext.gameUiBus;
         this.factory = factory;
         this.imageMap = imageMap;

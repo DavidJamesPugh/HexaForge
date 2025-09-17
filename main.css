@@ -11,13 +11,6 @@
     padding: 1em;
 }
 
-#intro b,
-#intro u,
-#intro .title {
-    /* automatically add spacing around inline elements */
-    margin: 0 0.2em;
-}
-
 #intro .title {
     font-size: 2em;
     display: block;

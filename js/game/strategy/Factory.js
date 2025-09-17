@@ -15,7 +15,7 @@ export default class StrategyFactory {
 
   static getMetaDescriptionData(strategyMeta, t) {
     const StrategyClass = this.getStrategyClass(strategyMeta.strategy.type);
-    console.log(strategyMeta.strategy.type);
+    
     if (typeof StrategyClass.getMetaDescriptionData !== 'function') {
       throw new Error(`Strategy class ${strategyMeta.strategy.type} has no getMetaDescriptionData method`);
     }

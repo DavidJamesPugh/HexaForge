@@ -40,7 +40,7 @@ export default class Main {
 
       // Initialize UI
       console.log("Main: Initializing UI...");
-      this.mainUi = new MainUi(this.play);
+      this.mainUi = new MainUi(this.play, this.imageMap);
       this.mainUi.display(document.getElementById("gameArea"));
       console.log("Main: UI initialized successfully");
     } catch (error) {

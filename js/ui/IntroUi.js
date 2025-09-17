@@ -1,6 +1,5 @@
-import globalUiBus from "../base/GlobalUiBus.js"; // if you have a global event bus
 import Handlebars from "handlebars";
-import introTemplateHtml from "../template/intro.html";
+import introTemplateHtml from "../template/intro.html?raw";
 
 export default class IntroUi {
     constructor() {
@@ -16,7 +15,8 @@ export default class IntroUi {
         if (this.isVisible) return;
 
         const wrapper = document.createElement("div");
-        wrapper.innerHTML = Handlebars.compile(introTemplateHtml)(templateData);
+        const templateIntro = Handlebars.compile(introTemplateHtml);
+        wrapper.innerHTML = templateIntro(templateData);
         this.container.appendChild(wrapper);
 
         this.isVisible = true;

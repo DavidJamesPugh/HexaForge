@@ -1,5 +1,5 @@
 import Handlebars from "handlebars";
-import incentivizedAdTemplate from "../template/incentivizedAd.html";
+import incentivizedAdTemplate from "../template/incentivizedAd.html?raw";
 import AlertUi from "./helper/AlertUi.js";
 import IncentivizedAdCompletedAction from "../game/action/IncentivizedAdCompletedAction.js";
 import ApiEvent from "../config/event/ApiEvent.js";

@@ -1,5 +1,5 @@
 import Handlebars from "handlebars";
-import helpTemplateHtml from "../template/help.html";
+import helpTemplateHtml from "../template/help.html?raw";
 import GameUiEvent  from "../config/event/GameEvent.js";
 import GameContext from "../base/GameContext.js";
 

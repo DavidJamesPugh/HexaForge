@@ -1,5 +1,5 @@
 import Handlebars from "handlebars";
-import settingsTemplateHtml from "../template/settings.html";
+import settingsTemplateHtml from "../template/settings.html?raw";
 import LoadingUi from "./helper/LoadingUi.js";
 import ConfirmUi from "./helper/ConfirmUi.js";
 import GameUiEvent from "../config/event/GameEvent.js";

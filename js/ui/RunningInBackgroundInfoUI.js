@@ -23,7 +23,7 @@ export default class RunningInBackgroundInfoUi {
         this.globalUiEm.removeListenerForType("RunningInBackgroundInfoUi");
     }
 
-    delayedDisplay(delayMs = 15000) {
+    delayedDisplay(delayMs = 1500000) {
         if (this.timer) clearTimeout(this.timer);
         this.timer = setTimeout(() => this.display(), delayMs);
     }

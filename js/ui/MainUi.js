@@ -1,6 +1,5 @@
 // MainUi.js
 import gameConfig from "../config/config.js";
-import imageMap from "../config/gameAssets.js";
 import GameUi from "./GameUi.js";
 import GlobalUiEvent from "../config/event/GlobalUiEvent.js";
 import GameEvent from "../config/event/GameEvent.js";
@@ -12,7 +11,7 @@ import RunningInBackgroundInfoUi from "./RunningInBackgroundInfoUi.js";
 import IntroUi from "./IntroUi.js";
 
 export default class MainUi {
-    constructor(play) {
+    constructor(play, imageMap) {
         this.play = play;
         this.imageMap = imageMap;
         this.globalUiEm = globalUiBus; // shared singleton
@@ -98,7 +97,7 @@ export default class MainUi {
         this._destroyCurrentUi();
 
         if (type === "mainGame") {
-            this.currentUi = new GameUi(this.play);
+            this.currentUi = new GameUi(this.play, this.imageMap);
         } 
         this.currentUi.display(this.container);
     }

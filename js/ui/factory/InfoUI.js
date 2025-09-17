@@ -1,6 +1,6 @@
 // ui/factory/InfoUi.js
 import infoTemplate from "../../template/factory/info.html";
-import infoDetailsTemplate from "../../template/factory/infoDetails.html";
+import infoDetailsTemplate from "../../template/factory/infoDetails.html?raw";
 import Component from "../../game/Component.js";
 import Sorter from "../../ui/factory/componentUi/Sorter.js";
 import ProductionGraphUi from "../../game/misc/productionTree2/ProductionGraphUi";

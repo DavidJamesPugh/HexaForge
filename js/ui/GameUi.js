@@ -14,12 +14,11 @@ import gameConfig from "../config/config.js";
 import GameUiEvent from "../config/event/GameUiEvent.js";
 import GameEvent from "../config/event/GameEvent.js";
 import GlobalUiEvent from "../config/event/GlobalUiEvent.js";
-import imageMap from "../config/gameAssets.js";
 import globalUiBus from "../base/GlobalUiBus.js";
 import GameContext from "../base/GameContext.js";
 
 export default class GameUi {
-    constructor(play) { 
+    constructor(play, imageMap) { 
         this.globalUiEm = globalUiBus;
         this.gameUiEm = GameContext.gameUiBus;
         this.play = play;
@@ -79,7 +78,7 @@ export default class GameUi {
 
         switch (type) {
             case "factory":
-                this.currentUi = new FactoryUi(this.game.getFactory(factoryId), this.play);
+                this.currentUi = new FactoryUi(this.game.getFactory(factoryId), this.play, this.imageMap);
                 break;
             case "factories":
                 this.currentUi = new FactoriesUi(this.game);

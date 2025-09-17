@@ -32,7 +32,7 @@ export default class ComponentsUi {
                 
             })
         }));
-        console.log(components);
+        
         this.container.insertAdjacentHTML("beforeend", Handlebars.compile(componentsTemplate)({ components }));
 
         // Event listeners

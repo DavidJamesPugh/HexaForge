@@ -1,5 +1,5 @@
 // ui/factory/MapToolsUi.js
-import mapToolsTemplate from "../../template/factory/mapTools.html";
+import mapToolsTemplate from "../../template/factory/mapTools.html?raw";
 import Handlebars from "handlebars";
 import FactoryEvent from "/js/config/event/FactoryEvent.js"
 

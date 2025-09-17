@@ -1,5 +1,5 @@
 import Handlebars from "handlebars";
-import controlsTemplate from "../../template/factory/controls.html";
+import controlsTemplate from "../../template/factory/controls.html?raw";
 import ClearPackagesAction from "../../game/action/ClearPackagesAction.js";
 import ResetFactoryAction from "../../game/action/ResetFactoryAction.js";
 import ConfirmUi from "../helper/ConfirmUi.js";
