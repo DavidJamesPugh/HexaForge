@@ -1,6 +1,6 @@
 import Handlebars from "handlebars";
 import helpTemplateHtml from "../template/help.html?raw";
-import GameUiEvent  from "../config/event/GameEvent.js";
+import GameUiEvent  from "../config/event/GameUiEvent.js";
 import GameContext from "../base/GameContext.js";
 
 export default class HelpUi {

@@ -1,6 +1,8 @@
-// AchievementsManager.js
-import GameEvent from "../config/event/GameEvent.js"; // ES module import
+// src/game/AchievementsManager.js
+import GameEvent from "../config/event/GameEvent.js";
 import BinaryArrayWriter from "../base/BinaryArrayWriter.js";
+import numberFormat from "../base/NumberFormat.js";
+import { lcFirst } from "/js/utils/stringHelpers.js"
 
 export default class AchievementsManager {
   constructor(game) {
@@ -18,8 +20,9 @@ export default class AchievementsManager {
   setAchieved(achievementId, value) {
     this._setAchieved(achievementId, value);
     if (value) {
-      // Instead of a global GameEvent, we import it above
-      this.game.getEventManager().invokeEvent(GameEvent.ACHIEVEMENT_RECEIVED, achievementId);
+      this.game
+        .getEventManager()
+        .invokeEvent(GameEvent.ACHIEVEMENT_RECEIVED, achievementId);
     }
   }
 
@@ -29,7 +32,10 @@ export default class AchievementsManager {
 
   isVisible(achievementId) {
     const achievement = this.game.getMeta().achievementsById[achievementId];
-    return !(achievement.requiresAchievement && !this.getAchievement(achievement.requiresAchievement));
+    return !(
+      achievement.requiresAchievement &&
+      !this.getAchievement(achievement.requiresAchievement)
+    );
   }
 
   // --- Achievement testing ---
@@ -38,7 +44,9 @@ export default class AchievementsManager {
   }
 
   test(achievement) {
-    return achievement.tests.every(test => this.testers[test.type].test(test));
+    return achievement.tests.every((test) =>
+      this.testers[test.type].test(test)
+    );
   }
 
   testAll() {
@@ -56,7 +64,9 @@ export default class AchievementsManager {
   getTesterDescriptionText(achievementId) {
     const achievement = this.game.getMeta().achievementsById[achievementId];
     if (!achievement) return [];
-    return achievement.tests.map(test => this.testers[test.type].getRequirementsInfoText(test));
+    return achievement.tests.map((test) =>
+      this.testers[test.type].getRequirementsInfoText(test)
+    );
   }
 
   getBonusDescriptionText(achievementId) {
@@ -67,19 +77,29 @@ export default class AchievementsManager {
 
   // --- Tester implementations ---
   getTesterImplementations() {
+    const researchById =  this.game.getMeta().researchById;
     return {
       amountOfMoney: {
-        getRequirementsInfoText: test => `Have more money than <span class="money">$${nf(test.amount)}</span>`,
-        test: test => this.game.getMoney() > test.amount
+        getRequirementsInfoText: (test) =>
+          `Have more money than <span class="money">$${numberFormat.formatNumber(
+            test.amount
+          )}</span>`,
+        test: (test) => this.game.getMoney() > test.amount,
       },
       avgMoneyIncome: {
-        getRequirementsInfoText: test => `Have avg income greater than <span class="money">$${nf(test.amount)}</span>`,
-        test: test => this.game.getStatistics().getAvgProfit() > test.amount
+        getRequirementsInfoText: (test) =>
+          `Have avg income greater than <span class="money">$${numberFormat.formatNumber(
+            test.amount
+          )}</span>`,
+        test: (test) =>
+          this.game.getStatistics().getAvgProfit() > test.amount,
       },
       researched: {
-        getRequirementsInfoText: test => `Research ${this.game.getMeta().researchById[test.researchId].name.lcFirst()}`,
-        test: test => this.game.getResearchManager().getResearch(test.researchId) > 0
-      }
+        getRequirementsInfoText: (test) =>
+          `Research ${lcFirst(researchById[test.researchId].name)}`,
+        test: (test) =>
+          this.game.getResearchManager().getResearch(test.researchId) > 0,
+      },
     };
   }
 
@@ -87,13 +107,16 @@ export default class AchievementsManager {
   getBonusImplementations() {
     return {
       money: {
-        getInfoText: bonus => `<span class="money">+$${nf(bonus.amount)}</span>`,
-        invoke: bonus => this.game.addMoney(bonus.amount)
+        getInfoText: (bonus) =>
+          `<span class="money">+$${numberFormat.formatNumber(
+            bonus.amount
+          )}</span>`,
+        invoke: (bonus) => this.game.addMoney(bonus.amount),
       },
       custom: {
-        getInfoText: bonus => bonus.description,
-        invoke: () => {} // no-op
-      }
+        getInfoText: (bonus) => bonus.description,
+        invoke: () => {}, // no-op
+      },
     };
   }
 
@@ -103,7 +126,9 @@ export default class AchievementsManager {
     const achievements = this.game.getMeta().achievementsByIdNum;
 
     writer.writeUint16(achievements.length);
-    writer.writeBooleansArrayFunc(achievements, achievement => this.getAchievement(achievement.id));
+    writer.writeBooleansArrayFunc(achievements, (achievement) =>
+      this.getAchievement(achievement.id)
+    );
     return writer;
   }
 

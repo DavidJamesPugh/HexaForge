@@ -1,10 +1,15 @@
 // src/ui/ResearchUi.js
-import template from '/js/template/research.html';
+import Handlebars from "handlebars";
+import template from '/js/template/research.html?raw';
 import BuyResearch from '/js/game/action/BuyResearch.js';
+import GameContext from "../base/GameContext.js";
+import numberFormat from '../base/NumberFormat.js';
+import GameEvent from "../config/event/GameEvent.js";
+import GameUiEvent from "../config/event/GameUiEvent.js";
 
 class ResearchUi {
-  constructor(gameUiEm, game) {
-    this.gameUiEm = gameUiEm;
+  constructor(game) {
+    this.gameUiEm = GameContext.gameUiBus;
     this.game = game;
     this.container = null;
   }
@@ -30,8 +35,8 @@ class ResearchUi {
           id: res.id,
           name: res.name,
           description: res.description,
-          price: canBuy ? nf(researchManager.getPrice(res.id)) : null,
-          priceResearchPoints: canBuy ? nf(researchManager.getPriceResearchPoints(res.id)) : null,
+          price: canBuy ? numberFormat.formatNumber(researchManager.getPrice(res.id)) : null,
+          priceResearchPoints: canBuy ? numberFormat.formatNumber(researchManager.getPriceResearchPoints(res.id)) : null,
           max: res.max,
           showBoughtAndMax: res.max > 1,
           iconStyle: `background-position: -${26 * res.iconX}px -${26 * res.iconY}px`,
@@ -40,27 +45,37 @@ class ResearchUi {
     }
 
     // Render template
-    this.container.html(Handlebars.compile(template)({
+    this.container.insertAdjacentHTML("beforeend", Handlebars.compile(template)({
       research: researchData,
       max: totalMax,
       have: totalHave,
     }));
 
     // Back button
-    this.container.find('.backButton').off('click').on('click', () => {
+    this.onBackButtonClick = () => {
       this.gameUiEm.invokeEvent(GameUiEvent.SHOW_FACTORY);
-    });
+    };
+    
+    // Later in display():
+    const btn = this.container.querySelector('.backButton');
+    if (btn) {
+      btn.removeEventListener("pointerdown", this.onBackButtonClick); // old one out
+      btn.addEventListener("pointerdown", this.onBackButtonClick);    // new one in
+    }
 
-    // Buy buttons
-    this.container.find('.researchItem').each((_, el) => {
-      const id = $(el).attr('data-id');
-      $(el).find('.buyButton').off('click').on('click', () => {
-        const action = new BuyResearch(this.game, id);
+
+    this.buyResearch = (id) => {
+      const action = new BuyResearch(this.game, id);
         if (action.canBuy()) {
           action.buy();
           this.refreshView();
         }
-      });
+    };
+    // Buy buttons
+    this.container.querySelectorAll('.researchItem').forEach((el) => {
+      const id = el.dataset.id;
+      el.removeEventListener("pointerdown", this.buyResearch);
+      el.addEventListener("pointerdown", () => this.buyResearch(id));
     });
 
     // Game tick listener
@@ -75,24 +90,28 @@ class ResearchUi {
   }
 
   update() {
-    $('#researchPoints').html(nf(this.game.getResearchPoints()));
-    $('#money').html(nf(this.game.getMoney()));
+    const researchPoints = this.container.querySelector('#researchPoints');
+    researchPoints.textContent = numberFormat.formatNumber(this.game.getResearchPoints());
+    const money = this.container.querySelector('#money');
+    money.textContent = numberFormat.formatNumber(this.game.getMoney());
 
-    this.container.find('.researchItem').each((_, el) => {
-      const id = $(el).attr('data-id');
-      const boughtEl = $(el).find('.bought');
-      const buyButton = $(el).find('.buyButton');
+    this.container.querySelectorAll('.researchItem').forEach((el) => {
+      const id = el.dataset.id;
+      const boughtEl = el.querySelector('.bought');
+      const buyButton = el.querySelector('.buyButton');
 
-      boughtEl.html(this.game.getResearchManager().getResearch(id));
-      this.game.getResearchManager().couldPurchase(id) ? buyButton.show() : buyButton.hide();
-      this.game.getResearchManager().canPurchase(id) ? buyButton.removeClass('cantBuy') : buyButton.addClass('cantBuy');
+    const couldBuy = this.game.getResearchManager().couldPurchase(id);
+    buyButton.style.display = couldBuy ? '' : 'none';
+
+    const canBuy = this.game.getResearchManager().canPurchase(id);
+    buyButton.classList.toggle('cantBuy', !canBuy);
     });
   }
 
   destroy() {
     this.game.getEventManager().removeListenerForType('researchUi');
     this.gameUiEm.removeListenerForType('researchUi');
-    if (this.container) this.container.html('');
+    if (this.container) this.container.innerHTML = '';
     this.container = null;
   }
 }

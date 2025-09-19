@@ -294,7 +294,7 @@ class MouseLayer {
   destroy() {
     this.mouseInfoHelper.destroy();
     this.factory.getEventManager().removeListenerForType(LAYER_MOUSE);
-    this.container.html("");
+    this.container.innerHTML = "";
     this.container = null;
   }
 }

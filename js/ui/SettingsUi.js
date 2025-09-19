@@ -2,15 +2,15 @@ import Handlebars from "handlebars";
 import settingsTemplateHtml from "../template/settings.html?raw";
 import LoadingUi from "./helper/LoadingUi.js";
 import ConfirmUi from "./helper/ConfirmUi.js";
-import GameUiEvent from "../config/event/GameEvent.js";
+import GameUiEvent from "../config/event/GameUiEvent.js";
 import GameContext from "../base/GameContext.js";
 import { dateToStr } from "../utils/dateUtils.js"; // (assuming you have a helper like this)
 
 export default class SettingsUi {
     constructor(play, game, userHash, saveManager) {
-        this.gameUiEm = GameContext.gameUiBus;
         this.play = play;
         this.game = game;
+        this.gameUiEm = this.game.getEventManager();
         this.userHash = userHash;
         this.saveManager = saveManager;
         this.isVisible = false;

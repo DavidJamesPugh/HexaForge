@@ -147,7 +147,7 @@ export default class PackageLayer {
   
     destroy() {
       this.factory.getEventManager().removeListenerForType("LayerPackage");
-      this.container.html("");
+      this.container.innerHTML = "";
       this.container = null;
       this.canvas = null;
     }

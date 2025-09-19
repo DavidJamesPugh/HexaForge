@@ -76,7 +76,7 @@ export default class ComponentLayer {
 
   destroy() {
     this.factory.getEventManager().removeListenerForType("LayerComponent");
-    this.container.html("");
+    this.container.innerHTML = "";
     this.container = null;
     this.canvas = null;
   }

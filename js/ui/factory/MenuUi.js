@@ -1,5 +1,5 @@
 import Handlebars from "handlebars";
-import menuTemplateHtml from "../../template/factory/menu.html";
+import menuTemplateHtml from "../../template/factory/menu.html?raw";
 import GlobalUiBus from "../../base/GlobalUiBus.js";
 import GameEvent from "/js/config/event/GameEvent.js"; 
 import GameUiEvent from "/js/config/event/GameUiEvent.js";

@@ -1,5 +1,5 @@
 import Handlebars from "handlebars";
-import factoryTemplateHtml from "../template/factory.html";
+import factoryTemplateHtml from "../template/factory.html?raw";
 import GameContext from "../base/GameContext.js";
 import GlobalUiBus from "../base/GlobalUiBus.js";
 import MenuUi from "./factory/MenuUi.js";
@@ -33,12 +33,12 @@ export default class FactoryUi {
 
     display(container) {
         this.container = container;
-        this.mainContainer = this.container.querySelector(".main");
+        this.mainContainer = this.container.querySelector("main");
         this.container.insertAdjacentHTML("beforeend", Handlebars.compile(factoryTemplateHtml)());
 
         if (this.game.getIsPremium()) {
             this.mainContainer.classList.toggle("fullScreen", true);
-            const mapContainer = this.container.querySelector(".mapContainer");
+            const mapContainer = this.container.querySelector("mapContainer");
             mapContainer.style.width = `${window.innerWidth - 250}px`;
             mapContainer.style.height = `${window.innerHeight - 150}px`;
         }
@@ -63,12 +63,14 @@ export default class FactoryUi {
         this.overviewUi.destroy();
         this.mapToolsUi.destroy();
         this.incentivizedAdButtonUi.destroy();
+        
+        if (this.mainContainer) {
+            this.mainContainer.classList.toggle("fullScreen", false);
+        }
 
         this.game.getEventManager().removeListenerForType("FactoryUi");
         this.container.innerHTML = ""; 
         this.container = null;
-        this.mainContainer = this.container.querySelector(".main");
 
-        this.mainContainer.classList.toggle("fullScreen", false);
     }
 }

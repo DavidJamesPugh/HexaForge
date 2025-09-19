@@ -20,10 +20,10 @@ export default class StatisticsUi {
         this.container = container;
 
         // Render template
-        this.container.html(Handlebars.compile(statisticsTemplateHtml)({}));
+        this.container.insertAdjacentHTML("beforeend", Handlebars.compile(statisticsTemplateHtml)({}));
 
         // Back button → return to factory view
-        this.container.find(".backButton").click(() => {
+        this.container.querySelector(".backButton").addEventListener("pointerdown", () => {
             this.gameUiEm.invokeEvent(GameUiEvent.SHOW_FACTORY);
         });
 
@@ -33,8 +33,8 @@ export default class StatisticsUi {
         });
 
         // Build and render production graph
-        const tree = new ProductionTreeBuilder(this.factory).buildTree("tankSeller", 100);
-        new ProductionGraphUi(tree, this.imageMap).display(this.container.find(".graph"));
+        const tree = new ProductionTreeBuilder(this.factory).buildTree("ironSeller", 100);
+        new ProductionGraphUi(tree, this.imageMap).display(this.container.querySelector(".graph"));
 
         // First update
         this.update();
@@ -48,7 +48,7 @@ export default class StatisticsUi {
         this.game.getEventManager().removeListenerForType("statisticsUi");
         this.gameUiEm.removeListenerForType("statisticsUi");
         if (this.container) {
-            this.container.html("");
+            this.container.innerHTML = "";
             this.container = null;
         }
     }

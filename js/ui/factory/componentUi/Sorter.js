@@ -46,7 +46,7 @@ export default class SorterUi {
     }
 
     destroy() {
-        this.container?.html("");
+        this.container.innerHTML = "";
         this.container = null;
     }
 }
