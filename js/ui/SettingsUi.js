@@ -5,6 +5,8 @@ import ConfirmUi from "./helper/ConfirmUi.js";
 import GameUiEvent from "../config/event/GameUiEvent.js";
 import GameContext from "../base/GameContext.js";
 import { dateToStr } from "../utils/dateUtils.js"; // assumes you have this helper
+import MainSingleton from "../MainSingleton.js";
+
 
 export default class SettingsUi {
   constructor(play, game, userHash, saveManager) {
@@ -156,8 +158,8 @@ export default class SettingsUi {
           .setCancelTitle("Yes, RESET GAME")
           .setOkTitle("Nooooo!!!")
           .setCancelCallback(() => {
-            MainInstance.destroy();
-            MainInstance.init(true);
+            MainSingleton.getInstance().destroy();
+            MainSingleton.init(true);
             this.destroy();
           })
           .display();

@@ -1,4 +1,5 @@
 import Main from "./Main.js";
+import MainSingleton from "./MainSingleton.js";
 
 const loader = {
   messageEl: document.getElementById("loadingMessage"),
@@ -30,9 +31,8 @@ window.addEventListener("DOMContentLoaded", async () => {
     }
 
     loader.showMessage("Loading game… please wait…");
-
-    const main = new Main();
-    await main.init(false); // false = not dev mode
+    
+    await MainSingleton.init(false);
 
     loader.hide();
     console.log("✅ Game initialized successfully!");
