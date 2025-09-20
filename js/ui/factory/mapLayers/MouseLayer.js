@@ -60,12 +60,11 @@ class MouseLayer {
 
           const meta =
             this.game.getMeta().componentsById[this.selectedComponentMetaId];
-
           if (
             downEvent &&
             event.leftMouseDown &&
             !downEvent.shiftKeyDown &&
-            meta.buildByDragging === 1
+            meta.buildByDragging
           ) {
             this.buyComponent(downEvent);
             this.buyComponent(event);
@@ -241,8 +240,8 @@ class MouseLayer {
       const pointerEvent = {
         x: Math.round(localX / this.tileSize),
         y: Math.round(localY / this.tileSize),
-        leftDown: e.buttons === 1,
-        rightDown: e.buttons === 2,
+        leftMouseDown: e.buttons === 1,
+        rightMouseDown: e.buttons === 2,
         shiftKeyDown: e.shiftKey,
         altKeyDown: e.altKey,
         pointerType: e.pointerType, // "mouse", "touch", "pen"
@@ -272,8 +271,8 @@ class MouseLayer {
         {
           x: lastEvent?.x ?? 0,
           y: lastEvent?.y ?? 0,
-          leftDown: e.buttons === 1,
-          rightDown: e.buttons === 2,
+          leftMouseDown: e.buttons === 1,
+          rightMouseDown: e.buttons === 2,
           shiftKeyDown: e.shiftKey,
           altKeyDown: e.altKey,
           pointerType: e.pointerType,

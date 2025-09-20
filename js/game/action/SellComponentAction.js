@@ -1,4 +1,5 @@
 // SellComponentAction.js
+import FactoryEvent from "../../config/event/FactoryEvent";
 
 export default class SellComponentAction {
     constructor(tile, width = 1, height = 1) {

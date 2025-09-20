@@ -7,7 +7,7 @@ export default class TrackStrategy {
   
     drawComponentLayer(ctx, tile) {
       if (!tile.isMainComponentContainer()) return;
-  
+      console.log("drawing transportlines layer");
       const meta = tile.getComponent().getMeta();
       const params = this._getDrawParameters(tile);
   

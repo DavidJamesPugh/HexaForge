@@ -1,15 +1,13 @@
-import Main from "./Main.js";
 import MainSingleton from "./MainSingleton.js";
 
 const loader = {
-  messageEl: document.getElementById("loadingMessage"),
-  bgEl: document.getElementById("initialLoaderBg"),
-  loaderEl: document.getElementById("initialLoader"),
+  get messageEl() { return document.getElementById("loadingMessage"); },
+  get bgEl() { return document.getElementById("initialLoaderBg"); },
+  get loaderEl() { return document.getElementById("initialLoader"); },
 
   showMessage(msg) {
-    if (this.messageEl) this.messageEl.innerHTML = msg;
+    if (this.messageEl) this.messageEl.textContent = msg;
   },
-
   hide() {
     if (this.loaderEl) this.loaderEl.style.display = "none";
     if (this.bgEl) this.bgEl.style.display = "none";
@@ -31,10 +29,14 @@ window.addEventListener("DOMContentLoaded", async () => {
     }
 
     loader.showMessage("Loading game… please wait…");
-    await MainSingleton.init(false);
+    await MainSingleton.init(true);
 
     loader.hide();
     console.log("✅ Game initialized successfully!");
+    
+    document.addEventListener("contextmenu", (event) => {
+      event.preventDefault();
+    });
   } catch (err) {
     console.error("❌ Game failed to start:", err);
     loader.showMessage(
