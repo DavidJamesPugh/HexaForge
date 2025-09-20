@@ -13,6 +13,7 @@ import GameContext from "../base/GameContext.js";
 import ApiEvent from "../config/event/ApiEvent.js";
 import logger from "../base/Logger.js";
 import Base64ArrayBuffer from "../base/Base64ArrayBuffer.js";
+import BinaryArrayReader from "../base/BinaryArrayReader.js";
 
 export default class Play {
   constructor() {

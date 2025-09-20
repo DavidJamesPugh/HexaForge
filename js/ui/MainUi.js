@@ -4,7 +4,6 @@ import GameUi from "./GameUi.js";
 import GlobalUiEvent from "../config/event/GlobalUiEvent.js";
 import GameEvent from "../config/event/GameEvent.js";
 import globalUiBus from "../base/GlobalUiBus.js";
-//import MissionsUi from "./MissionsUi.js";
 import RunningInBackgroundInfoUi from "./RunningInBackgroundInfoUi.js";
 import AlertUi from "./helper/AlertUi.js";
 //import GoogleAddsUi from "./GoogleAddsUi.js";
@@ -36,11 +35,10 @@ export default class MainUi {
         // Initialize background info UI
         this.runningInBackgroundInfoUi = new RunningInBackgroundInfoUi(this.globalUiEm);
         this.runningInBackgroundInfoUi.init();
-
-        // Intro UI if first time
-        if (this.play.getGame().getTicker().getNoOfTicks() < 1000) {
-            new IntroUi().display();
-        }
+        const ticker = this.play.getGame().getTicker();
+        this.play.getGame().getEventManager().addListener("MainUi", GameEvent.TICKS_STARTED, () => {
+            if (ticker.getNoOfTicks() < 1000) new IntroUi().display();
+        });
 
         this.setupFocusChecker();
 
