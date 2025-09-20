@@ -2,6 +2,7 @@
 import Handlebars from "handlebars";
 import achievementsTemplateHtml from "../template/achievements.html?raw";
 import GameEvent from "../config/event/GameEvent.js";
+import GameUiEvent from "../config/event/GameUiEvent.js";
 import GameContext from "../base/GameContext.js";
 
 export default class AchievementsUi {
@@ -37,7 +38,7 @@ export default class AchievementsUi {
     const backButton = this.container.querySelector(".backButton");
     if (backButton) {
       backButton.addEventListener("pointerdown", () =>
-        this.gameUiEm.invokeEvent(GameEvent.SHOW_FACTORY)
+        this.gameUiEm.invokeEvent(GameUiEvent.SHOW_FACTORY)
       );
     }
 

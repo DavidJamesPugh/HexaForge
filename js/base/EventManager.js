@@ -6,6 +6,7 @@ export default class EventManager {
     }
     addListener(name, type, callback) {
       // Convert handledEvents to array if it's an object
+      if (!type) console.warn("Trying to add listener with undefined type!", name);
       const handled = Array.isArray(this.handledEvents)
         ? this.handledEvents
         : Object.values(this.handledEvents);

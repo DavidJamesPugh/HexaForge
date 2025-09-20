@@ -6,22 +6,21 @@ import MouseLayer from "./mapLayers/MouseLayer.js";
 import AreasLayer from "./mapLayers/AreasLayer.js";
 import ScreenShotUi from "./ScreenShotUi.js";
 import GlobalUiBus from "../../base/GlobalUiBus.js";
-import imageMap from "../../config/gameAssets.js";
 import FactoryEvent from "../../config/event/FactoryEvent.js"; // assuming
 
 export default class MapUi {
-  constructor(factory) {
+  constructor(factory, imageMap) {
     this.globalUiEm = GlobalUiBus;
     this.imageMap = imageMap;
     this.factory = factory;
     this.game = factory.getGame();
     this.tileSize = 21;
 
-    this.backgroundLayer = new BackgroundLayer(imageMap, factory, { tileSize: this.tileSize });
-    this.componentLayer = new ComponentLayer(imageMap, factory, { tileSize: this.tileSize });
-    this.packageLayer = new PackageLayer(imageMap, factory, { tileSize: this.tileSize });
-    this.mouseLayer = new MouseLayer(imageMap, factory, { tileSize: this.tileSize });
-    this.areasLayer = new AreasLayer(imageMap, factory, { tileSize: this.tileSize });
+    this.backgroundLayer = new BackgroundLayer(this.imageMap, factory, { tileSize: this.tileSize });
+    this.componentLayer = new ComponentLayer(this.imageMap, factory, { tileSize: this.tileSize });
+    this.packageLayer = new PackageLayer(this.imageMap, factory, { tileSize: this.tileSize });
+    this.mouseLayer = new MouseLayer(this.imageMap, factory, { tileSize: this.tileSize });
+    this.areasLayer = new AreasLayer(this.imageMap, factory, { tileSize: this.tileSize });
   }
 
   display(container) {

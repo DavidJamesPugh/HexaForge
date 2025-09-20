@@ -17,7 +17,7 @@ export default class AreasLayer {
 
   display(container) {
     this.container = container;
-    this.container.insertAdjacentHTML("afterbegin", '<div id="areasLayer" style="position:absolute"></div>');
+    this.container.insertAdjacentHTML("beforeend", '<div id="areasLayer" style="position:absolute"></div>');
 
     this.factory.getEventManager().addListener(
       "AreasLayer",
@@ -113,7 +113,7 @@ export default class AreasLayer {
           new ConfirmUi(
             "",
             `<center>Are you sure you want to buy this area for <br />
-            <b class="money" style="font-size:1.1em">$${numberFormat.formatNumber(meta.price)}</b></center>`
+            <b class="money" style="font-size:1.1em">$${numberFormat.formatNumber(metaArea.price)}</b></center>`
           ).setOkTitle("Yes, buy").setCancelTitle("No")
           .setOkCallback(() => {
             const confirmAction = new BuyAreaAction(this.factory, id);

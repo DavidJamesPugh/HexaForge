@@ -1,7 +1,8 @@
 import Handlebars from "handlebars";
-import purchasesTemplateHtml from "../template/purchases.html";
+import purchasesTemplateHtml from "../template/purchases.html?raw";
 import UrlHandler from "../play/UrlHandler.js";
-import GameUiEvent from "../config/event/GameEvent.js";
+import GameEvent from "../config/event/GameEvent.js";
+import GameUiEvent from "../config/event/GameUiEvent.js";
 import GameContext from "../base/GameContext.js";
 
 export default class PurchasesUi {

@@ -22,7 +22,7 @@ export default class FactoryUi {
         this.imageMap = imageMap;
 
         this.menuUi = new MenuUi(factory);
-        this.mapUi = new MapUi(factory);
+        this.mapUi = new MapUi(factory, this.imageMap);
         this.componentsUi = new ComponentsUi(factory);
         this.mapToolsUi = new MapToolsUi(factory);
         this.infoUi = new InfoUi(factory, this.statistics, play, this.imageMap);
@@ -33,12 +33,12 @@ export default class FactoryUi {
 
     display(container) {
         this.container = container;
-        this.mainContainer = this.container.querySelector("main");
         this.container.insertAdjacentHTML("beforeend", Handlebars.compile(factoryTemplateHtml)());
-
+        this.mainContainer = document.querySelector(".main");
+console.log(this.mainContainer);
         if (this.game.getIsPremium()) {
             this.mainContainer.classList.toggle("fullScreen", true);
-            const mapContainer = this.container.querySelector("mapContainer");
+            const mapContainer = this.container.querySelector(".mapContainer");
             mapContainer.style.width = `${window.innerWidth - 250}px`;
             mapContainer.style.height = `${window.innerHeight - 150}px`;
         }

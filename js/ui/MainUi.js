@@ -6,7 +6,7 @@ import GameEvent from "../config/event/GameEvent.js";
 import globalUiBus from "../base/GlobalUiBus.js";
 //import MissionsUi from "./MissionsUi.js";
 import RunningInBackgroundInfoUi from "./RunningInBackgroundInfoUi.js";
-//import AlertUi from "./helper/AlertUi.js";
+import AlertUi from "./helper/AlertUi.js";
 //import GoogleAddsUi from "./GoogleAddsUi.js";
 import IntroUi from "./IntroUi.js";
 

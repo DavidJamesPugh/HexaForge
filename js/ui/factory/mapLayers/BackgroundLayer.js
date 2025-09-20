@@ -55,7 +55,7 @@ export default class BackgroundLayer {
         switch (tile.getTerrain()) {
           case "wall":
             this.drawTerrainBorders(ctx, tile, 7, 1, { grass: true, road: true });
-            this.drawTerrainBorders(ctx, tile, 10, 6, { floor: true, grass: true, road: true });
+            this.drawTerrainBorders(ctx, tile, 10, 6, { floor: true, grass: true, road: true});
             break;
           case "floor":
             this.drawTerrainBorders(ctx, tile, 7, 1, { grass: true, road: true });
@@ -117,21 +117,21 @@ export default class BackgroundLayer {
       if (top && left) ctx.drawImage(this.sprite, 3 * g, v, 11, 11, m, f, 11, 11);
       if (bottom && right) ctx.drawImage(this.sprite, 3 * g + 10, v + 10, 11, 11, m + 10, f + 10, 11, 11);
       if (bottom && left) ctx.drawImage(this.sprite, 3 * g, v + 10, 11, 11, m, f + 10, 11, 11);
-  
-      if (!tr && top && right) ctx.drawImage(this.sprite, 0 * g + 10, v, 11, 11, m + 10, f, 11, 11);
-      if (!tl && top && left) ctx.drawImage(this.sprite, 0 * g, v, 11, 11, m, f, 11, 11);
-      if (!br && bottom && right) ctx.drawImage(this.sprite, 0 * g + 10, v + 10, 11, 11, m + 10, f + 10, 11, 11);
-      if (!bl && bottom && left) ctx.drawImage(this.sprite, 0 * g, v + 10, 11, 11, m, f + 10, 11, 11);
+      
+      if (tr && !top && !right) ctx.drawImage(this.sprite, 0 * g + 10, v, 11, 11, m + 10, f, 11, 11);
+      if (tl && !top && !left) ctx.drawImage(this.sprite, 0 * g, v, 11, 11, m, f, 11, 11);
+      if (br && !bottom && !right) ctx.drawImage(this.sprite, 0 * g + 10, v + 10, 11, 11, m + 10, f + 10, 11, 11);
+      if (bl && !bottom && !left) ctx.drawImage(this.sprite, 0 * g, v + 10, 11, 11, m, f + 10, 11, 11);
   
       const b = left ? 10 : 0;
       const S = right ? 10 : 0;
       const G = top ? 10 : 0;
       const T = bottom ? 10 : 0;
   
-      if (top) ctx.drawImage(this.sprite, rand + b, X, d - b - S, 11, m + b, f, d - b - S, 11);
-      if (bottom) ctx.drawImage(this.sprite, rand + b, X + 10, d - b - S, 11, m + b, f + 10, d - b - S, 11);
-      if (right) ctx.drawImage(this.sprite, rand + 10, y + G, 11, d - G - T, m + 10, f + G, 11, d - G - T);
-      if (left) ctx.drawImage(this.sprite, rand, y + G, 11, d - G - T, m, f + G, 11, d - G - T);
+       if (top) ctx.drawImage(this.sprite, rand + b, X, d - b - S, 11, m + b, f, d - b - S, 11);
+       if (bottom) ctx.drawImage(this.sprite, rand + b, X + 10, d - b - S, 11, m + b, f + 10, d - b - S, 11);
+       if (right) ctx.drawImage(this.sprite, rand + 10, y + G, 11, d - G - T, m + 10, f + G, 11, d - G - T);
+       if (left) ctx.drawImage(this.sprite, rand, y + G, 11, d - G - T, m, f + G, 11, d - G - T);
     }
   
     drawRoad(ctx, tile, n, allowed) {

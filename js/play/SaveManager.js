@@ -1,20 +1,37 @@
 import config from "../config/config.js";
 import UrlHandler from "./UrlHandler.js";
-import logger from "../base/Logger.js";
+import logger from "/js/base/logger.js";
+
+const MODULE_NAME = "SaveManager";
 
 export default class SaveManager {
-  constructor(api, playerId, storagePrefix) {
+  constructor(api, userId, prefix) {
     this.api = api;
-    this.localStorageKey = `${storagePrefix}|${playerId}`;
+    this.localStorageKey = `${prefix}|${userId}`;
     this.cloudSaveName = "Main";
     this.cloudSaveIntervalMs = config.saveManager.cloudSaveIntervalMs;
     this.localSaveIntervalMs = config.saveManager.localSaveIntervalMs;
+
     this.cloudSaveInterval = null;
     this.localSaveInterval = null;
 
     const urlVars = UrlHandler.getUrlVars();
-    this.useCloud = urlVars.cloud !== "0" && urlVars.cloud !== 0 && urlVars.cloud !== "false";
-    if (!this.useCloud) logger.info("SaveManager", "Cloud save disabled");
+    this.useCloud =
+      urlVars.cloud !== "0" &&
+      urlVars.cloud !== 0 &&
+      urlVars.cloud !== "false";
+
+    if (!this.useCloud) {
+      logger.info(MODULE_NAME, "Cloud save disabled");
+    }
+  }
+
+  getCloudSaveInterval() {
+    return this.cloudSaveIntervalMs;
+  }
+
+  getLocalSaveInterval() {
+    return this.localSaveIntervalMs;
   }
 
   setUpdateGameFromLoadedDataCallback(callback) {
@@ -27,123 +44,133 @@ export default class SaveManager {
     return this;
   }
 
-  getCloudSaveInterval() {
-    return this.cloudSaveIntervalMs;
-  }
-
-  getLocalSaveInterval() {
-    return this.localSaveIntervalMs;
-  }
-
-  async init(forceSave = false, callback = () => {}) {
-    const start = () => {
+  init(skipLoad, onReady) {
+    const finishInit = () => {
       this._startInterval();
-      logger.info("SaveManager", "Initialized");
-      callback();
+      logger.info(MODULE_NAME, "Initialized");
+      onReady?.();
     };
 
-    if (forceSave) {
-      await this.saveAutoCloud();
-      await this.saveAutoLocal();
-      start();
+    if (skipLoad) {
+      this.saveAutoCloud(() => {});
+      this.saveAutoLocal(() => {});
+      finishInit();
     } else {
-      await this.loadAuto();
-      start();
+      this.loadAuto(() => finishInit());
     }
+
+    return this;
   }
 
   _startInterval() {
     this.cloudSaveInterval = setInterval(() => {
-      this.saveAutoCloud(() => logger.info("SaveManager", "Auto saved to cloud"));
+      this.saveAutoCloud(() => {
+        logger.info(MODULE_NAME, "Auto saved to cloud");
+      });
     }, this.cloudSaveIntervalMs);
 
     this.localSaveInterval = setInterval(() => {
-      this.saveAutoLocal(() => logger.info("SaveManager", "Auto saved to local"));
+      this.saveAutoLocal(() => {
+        logger.info(MODULE_NAME, "Auto saved to local");
+      });
     }, this.localSaveIntervalMs);
   }
 
   destroy() {
-    clearInterval(this.cloudSaveInterval);
-    clearInterval(this.localSaveInterval);
+    if (this.cloudSaveInterval) clearInterval(this.cloudSaveInterval);
+    if (this.localSaveInterval) clearInterval(this.localSaveInterval);
   }
 
-  getSavesInfo(playerId, callback) {
-    this.api.getSavesInfo(playerId, callback);
+  getSavesInfo(slots, callback) {
+    this.api.getSavesInfo(slots, callback);
   }
 
-  async saveManual(name, callback = () => {}) {
-    await this._saveCloud(name, callback);
+  saveManual(slotId, callback) {
+    this._saveCloud(slotId, callback);
   }
 
-  async saveAuto(callback = () => {}) {
-    await this._saveLocal(this.cloudSaveName, async () => {
-      await this._saveCloud(this.cloudSaveName, callback);
+  saveAuto(callback) {
+    this._saveLocal(this.cloudSaveName, () => {
+      this._saveCloud(this.cloudSaveName, callback);
     });
   }
 
-  async saveAutoCloud(callback = () => {}) {
-    await this._saveCloud(this.cloudSaveName, callback);
+  saveAutoCloud(callback) {
+    this._saveCloud(this.cloudSaveName, callback);
   }
 
-  async saveAutoLocal(callback = () => {}) {
-    await this._saveLocal(this.cloudSaveName, callback);
+  saveAutoLocal(callback) {
+    this._saveLocal(this.cloudSaveName, callback);
   }
 
-  async _saveCloud(name, callback = () => {}) {
+  _saveCloud(slotId, callback) {
     if (this.useCloud) {
-      await this.api.save(name, this.saveDataCallback(), callback);
+      this.api.save(slotId, this.saveDataCallback(), callback);
     } else {
-      logger.info("SaveManager", "Cloud save skipped!");
-      callback();
+      logger.info(MODULE_NAME, "Cloud save skipped!");
+      callback?.();
     }
   }
 
-  async _saveLocal(name, callback = () => {}) {
-    window.localStorage[`${this.localStorageKey}|${name}`] = JSON.stringify(this.saveDataCallback());
-    callback();
+  _saveLocal(slotId, callback) {
+    localStorage.setItem(
+      `${this.localStorageKey}|${slotId}`,
+      JSON.stringify(this.saveDataCallback())
+    );
+    callback?.();
   }
 
-  async loadManual(name, callback = () => {}) {
-    this._loadCloud(name, (data) => {
+  loadManual(slotId, callback) {
+    this._loadCloud(slotId, (data) => {
       this.updateGameFromSaveData(data);
       this.saveAutoCloud(() => {});
-      callback();
+      callback?.();
     });
   }
 
-  async loadAuto(callback = () => {}) {
+  loadAuto(callback) {
     this._loadCloud(this.cloudSaveName, (cloudData) => {
       this._loadLocal(this.cloudSaveName, (localData) => {
-        let preferred = null;
+        let chosen = null;
 
         if (localData && cloudData) {
-          preferred = localData.meta.ver > cloudData.meta.ver ? localData : cloudData;
-          logger.info(
-            "SaveManager",
-            `Preferred ${preferred === localData ? "local" : "cloud"} save local ver:${localData.meta.ver} cloud ver:${cloudData.meta.ver}`
-          );
-        } else {
-          preferred = localData || cloudData;
+          if (localData.meta.ver > cloudData.meta.ver) {
+            logger.info(
+              MODULE_NAME,
+              `Preferred local save local ver:${localData.meta.ver} > cloud ver:${cloudData.meta.ver}`
+            );
+            chosen = localData;
+          } else {
+            logger.info(
+              MODULE_NAME,
+              `Preferred cloud save local ver:${localData.meta.ver} < cloud ver:${cloudData.meta.ver}`
+            );
+            chosen = cloudData;
+          }
+        } else if (localData) {
+          chosen = localData;
+        } else if (cloudData) {
+          chosen = cloudData;
         }
 
-        if (preferred) this.updateGameFromSaveData(preferred);
-        callback();
+        if (chosen) this.updateGameFromSaveData(chosen);
+        callback?.();
       });
     });
   }
 
   updateGameFromSaveData(data) {
-    this.updateGameFromLoadedDataCallback(data);
+    this.updateGameFromLoadedDataCallback?.(data);
   }
 
-  _loadCloud(name, callback = () => {}) {
-    this.api.load(name, callback);
+  _loadCloud(slotId, callback) {
+    this.api.load(slotId, callback);
   }
 
-  _loadLocal(name, callback = () => {}) {
+  _loadLocal(slotId, callback) {
     try {
-      const data = JSON.parse(window.localStorage[`${this.localStorageKey}|${name}`]);
-      callback(data);
+      const raw = localStorage.getItem(`${this.localStorageKey}|${slotId}`);
+      callback(raw ? JSON.parse(raw) : null);
     } catch {
       callback(null);
     }

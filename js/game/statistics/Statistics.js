@@ -27,6 +27,7 @@ export default class Statistics {
     }
 
     init() {
+        console.log("Statistics EventManager", this.game.getEventManager());
         this.game.getEventManager().addListener("Statistics", GameEvent.GAME_TICK, (tickData) => {
             let data = { profit: tickData.profit, researchProduction: tickData.researchProduction };
             this.gameCollector.handleInput(data);
