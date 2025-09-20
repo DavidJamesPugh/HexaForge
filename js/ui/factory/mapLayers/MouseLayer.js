@@ -115,7 +115,6 @@ class MouseLayer {
       (event) => {
         if (downEvent && downEvent.x === event.x && downEvent.y === event.y) {
           let comp = this.factory.getTile(event.x, event.y).getComponent();
-
           if (downEvent.altKeyDown) {
             this.updateTileMeta(event);
           } else if (this.selectedComponentMetaId) {
@@ -222,7 +221,7 @@ class MouseLayer {
   
     element.addEventListener("pointerout", () => {
       this.factory.getEventManager().invokeEvent(
-        FactoryEvent.FACTORY_POINTER_OUT,
+        FactoryEvent.FACTORY_MOUSE_OUT,
         lastEvent
       );
       lastEvent = null;
@@ -244,8 +243,8 @@ class MouseLayer {
         y: Math.round(localY / this.tileSize),
         leftDown: e.buttons === 1,
         rightDown: e.buttons === 2,
-        shift: e.shiftKey,
-        alt: e.altKey,
+        shiftKeyDown: e.shiftKey,
+        altKeyDown: e.altKey,
         pointerType: e.pointerType, // "mouse", "touch", "pen"
       };
   
@@ -260,7 +259,7 @@ class MouseLayer {
   
       if (!lastEvent || lastEvent.x !== pointerEvent.x || lastEvent.y !== pointerEvent.y) {
         this.factory.getEventManager().invokeEvent(
-          FactoryEvent.FACTORY_POINTER_MOVE,
+          FactoryEvent.FACTORY_MOUSE_MOVE,
           pointerEvent
         );
         lastEvent = pointerEvent;
@@ -269,14 +268,14 @@ class MouseLayer {
   
     element.addEventListener("pointerdown", (e) => {
       this.factory.getEventManager().invokeEvent(
-        FactoryEvent.FACTORY_POINTER_DOWN,
+        FactoryEvent.FACTORY_MOUSE_DOWN,
         {
           x: lastEvent?.x ?? 0,
           y: lastEvent?.y ?? 0,
           leftDown: e.buttons === 1,
           rightDown: e.buttons === 2,
-          shift: e.shiftKey,
-          alt: e.altKey,
+          shiftKeyDown: e.shiftKey,
+          altKeyDown: e.altKey,
           pointerType: e.pointerType,
         }
       );
@@ -284,7 +283,7 @@ class MouseLayer {
   
     element.addEventListener("pointerup", () => {
       this.factory.getEventManager().invokeEvent(
-        FactoryEvent.FACTORY_POINTER_UP,
+        FactoryEvent.FACTORY_MOUSE_UP,
         lastEvent
       );
     });

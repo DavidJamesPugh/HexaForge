@@ -1,5 +1,6 @@
 // src/game/action/UpdateTileAction.js
 import Tile from "../Tile.js";
+import FactoryEvent from "../../config/event/FactoryEvent.js";
 
 class UpdateTileAction {
   constructor(tile, toolId) {
