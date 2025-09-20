@@ -2,13 +2,18 @@
 import BuyComponentAction from "../../../../game/action/BuyComponentAction.js";
 import TipUi from "../../../../ui/helper/TipUi.js";
 
-class MouseInfoHelper {
+export default class MouseInfoHelper {
+  container = null;
+  lastTip = null;
+  mouseSelectionElement = null;
+  cantPlaceElement = null;
+  componentSelectedElement = null;
+
   constructor(factory, imageMap, tileSize) {
     this.factory = factory;
     this.game = factory.getGame();
     this.imageMap = imageMap;
     this.tileSize = tileSize;
-    this.lastTip = null;
   }
 
   display(container) {
@@ -17,76 +22,69 @@ class MouseInfoHelper {
 
   destroy() {
     this.container = null;
+    this.turnOffBuildMode();
+    this.turnOffCantBuildMode();
+    this.turnOffComponentSelected();
+    this.turnOffNotEnoughMoneyTip();
   }
 
   updateMouseInformationModes(componentId, pos) {
-    if (!pos || !componentId) {
-      this.turnOffBuildMode();
-      this.turnOffCantBuildMode();
-      this.turnOffNotEnoughMoneyTip();
-      return;
+    if (!componentId || !pos) {
+        this.turnOffBuildMode();
+        this.turnOffCantBuildMode();
+        this.turnOffNotEnoughMoneyTip();
+        return;
     }
 
     const compMeta = this.game.getMeta().componentsById[componentId];
-    const canBuildType = this.factory.isPossibleToBuildOnTypeWithSize(
-      pos.x,
-      pos.y,
-      compMeta.width,
-      compMeta.height,
-      compMeta
-    );
-    const canBuildArea = this.factory
-      .getAreasManager()
-      .canBuildAt(pos.x, pos.y, compMeta.width, compMeta.height);
-    const isOutOfMap = !this.factory.isOnMap(
-      pos.x,
-      pos.y,
-      compMeta.width,
-      compMeta.height
-    );
-
     const tile = this.factory.getTile(pos.x, pos.y);
     const buyAction = new BuyComponentAction(tile, compMeta);
 
-    if (isOutOfMap) {
-      this.turnOffBuildMode();
-    } else {
-      this.updateBuildMode(componentId, pos);
-    }
+    const isOutOfMap = !this.factory.isOnMap(pos.x, pos.y, compMeta.width, compMeta.height);
+    const canBuildType = this.factory.isPossibleToBuildOnTypeWithSize(
+        pos.x, pos.y, compMeta.width, compMeta.height, compMeta
+    );
+    const canBuildArea = this.factory.getAreasManager().canBuildAt(
+        pos.x, pos.y, compMeta.width, compMeta.height
+    );
 
+    // Handle build mode / out-of-map
+    isOutOfMap ? this.turnOffBuildMode() : this.updateBuildMode(componentId, pos);
+
+    // Handle cant-build / not-enough-money tips
     if ((canBuildType && canBuildArea) || isOutOfMap) {
-      if (buyAction.canBuy()) {
-        this.turnOffCantBuildMode();
-        this.turnOffNotEnoughMoneyTip();
-      } else {
-        this.updateCantBuildMode(componentId, pos);
-        this.updateNotEnoughMoneyTip();
-      }
+        if (buyAction.canBuy()) {
+            this.turnOffCantBuildMode();
+            this.turnOffNotEnoughMoneyTip();
+        } else {
+            this.updateCantBuildMode(componentId, pos);
+            this.updateNotEnoughMoneyTip();
+        }
     } else {
-      this.updateCantBuildMode(componentId, pos);
+        this.updateCantBuildMode(componentId, pos);
+        this.turnOffNotEnoughMoneyTip();
     }
-  }
+}
+
 
   updateComponentSelected(component) {
-    if (!component) {
-      this.turnOffComponentSelected();
-      return;
-    }
+    if (!component) return this.turnOffComponentSelected();
 
     const meta = component.getMeta();
     if (!this.componentSelectedElement) {
-      this.componentSelectedElement = $(this.imageMap.getImage("blueSelection"));
-      this.container.append(this.componentSelectedElement);
+      this.componentSelectedElement = this.createImageElement(this.imageMap.getImage("blueSelection"));
+      this.container.appendChild(this.componentSelectedElement);
     }
 
-    this.componentSelectedElement
-      .css("position", "absolute")
-      .css("opacity", 0.5)
-      .css("pointer-events", "none")
-      .css("left", component.getX() * this.tileSize)
-      .css("top", component.getY() * this.tileSize)
-      .css("width", this.tileSize * meta.width)
-      .css("height", this.tileSize * meta.height);
+    this.setElementStyle(this.componentSelectedElement, {
+      left: component.getX() * this.tileSize + "px",
+      top: component.getY() * this.tileSize + "px",
+      width: this.tileSize * meta.width + "px",
+      height: this.tileSize * meta.height + "px",
+      opacity: 0.5,
+      pointerEvents: "none",
+      position: "absolute",
+    });
   }
 
   turnOffComponentSelected() {
@@ -99,18 +97,19 @@ class MouseInfoHelper {
   updateBuildMode(componentId, pos) {
     const meta = this.game.getMeta().componentsById[componentId];
     if (!this.mouseSelectionElement) {
-      this.mouseSelectionElement = $(this.imageMap.getImage("yellowSelection"));
-      this.container.append(this.mouseSelectionElement);
+      this.mouseSelectionElement = this.createImageElement(this.imageMap.getImage("yellowSelection"));
+      this.container.appendChild(this.mouseSelectionElement);
     }
 
-    this.mouseSelectionElement
-      .css("position", "absolute")
-      .css("opacity", 0.5)
-      .css("pointer-events", "none")
-      .css("left", pos.x * this.tileSize)
-      .css("top", pos.y * this.tileSize)
-      .css("width", this.tileSize * meta.width)
-      .css("height", this.tileSize * meta.height);
+    this.setElementStyle(this.mouseSelectionElement, {
+      left: pos.x * this.tileSize + "px",
+      top: pos.y * this.tileSize + "px",
+      width: this.tileSize * meta.width + "px",
+      height: this.tileSize * meta.height + "px",
+      opacity: 0.5,
+      pointerEvents: "none",
+      position: "absolute",
+    });
   }
 
   turnOffBuildMode() {
@@ -123,18 +122,19 @@ class MouseInfoHelper {
   updateCantBuildMode(componentId, pos) {
     const meta = this.game.getMeta().componentsById[componentId];
     if (!this.cantPlaceElement) {
-      this.cantPlaceElement = $(this.imageMap.getImage("cantPlace"));
-      this.container.append(this.cantPlaceElement);
+      this.cantPlaceElement = this.createImageElement(this.imageMap.getImage("cantPlace"));
+      this.container.appendChild(this.cantPlaceElement);
     }
 
-    this.cantPlaceElement
-      .css("position", "absolute")
-      .css("opacity", 0.5)
-      .css("pointer-events", "none")
-      .css("left", pos.x * this.tileSize)
-      .css("top", pos.y * this.tileSize)
-      .css("width", this.tileSize * meta.width)
-      .css("height", this.tileSize * meta.height);
+    this.setElementStyle(this.cantPlaceElement, {
+      left: pos.x * this.tileSize + "px",
+      top: pos.y * this.tileSize + "px",
+      width: this.tileSize * meta.width + "px",
+      height: this.tileSize * meta.height + "px",
+      opacity: 0.5,
+      pointerEvents: "none",
+      position: "absolute",
+    });
   }
 
   turnOffCantBuildMode() {
@@ -150,7 +150,7 @@ class MouseInfoHelper {
         this.container,
         `<span class="red">You don't have enough money!</span>`
       ).init();
-      $("body").css("cursor", "no-drop");
+      document.body.style.cursor = "no-drop";
     }
   }
 
@@ -158,9 +158,22 @@ class MouseInfoHelper {
     if (this.lastTip) {
       this.lastTip.destroy();
       this.lastTip = null;
-      $("body").css("cursor", "");
+      document.body.style.cursor = "";
     }
   }
-}
 
-export default MouseInfoHelper;
+  // --- Helper functions ---
+
+  createImageElement(image) {
+    const img = document.createElement("img");
+    img.src = image.src; // <-- use the loaded image src
+    img.style.position = "absolute";
+    img.style.pointerEvents = "none";
+    img.style.opacity = 0.5;
+    return img;
+  }
+
+  setElementStyle(el, styles) {
+    Object.assign(el.style, styles);
+  }
+}

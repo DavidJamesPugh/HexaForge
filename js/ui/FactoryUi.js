@@ -35,7 +35,7 @@ export default class FactoryUi {
         this.container = container;
         this.container.insertAdjacentHTML("beforeend", Handlebars.compile(factoryTemplateHtml)());
         this.mainContainer = document.querySelector(".main");
-console.log(this.mainContainer);
+
         if (this.game.getIsPremium()) {
             this.mainContainer.classList.toggle("fullScreen", true);
             const mapContainer = this.container.querySelector(".mapContainer");
