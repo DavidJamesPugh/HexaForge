@@ -1,5 +1,5 @@
 // ComponentsUi.js
-import componentsTemplate from "../../template/factory/components.html";
+import componentsTemplate from "../../template/factory/components.html?raw";
 import BuyComponentAction from "../../game/action/BuyComponentAction.js";
 import FactoryEvent from "../../config/event/FactoryEvent.js";
 import GlobalUiEvent from "../../config/event/GlobalUiEvent.js";
@@ -26,7 +26,9 @@ export default class ComponentsUi {
                     return { id: meta.id, name: meta.name, 
                         style: `background-position: -${26 * meta.iconX}px -${26 * meta.iconY}px` };
                 } else if (id === "noComponent") {
-                    return { name: "No component", style: "background-position: 0px 0px" };
+                    return { 
+                        name: "No component", 
+                        style: "background-position: 0px 0px" };
                 }
                 return {};
                 
@@ -40,18 +42,11 @@ export default class ComponentsUi {
             "componentsUi",
             FactoryEvent.COMPONENT_META_SELECTED,
             (id) => {
+                this.container.querySelectorAll(`.button`)
+                .forEach(div => div.classList.remove("buttonSelected"));
                 if (this.selectedComponentId === id) {
-                    // Toggle off (deselect)
-                    this.container.querySelectorAll(`.but${id}`)
-                        .forEach(div => div.classList.remove("buttonSelected"));
                     this.selectedComponentId = null;
                 } else {
-                    // Deselect old
-                    if (this.selectedComponentId) {
-                        this.container.querySelectorAll(`.but${this.selectedComponentId}`)
-                            .forEach(div => div.classList.remove("buttonSelected"));
-                    }
-                    // Select new
                     this.container.querySelectorAll(`.but${id}`)
                         .forEach(div => div.classList.add("buttonSelected"));
                     this.selectedComponentId = id;
