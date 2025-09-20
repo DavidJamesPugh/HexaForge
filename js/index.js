@@ -31,7 +31,6 @@ window.addEventListener("DOMContentLoaded", async () => {
     }
 
     loader.showMessage("Loading game… please wait…");
-    
     await MainSingleton.init(false);
 
     loader.hide();

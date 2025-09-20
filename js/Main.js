@@ -50,7 +50,9 @@ export default class Main {
   }
 
   destroy() {
+    console.log("Main destroyed1", this);
     this.mainUi?.destroy();
     this.play?.destroy();
+    console.log("Main destroyed2", this);
   }
 }

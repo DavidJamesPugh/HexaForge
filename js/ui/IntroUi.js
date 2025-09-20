@@ -11,18 +11,14 @@ export default class IntroUi {
 
 
     display(templateData = {}) {
-
         if (this.isVisible) return;
 
-        const wrapper = document.createElement("div");
-        const templateIntro = Handlebars.compile(introTemplateHtml);
-        wrapper.innerHTML = templateIntro(templateData);
-        this.container.appendChild(wrapper);
+        document.body.insertAdjacentHTML("beforeend", Handlebars.compile(introTemplateHtml)(templateData));
 
         this.isVisible = true;
 
-        const intro = wrapper.querySelector("#intro");
-        const introBg = wrapper.querySelector("#introBg");
+        const intro = document.querySelector("#intro");
+        const introBg = document.querySelector("#introBg");
 
         // Center horizontally
         const left = (document.documentElement.clientWidth - intro.offsetWidth) / 2;

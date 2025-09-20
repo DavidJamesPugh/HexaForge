@@ -158,8 +158,7 @@ export default class SettingsUi {
           .setCancelTitle("Yes, RESET GAME")
           .setOkTitle("Nooooo!!!")
           .setCancelCallback(() => {
-            MainSingleton.getInstance().destroy();
-            MainSingleton.init(true);
+            MainSingleton.reset(true); // restart in dev mode, or reset save
             this.destroy();
           })
           .display();

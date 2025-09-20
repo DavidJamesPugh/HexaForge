@@ -36,9 +36,15 @@ export default class MainUi {
         this.runningInBackgroundInfoUi = new RunningInBackgroundInfoUi(this.globalUiEm);
         this.runningInBackgroundInfoUi.init();
         const ticker = this.play.getGame().getTicker();
-        this.play.getGame().getEventManager().addListener("MainUi", GameEvent.TICKS_STARTED, () => {
-            if (ticker.getNoOfTicks() < 1000) new IntroUi().display();
-        });
+        
+        const introUi = new IntroUi(); // singleton instance somewhere globally
+        const listener = () => {
+            if (ticker.getNoOfTicks() < 1000) {
+                introUi.display();
+                this.play.getGame().getEventManager().removeListener("MainUi", GameEvent.TICKS_STARTED, listener);
+            }
+        };
+        this.play.getGame().getEventManager().addListener("MainUi", GameEvent.TICKS_STARTED, listener);
 
         this.setupFocusChecker();
 
