@@ -105,7 +105,6 @@ export default class Play {
       await this.purchasesManager.init();
       console.log("Play: PurchasesManager initialized");
 
-      // Initialize game logic
       console.log("Play: Initializing game logic...");
       this.game.init();
       console.log("Play: Game logic initialized");

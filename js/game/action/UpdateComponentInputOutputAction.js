@@ -49,12 +49,6 @@ export default class UpdateComponentInputOutputAction {
   }
 
   update() {
-    console.log(
-      "from:", this.fromTile.getId(),
-      "to:", this.toTile.getId(),
-      "dir:", this.fromTile.getDirection(this.toTile)
-    );
-    
     this.fromTile.getInputOutputManager().setOutput(this.fromTile.getDirection(this.toTile));
     this.factory.getEventManager().invokeEvent(
       FactoryEvent.FACTORY_COMPONENTS_CHANGED,

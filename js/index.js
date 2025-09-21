@@ -29,14 +29,11 @@ window.addEventListener("DOMContentLoaded", async () => {
     }
 
     loader.showMessage("Loading game… please wait…");
-    await MainSingleton.init(true);
+    await MainSingleton.init(false);
 
     loader.hide();
     console.log("✅ Game initialized successfully!");
     
-    document.addEventListener("contextmenu", (event) => {
-      event.preventDefault();
-    });
   } catch (err) {
     console.error("❌ Game failed to start:", err);
     loader.showMessage(

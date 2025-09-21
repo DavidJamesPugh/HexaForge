@@ -1,6 +1,5 @@
 // game/Game.js
 import Factory from "./Factory.js";
-import EventManager from "../base/EventManager.js";
 import ResearchManager from "./ResearchManager.js";
 import AchievementsManager from "./AchievementsManager.js";
 import Calculator from "./calculator/Calculator.js";
@@ -87,7 +86,7 @@ export default class Game {
 
   exportToWriter() {
     const writer = new BinaryArrayWriter();
-    writer.writeUint16(7);
+    writer.writeUint16(9);
     writer.writeFloat64(this.money);
     writer.writeFloat64(this.researchPoints);
     writer.writeInt8(this.isPremium ? 1 : 0);
@@ -102,6 +101,7 @@ export default class Game {
       const factory = this.factories[key];
       writer.writeUint8(factory.getMeta().idNum);
       writer.writeWriter(factory.exportToWriter());
+
     }
 
     return writer;
@@ -109,12 +109,13 @@ export default class Game {
 
   importFromReader(reader) {
     const version = reader.readUint16();
-
+    console.log(reader.peekFloat64());
     this.setMoney(reader.readFloat64());
+    this.setMoney(20000000);
     this.setResearchPoints(reader.readFloat64());
     if (version >= 7) this.setIsPremium(!!reader.readInt8());
     else this.setIsPremium(false);
-
+    
     this.researchManager.importFromReader(reader.readReader(), version);
     this.achievementsManager.importFromReader(reader.readReader(), version);
     this.statistics.importFromReader(reader.readReader(), version);

@@ -23,10 +23,10 @@ export default class Benchmarker {
             const avgRunTime = this.weightSum ? Math.round((this.timeSpent / this.weightSum) * 10) / 10 : 0;
             const cpuUsage = Math.round((100 * this.timeSpent / elapsed) * 100) / 100;
 
-            logger.info(
-                `Bench:${this.name}`,
-                `AVG: ${this.timeSpent}ms / ${elapsed}ms (Runs: ${this.weightSum}, Avg run time: ${avgRunTime}ms) CPU time spent: ${cpuUsage}%`
-            );
+           // logger.info(
+            //     `Bench:${this.name}`,
+            //     `AVG: ${this.timeSpent}ms / ${elapsed}ms (Runs: ${this.weightSum}, Avg run time: ${avgRunTime}ms) CPU time spent: ${cpuUsage}%`
+            // );
 
             // reset counters
             this.timeSpent = 0;

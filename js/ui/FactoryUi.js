@@ -33,6 +33,9 @@ export default class FactoryUi {
 
     display(container) {
         this.container = container;
+        this.container.addEventListener("contextmenu", (event) => {
+            event.preventDefault();
+          });
         this.container.insertAdjacentHTML("beforeend", Handlebars.compile(factoryTemplateHtml)());
         this.mainContainer = document.querySelector(".main");
 

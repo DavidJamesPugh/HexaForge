@@ -38,8 +38,11 @@ export default class MainUi {
         const ticker = this.play.getGame().getTicker();
         
         const introUi = new IntroUi(); // singleton instance somewhere globally
+        const startTime = Date.now();
+        
         const listener = () => {
-            if (ticker.getNoOfTicks() < 1000) {
+            const elapsed = Date.now() - startTime;
+            if (ticker.getNoOfTicks() < 1000 && elapsed >= 100) {
                 introUi.display();
                 this.play.getGame().getEventManager().removeListener("MainUi", GameEvent.TICKS_STARTED, listener);
             }
