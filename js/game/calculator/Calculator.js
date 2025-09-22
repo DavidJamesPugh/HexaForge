@@ -33,7 +33,6 @@ export default class Calculator {
       result.researchProduction += fcResult.researchProduction;
       result.factory_results[id] = fcResult;
     }
-
     this.game.addMoney(result.profit);
     this.game.addResearchPoints(result.researchProduction);
 

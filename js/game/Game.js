@@ -86,7 +86,8 @@ export default class Game {
 
   exportToWriter() {
     const writer = new BinaryArrayWriter();
-    writer.writeUint16(9);
+    
+    writer.writeUint16(7);
     writer.writeFloat64(this.money);
     writer.writeFloat64(this.researchPoints);
     writer.writeInt8(this.isPremium ? 1 : 0);
@@ -103,28 +104,34 @@ export default class Game {
       writer.writeWriter(factory.exportToWriter());
 
     }
-
+    
     return writer;
   }
 
   importFromReader(reader) {
+    
     const version = reader.readUint16();
-    console.log(reader.peekFloat64());
     this.setMoney(reader.readFloat64());
-    this.setMoney(20000000);
     this.setResearchPoints(reader.readFloat64());
     if (version >= 7) this.setIsPremium(!!reader.readInt8());
     else this.setIsPremium(false);
     
+    console.log("Game.import: version=", version);
+    console.log("Game.import: before managers: money=", this.getMoney(), "rp=", this.getResearchPoints(), "premium=", this.getIsPremium());
+
     this.researchManager.importFromReader(reader.readReader(), version);
     this.achievementsManager.importFromReader(reader.readReader(), version);
     this.statistics.importFromReader(reader.readReader(), version);
     this.ticker.importFromReader(reader.readReader(), version);
 
     const factoriesCount = reader.readUint8();
+    console.log("Game.import: factoriesCount=", factoriesCount);
     for (let i = 0; i < factoriesCount; i++) {
       const factoryMeta = this.meta.factoriesByIdNum[reader.readUint8()];
       const factoryReader = reader.readReader();
+      if (!factoryMeta) {
+        console.warn("Game.import: Missing factoryMeta for index", i);
+      }
       if (factoryMeta) this.factories[factoryMeta.id].importFromReader(factoryReader, version);
     }
 

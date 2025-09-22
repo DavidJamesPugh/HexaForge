@@ -129,6 +129,7 @@ export default class AchievementsManager {
     writer.writeBooleansArrayFunc(achievements, (achievement) =>
       this.getAchievement(achievement.id)
     );
+    
     return writer;
   }
 
@@ -137,6 +138,7 @@ export default class AchievementsManager {
 
     const length = reader.readUint16();
     this.achievements = {};
+    console.log("Achievements.import: length=", length, "bufferLen=", reader.getLength());
 
     reader.readBooleanArrayFunc(length, (index, value) => {
       if (value) {
@@ -144,5 +146,7 @@ export default class AchievementsManager {
         if (achievement) this._setAchieved(achievement.id, true);
       }
     });
+    const achieved = Object.keys(this.achievements).length;
+    console.log("Achievements.import: achieved count=", achieved);
   }
 }

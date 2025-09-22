@@ -73,13 +73,14 @@ export default class FactoriesUi {
     }
 
     update() {
-        this.updateText("#money", this.game.getMoney());
+        this.updateText("#moneyValue", this.game.getMoney());
+        
         this.updateText("#researchPoints", this.game.getResearchPoints());
 
 
         const avgProfit = this.statistics.getAvgProfit();
 
-        this.updateText("#income", avgProfit ? NumberFormat.formatNumber(avgProfit) : " ? ");
+        this.updateText("#incomeValue", avgProfit ? NumberFormat.formatNumber(avgProfit) : " ? ");
 
         const avgResearch = this.statistics.getAvgResearchPointsProduction();
         this.updateText("#researchIncome", avgResearch ? NumberFormat.formatNumber(avgResearch) : " ? ");

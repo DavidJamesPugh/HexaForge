@@ -9,7 +9,17 @@ export default class TrackStrategy {
     if (tile.isMainComponentContainer()) {
       const meta = tile.getComponent().getMeta();
       const params = this._getDrawParameters(tile);
-      const sprite = this.imageMap.getImage(meta.id);
+      let sprite = this.imageMap.getImage(meta.id);
+      if (!sprite) {
+        // Fallback commonly used for tracks
+        sprite = this.imageMap.getImage("transportLine");
+        if (!sprite) {
+          console.warn("TrackStrategy: missing sprite for", meta.id);
+          return;
+        } else {
+          console.log("TrackStrategy: using fallback sprite 'transportLine' for", meta.id);
+        }
+      }
 
       const sx = params.n * this.tileSize;
       const sy = 0;

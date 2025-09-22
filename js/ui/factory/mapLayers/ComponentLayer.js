@@ -31,6 +31,7 @@ export default class ComponentLayer {
     this.canvas.width = this.tilesX * this.tileSize;
     this.canvas.height = this.tilesY * this.tileSize;
     container.append(this.canvas);
+    console.log("ComponentLayer: canvas size:", this.canvas.width, this.canvas.height);
 
     this.factory.getEventManager().addListener(
       "LayerComponent",
@@ -62,16 +63,29 @@ export default class ComponentLayer {
         this.tilesWithComponentCache.push(tile);
       }
     }
+    const mainCount = this.tilesWithComponentCache.filter(t => t.isMainComponentContainer()).length;
+    console.log("ComponentLayer: buildCache tilesWithComponentCache=", this.tilesWithComponentCache.length, "mainCount=", mainCount);
   }
 
   redraw() {
     const ctx = this.canvas.getContext("2d");
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
+    let drawCount = 0;
+    const img = this.imageMap.getImage("components");
+    if (!img) console.warn("ComponentLayer: components image not loaded");
     for (const tile of this.tilesWithComponentCache) {
+      if (!tile.isMainComponentContainer()) continue;
+      // Skip drawing components whose main tile is not inside bought areas, to match visibility rules
+      // If areas are not used, this no-ops
+      const areas = this.factory.getAreasManager?.();
+      if (areas && !areas.canBuildAt(tile.getX(), tile.getY(), tile.getComponent().getMeta().width, tile.getComponent().getMeta().height)) {
+        continue;
+      }
       const strategyName = tile.getComponent().getMeta().drawStrategy || "default";
       this.strategies[strategyName].drawComponentLayer(ctx, tile);
+      drawCount++;
     }
+    console.log("ComponentLayer: redraw drew main components:", drawCount);
   }
 
   destroy() {

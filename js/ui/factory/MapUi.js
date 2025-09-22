@@ -58,6 +58,7 @@ export default class MapUi {
 
     this.backgroundLayer.display(this.element);
     this.componentLayer.display(this.element);
+    console.log("MapUi: after componentLayer.display - overlay size:", this.overlay.clientWidth, this.overlay.clientHeight, "map size:", mapW, mapH);
     this.packageLayer.display(this.element);
     this.mouseLayer.display(this.element);
     this.areasLayer.display(this.element);

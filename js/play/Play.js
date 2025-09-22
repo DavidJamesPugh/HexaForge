@@ -23,7 +23,6 @@ export default class Play {
     this.purchasesManager = null;
     this.confirmedTimestamp = null;
     this.game = null;
-    this.missions = {};
   }
 
   getMeta() {
@@ -32,10 +31,6 @@ export default class Play {
 
   getGame() {
     return this.game;
-  }
-
-  getMission(missionId) {
-    return this.missions[missionId];
   }
 
   getSaveManager() {
@@ -129,7 +124,19 @@ export default class Play {
       }))
       .setUpdateGameFromLoadedDataCallback((savedData) => {
         try {
+          console.log("Play: Decoding save. Meta:", savedData?.meta);
           this.importFromReader(new BinaryArrayReader(Base64ArrayBuffer.decode(savedData.data)));
+          // console.log("Play: After import: money=", this.game.getMoney(), "rp=", this.game.getResearchPoints(), "isPremium=", this.game.getIsPremium());
+
+          // Log a sample of reconstructed state
+          // const f0 = this.game.getFactory(this.game.getMeta().factories[0].id);
+          // if (f0) {
+          //   const mainTiles = f0.getTiles().filter(t => t.isMainComponentContainer());
+          //   console.log("Play: Factory 0 components count:", mainTiles.length);
+          // }
+          // console.log("Play: Research sample:", Object.keys(this.game.getResearchManager().research).slice(0,5).reduce((acc, k) => (acc[k]=this.game.getResearchManager().research[k], acc), {}));
+
+
           this.game.getTicker().addOfflineGains();
           logger.info("Play", "Game loaded from save");
         } catch (err) {
@@ -143,7 +150,6 @@ export default class Play {
     this.api?.destroy();
     this.saveManager?.destroy();
     this.purchasesManager?.destroy();
-    Object.values(this.missions).forEach((m) => m.destroy());
   }
 
   exportToWriter() {

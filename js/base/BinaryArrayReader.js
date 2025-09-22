@@ -22,6 +22,13 @@ export default class BinaryArrayReader {
     }
     return this.dataView[method](this.offset, true); // <-- little-endian
   }
+  peekBytes(length) {
+    if (this.offset + length > this.buffer.byteLength) {
+      throw new Error(`Peek out of bounds: trying to peek ${length} bytes at offset ${this.offset}, buffer length ${this.buffer.byteLength}`);
+    }
+    return new Uint8Array(this.buffer, this.offset, length);
+  }
+
   readBooleanMap() {
     return new BinaryBoolean(this.readUint8()).reverse();
   }
@@ -88,7 +95,7 @@ export default class BinaryArrayReader {
 
   readReader() {
     const length = this.readInt32();
-    console.log("readReader length:", length, "offset:", this.offset);
+    
     if (this.offset + length > this.buffer.byteLength) {
         throw new Error(`readReader: length exceeds buffer size`);
     }
@@ -100,6 +107,16 @@ export default class BinaryArrayReader {
     }
 
     return new BinaryArrayReader(buffer);
+}
+
+peekReader() {
+  const length = this.peekInt32(); // does not advance
+  if (this.offset + 4 + length > this.buffer.byteLength) {
+    throw new Error("peekReader: length exceeds buffer size");
+  }
+  return new BinaryArrayReader(
+    this.buffer.slice(this.offset + 4, this.offset + 4 + length)
+  );
 }
 
   readBooleanArrayFunc(length, callback) {

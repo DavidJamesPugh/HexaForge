@@ -1,6 +1,8 @@
 // LocalApi.js
 import logger from "../../../base/Logger.js";
 import ApiEvent from "../../../config/event/ApiEvent.js";
+import Base64ArrayBuffer from "/js/base/Base64ArrayBuffer.js";
+import BinaryArrayReader from "/js/base/BinaryArrayReader.js";
 
 export default class LocalApi {
     userHash;
@@ -15,6 +17,7 @@ export default class LocalApi {
 
     constructor(em, userHash, storagePrefix) {
         this.userHash = userHash;
+        
         this.storageKey = `${storagePrefix}|${userHash}`;
         this.em = em;
     }
@@ -38,6 +41,9 @@ export default class LocalApi {
         this.purchases = [];
         this.saves = {};
         this.savesMeta = {};
+        
+        const mainSave = this.decodeMainSave();
+        console.log("Main save bytes:", mainSave);
         try {
             const data = JSON.parse(localStorage.getItem(this.storageKey));
             if (data) {
@@ -141,4 +147,39 @@ export default class LocalApi {
             adDiv.remove();
         }, 500);
     }
+
+    decodeMainSave() {
+        const saveKey = "Main";
+        const rawSave = this.saves[saveKey];
+        
+        if (!rawSave) {
+            logger.info("LocalApi", "No Main save data found");
+            return null;
+        }
+    
+        try {
+            // Decode Base64 string to ArrayBuffer
+            const buffer = Base64ArrayBuffer.decode(rawSave);
+            const bytes = new Uint8Array(buffer);
+    
+            logger.info("LocalApi", "Main save bytes:", bytes);
+    
+            // Use BinaryArrayReader to parse
+            const reader = new BinaryArrayReader(buffer);
+    
+            // Read core fields (matching exportToWriter order)
+            const version = reader.readUint16();
+            const money = reader.readFloat64();
+            const researchPoints = reader.readFloat64();
+            let isPremium = 0;
+            if (version >= 7) isPremium = reader.readInt8();
+    
+            // Optionally return the reader for further parsing of factories, achievements, etc.
+            return { version, money, researchPoints, isPremium, reader };
+        } catch (err) {
+            logger.warning("LocalApi", "Failed to decode Main save", err);
+            return null;
+        }
+    }
+    
 }

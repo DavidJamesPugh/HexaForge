@@ -45,21 +45,22 @@ export default class SaveManager {
   }
 
   init(skipLoad, onReady) {
-    const finishInit = () => {
-      this._startInterval();
-      logger.info(MODULE_NAME, "Initialized");
-      onReady?.();
-    };
+    return new Promise((resolve) => {
+      const finishInit = () => {
+        this._startInterval();
+        logger.info(MODULE_NAME, "Initialized");
+        onReady?.();
+        resolve();
+      };
 
-    if (skipLoad) {
-      this.saveAutoCloud(() => {});
-      this.saveAutoLocal(() => {});
-      finishInit();
-    } else {
-      this.loadAuto(() => finishInit());
-    }
-
-    return this;
+      if (skipLoad) {
+        this.saveAutoCloud(() => {});
+        this.saveAutoLocal(() => {});
+        finishInit();
+      } else {
+        this.loadAuto(() => finishInit());
+      }
+    });
   }
 
   _startInterval() {
@@ -169,7 +170,21 @@ export default class SaveManager {
 
   _loadLocal(slotId, callback) {
     try {
-      const raw = localStorage.getItem(`${this.localStorageKey}|${slotId}`);
+    e.getItem(`${this.localStorageKey}|${slotId}`);
+      if (!raw) {
+        console.log("SaveManager: No local save found for slot", slotId);
+      } else {
+        try {
+          const parsed = JSON.parse(raw);
+          console.log("SaveManager: Loaded local save meta:", parsed?.meta);
+          console.log(
+            "SaveManager: Local save data length:",
+            typeof parsed?.data === "string" ? parsed.data.length : 0
+          );
+        } catch (e) {
+          console.warn("SaveManager: Failed to parse local save JSON", e);
+        }
+      }
       callback(raw ? JSON.parse(raw) : null);
     } catch {
       callback(null);

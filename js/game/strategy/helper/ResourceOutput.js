@@ -51,10 +51,8 @@ export default class ResourceOutput {
     for (let i = 0; i < tiles.length; i++) {
       const resourceId = this._getNextOutputResource();
       if (!resourceId) break;
-
       const tileInfo = tiles[this.distributeTileIndex];
       this.distributeTileIndex = (this.distributeTileIndex + 1) % tiles.length;
-
       const inputQueue = tileInfo.tile.getComponent().getStrategy().getInputQueue(tileInfo.oppositeDirection);
       if (!inputQueue.getFirst()) {
         const amount = this.getOutputAmount();

@@ -31,6 +31,7 @@ export default class Factory {
   }
 
   reset() {
+    console.log("Factory.reset called for", this.meta.id);
     this.tiles.forEach(tile => tile.setComponent(null));
     new FactorySetup(this).init();
   }
@@ -126,7 +127,6 @@ export default class Factory {
   }
 
   importFromReader(reader, version) {
-    console.log("Factory.importFromReader start, version:", version);
   
     this.upgradesManager.importFromReader(reader.readReader(), version);
     this.areasManager.importFromReader(reader.readReader(), version);
@@ -137,43 +137,30 @@ export default class Factory {
     const tilesX = reader.readUint8();
     const tilesY = reader.readUint8();
   
-    console.log("Loading factory size:", tilesX, tilesY);
   
     this.tiles.forEach(tile => tile.setComponent(null));
     const mainTiles = [];
-    console.log("Reader position before boolean array:", reader.getPosition?.());
 
     reader.readBooleanArrayFunc(tilesX * tilesY, (index, value) => {
       if (value) {
-        console.log("BooleanArray TRUE at", index, "-> tile coords:", Math.floor(index / tilesX), index % tilesX);
         mainTiles.push(this.tiles[Math.floor(index / tilesX) * this.meta.tilesX + (index % tilesX)]);
-      } else {
-        // optional: log first few falses to confirm
-        if (index < 20) console.log("BooleanArray false at", index);
       }
     });
-    console.log("Reader raw bytes after boolean array:", new Uint8Array(reader.getBuffer()).slice(reader.getOffset()-10, reader.getOffset()+10));
 
-  
-    console.log("Collected mainTiles:", mainTiles.length);
   
     for (const tile of mainTiles) {
       const compId = reader.readUint8();
-      console.log("Assigning component", compId, "to tile", tile.x, tile.y);
       tile.setComponent(this.getGame().getMeta().componentsByIdNum[compId]);
     }
   
     for (const tile of mainTiles) {
-      console.log("importFromReader1 for tile", tile.x, tile.y, tile.component?.meta?.id);
       tile.importFromReader1(reader, version);
     }
   
     for (const tile of mainTiles) {
-      console.log("importFromReader2 for tile", tile.x, tile.y, tile.component?.meta?.id);
       tile.importFromReader2(reader, version);
     }
   
     this.em.invokeEvent(FactoryEvent.FACTORY_COMPONENTS_CHANGED);
-    console.log("Factory.importFromReader finished.");
   }
 }
