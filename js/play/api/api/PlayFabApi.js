@@ -1,5 +1,5 @@
 // play/api/api/PlayFabApi.js
-//import * as PlayFab from "../lib/playFab/PlayFabClientApi.js";
+import * as PlayFab from "playfab";
 
 const MODULE = "PlayFab";
 

@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "build:ui":"vite build && rimraf C:\\Annex\\Projects\\IncBackEnd\\dist && xcopy dist C:\\Annex\\Projects\\IncBackEnd\\dist /E /I /Y",
+    "build:ui": "vite build && rimraf C:\\Annex\\Projects\\IncBackEnd\\dist && xcopy dist C:\\Annex\\Projects\\IncBackEnd\\dist /E /I /Y",
     "preview": "vite preview"
   },
   "repository": {
@@ -24,6 +24,7 @@
     "vite-plugin-string": "^1.2.3"
   },
   "dependencies": {
-    "handlebars": "^4.7.8"
+    "handlebars": "^4.7.8",
+    "playfab": "^1.0.1"
   }
 }
