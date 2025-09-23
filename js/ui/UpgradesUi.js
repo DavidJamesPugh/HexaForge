@@ -75,17 +75,18 @@ export default class UpgradesUi {
           }px`,
         });
       }
-
-      if (upgrades.length) upgrades.reverse();
-      groups.push({
-        name: groupMeta.name,
-        upgrades,
-        iconStyle: `background-position: -${26 * groupMeta.iconX}px -${
-          26 * groupMeta.iconY
-        }px`,
-      });
+      if (upgrades.length > 0) {
+        upgrades.reverse();
+        groups.push({
+          name: groupMeta.name,
+          upgrades,
+          iconStyle: `background-position: -${26 * groupMeta.iconX}px -${
+            26 * groupMeta.iconY
+          }px`,
+        });
+      }
     }
-
+    
     // Render into container
     this.container.innerHTML = Handlebars.compile(template)({ groups });
 

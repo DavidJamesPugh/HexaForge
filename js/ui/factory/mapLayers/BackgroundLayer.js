@@ -88,10 +88,17 @@ export default class BackgroundLayer {
         const x = tile.getX() * this.tileSize;
         const y = tile.getY() * this.tileSize;
         const terrain = terrainMap[tile.getTerrain()];
-        const sx = Math.floor(terrain.tiles * Math.random()) * (this.tileSize + 1);
+        
+        const seed = (tile.getX() * 73893) ^ (tile.getY() * 19349663);
+        const variation = Math.abs(seed) % terrain.tiles;
+        const sx = variation * (this.tileSize + 1);
         const sy = terrain.y * (this.tileSize + 1);
   
-        ctx.drawImage(this.sprite, sx, sy, this.tileSize, this.tileSize, x, y, this.tileSize, this.tileSize);
+        ctx.drawImage(this.sprite, 
+          sx, sy, 
+          this.tileSize, this.tileSize, 
+          x, y, 
+          this.tileSize, this.tileSize);
       }
     }
   
@@ -103,8 +110,9 @@ export default class BackgroundLayer {
       const X = n * g;
       const y = (n + 1) * g;
       const v = (n + 2) * g;
-      const rand = Math.floor(i * Math.random()) * g;
-  
+      const seed = (tile.getX() * 73893) ^ (tile.getY() * 19349663);
+      const rand = Math.abs(Math.floor((seed % i)) * g);
+
       const has = dir => {
         const t = tile.getTileInDirection(dir);
         return !t || allowed[t.getTerrain()];
@@ -128,7 +136,11 @@ export default class BackgroundLayer {
       const G = top ? 10 : 0;
       const T = bottom ? 10 : 0;
   
-       if (top) ctx.drawImage(this.sprite, rand + b, X, d - b - S, 11, m + b, f, d - b - S, 11);
+       if (top) ctx.drawImage(this.sprite, 
+        rand + b, X, 
+        d - b - S, 11, 
+        m + b, f, 
+        d - b - S, 11);
        if (bottom) ctx.drawImage(this.sprite, rand + b, X + 10, d - b - S, 11, m + b, f + 10, d - b - S, 11);
        if (right) ctx.drawImage(this.sprite, rand + 10, y + G, 11, d - G - T, m + 10, f + G, 11, d - G - T);
        if (left) ctx.drawImage(this.sprite, rand, y + G, 11, d - G - T, m, f + G, 11, d - G - T);

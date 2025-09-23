@@ -10,13 +10,13 @@
       <div class="upgradeGroup">
         <div class="head">
           <div class="buildingIcon">
-            <div class="buildingIconSelf"></div>
+            <div class="buildingIconSelf" style="{{iconStyle}}"></div>
           </div>
           <div class="text">{{name}}</div> {{#each upgrades}} {{#if isSeparator}}
               <div style="width:10px; height:10px; float:right;"></div>
             {{else}}
               <div class="upgradeItem upgradeItem_{{action}}" data-id="{{id}}" data-action="{{action}}">
-                <div class="upgradeIcon"></div>
+                <div class="upgradeIcon" style="{{iconStyle}}"></div>
                 <div class="upgradePopup smallText">
                   <b>{{title}}</b> {{#if isSell}}( <u>sell</u>){{/if}}
                   <br />
@@ -36,7 +36,7 @@
                       <span class="miniText">(refunds {{refund}})</span>
                       <br />
                     {{else}}
-                      <b class="red">You haven\'t bought any, can\'t sell</b>
+                      <b class="red">You haven't bought any, can't sell</b>
                       <br /> {{/if}} {{/if}}
                 </div>
               </div>

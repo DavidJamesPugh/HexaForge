@@ -1,5 +1,5 @@
 
-const scale = (base, exponent) => base * Math.pow(1000, exponent);
+const scale = (base, exponent) => base * Math.pow(10, exponent);
     const upgradesComponent = {
         layout: [
             { name: "Conveyor", iconX: 1, iconY: 0, items: ["packageSize"] },
