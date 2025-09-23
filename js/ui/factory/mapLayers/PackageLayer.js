@@ -112,7 +112,7 @@ export default class PackageLayer {
       for (let h = 0; h < queue.getLength(); h++) {
         let index = h;
         if (moveDir === "top" || moveDir === "left") {
-          index = queue.getLength() - h - 1;
+          index = queue.getLength() - index - 1;
         }
   
         const pkg = queue.get(index);
@@ -124,11 +124,11 @@ export default class PackageLayer {
   
         let drawX, drawY;
         if (posDir === "left" || posDir === "right") {
-          drawX = baseX + this.firstPackageLocation[posDir][moveDir] + this.movementDirectionCoefficient[posDir][moveDir] * h + pkg.getOffset() / 2;
+          drawX = baseX + this.firstPackageLocation[posDir][moveDir] + this.movementDirectionCoefficient[posDir][moveDir] * index + pkg.getOffset() / 2;
           drawY = baseY - this.packageSize / 2 + pkg.getOffset();
         } else {
           drawX = baseX - this.packageSize / 2 + pkg.getOffset();
-          drawY = baseY + this.firstPackageLocation[posDir][moveDir] + this.movementDirectionCoefficient[posDir][moveDir] * h + pkg.getOffset() / 2;
+          drawY = baseY + this.firstPackageLocation[posDir][moveDir] + this.movementDirectionCoefficient[posDir][moveDir] * index + pkg.getOffset() / 2;
         }
   
         ctx.drawImage(

@@ -50,7 +50,8 @@ export default class Package {
     const resourceIdNum = reader.readUint8();
     if (resourceIdNum === 0) return null;
 
-    const amount = version >= 6 ? reader.readUint8() : 1;
+    const ver = version === undefined ? 6 : Number(version);
+    const amount = ver >= 6 ? reader.readUint8() : 1;
     const resourceMeta = factory.getGame().getMeta().resourcesByIdNum[resourceIdNum];
     return resourceMeta ? Package.getNew(resourceMeta.id, amount, factory) : null;
   }

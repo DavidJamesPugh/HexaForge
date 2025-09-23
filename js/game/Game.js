@@ -116,8 +116,6 @@ export default class Game {
     if (version >= 7) this.setIsPremium(!!reader.readInt8());
     else this.setIsPremium(false);
     
-    console.log("Game.import: version=", version);
-    console.log("Game.import: before managers: money=", this.getMoney(), "rp=", this.getResearchPoints(), "premium=", this.getIsPremium());
 
     this.researchManager.importFromReader(reader.readReader(), version);
     this.achievementsManager.importFromReader(reader.readReader(), version);
@@ -125,7 +123,6 @@ export default class Game {
     this.ticker.importFromReader(reader.readReader(), version);
 
     const factoriesCount = reader.readUint8();
-    console.log("Game.import: factoriesCount=", factoriesCount);
     for (let i = 0; i < factoriesCount; i++) {
       const factoryMeta = this.meta.factoriesByIdNum[reader.readUint8()];
       const factoryReader = reader.readReader();

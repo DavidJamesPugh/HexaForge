@@ -17,7 +17,6 @@ export default class UserHash {
             this.userHash = this._generateUserHash(this.hashLength);
             this.updateUserHash(this.userHash);
         }
-        logger.info("UserHash", `User hash loaded ${this.userHash}`);
         return this;
     }
 

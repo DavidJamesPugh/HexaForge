@@ -43,6 +43,7 @@ export default class SaveManager {
     this.saveDataCallback = callback;
     return this;
   }
+  
 
   init(skipLoad, onReady) {
     return new Promise((resolve) => {
@@ -170,23 +171,26 @@ export default class SaveManager {
 
   _loadLocal(slotId, callback) {
     try {
-    e.getItem(`${this.localStorageKey}|${slotId}`);
+      const key = `${this.localStorageKey}|${slotId}`;
+      const raw = localStorage.getItem(key);
       if (!raw) {
         console.log("SaveManager: No local save found for slot", slotId);
-      } else {
-        try {
-          const parsed = JSON.parse(raw);
-          console.log("SaveManager: Loaded local save meta:", parsed?.meta);
-          console.log(
-            "SaveManager: Local save data length:",
-            typeof parsed?.data === "string" ? parsed.data.length : 0
-          );
-        } catch (e) {
-          console.warn("SaveManager: Failed to parse local save JSON", e);
-        }
+        callback(null);
+        return;
       }
-      callback(raw ? JSON.parse(raw) : null);
-    } catch {
+      try {
+        const parsed = JSON.parse(raw);
+        console.log(
+          "SaveManager: Local save data length:",
+          typeof parsed?.data === "string" ? parsed.data.length : 0
+        );
+        callback(parsed);
+      } catch (e) {
+        console.warn("SaveManager: Failed to parse local save JSON", e);
+        callback(null);
+      }
+    } catch (e) {
+      console.warn("SaveManager: Error while loading local save", e);
       callback(null);
     }
   }

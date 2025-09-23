@@ -31,7 +31,6 @@ export default class Factory {
   }
 
   reset() {
-    console.log("Factory.reset called for", this.meta.id);
     this.tiles.forEach(tile => tile.setComponent(null));
     new FactorySetup(this).init();
   }
@@ -123,6 +122,7 @@ export default class Factory {
     for (const tile of mainTiles) writer.writeUint8(tile.getComponent().getMeta().idNum);
     for (const tile of mainTiles) tile.exportToWriter1(writer);
     for (const tile of mainTiles) tile.exportToWriter2(writer);
+    
     return writer;
   }
 
@@ -130,7 +130,6 @@ export default class Factory {
   
     this.upgradesManager.importFromReader(reader.readReader(), version);
     this.areasManager.importFromReader(reader.readReader(), version);
-  
     this.isPaused = !!reader.readUint8();
     this.isBought = !!reader.readUint8();
   

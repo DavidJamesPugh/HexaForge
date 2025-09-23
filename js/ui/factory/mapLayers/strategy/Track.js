@@ -13,12 +13,6 @@ export default class TrackStrategy {
       if (!sprite) {
         // Fallback commonly used for tracks
         sprite = this.imageMap.getImage("transportLine");
-        if (!sprite) {
-          console.warn("TrackStrategy: missing sprite for", meta.id);
-          return;
-        } else {
-          console.log("TrackStrategy: using fallback sprite 'transportLine' for", meta.id);
-        }
       }
 
       const sx = params.n * this.tileSize;

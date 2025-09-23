@@ -39,7 +39,7 @@ export default class TransportStackingQueue {
 
   importFromReader(reader) {
     for (let i = 0; i < this.queue.length; i++) {
-      this.set(i, Package.createFromExport(this.tile.getFactory(), reader, reader));
+      this.set(i, Package.createFromExport(this.tile.getFactory(), reader));
     }
   }
 }

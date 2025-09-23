@@ -52,7 +52,6 @@ export default class GameUi {
         this.gameUiEm.addListener("GameUi", GameUiEvent.SHOW_FACTORY, (id) => {
             id ??= lastFactoryId;
             lastFactoryId = id;
-            console.log("GameUi: SHOW_FACTORY", id);
             this._showUi("factory", id);
         });
 

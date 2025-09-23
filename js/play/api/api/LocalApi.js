@@ -43,7 +43,6 @@ export default class LocalApi {
         this.savesMeta = {};
         
         const mainSave = this.decodeMainSave();
-        console.log("Main save bytes:", mainSave);
         try {
             const data = JSON.parse(localStorage.getItem(this.storageKey));
             if (data) {
@@ -162,7 +161,6 @@ export default class LocalApi {
             const buffer = Base64ArrayBuffer.decode(rawSave);
             const bytes = new Uint8Array(buffer);
     
-            logger.info("LocalApi", "Main save bytes:", bytes);
     
             // Use BinaryArrayReader to parse
             const reader = new BinaryArrayReader(buffer);

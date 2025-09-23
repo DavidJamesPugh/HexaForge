@@ -90,7 +90,6 @@ export default class ResearchManager {
 
         this.research = {};
         const numResearch = reader.readUint16();
-      console.log("Research.import: numResearch=", numResearch, "bufferLen=", reader.getLength());
 
         reader.readBooleanArrayFunc(numResearch, (index, hasResearch) => {
             if (hasResearch) {
@@ -106,6 +105,5 @@ export default class ResearchManager {
             const meta = this.game.getMeta().researchByIdNum[idNum];
             if (meta) this.setResearch(meta.id, amount);
         }
-      console.log("Research.import: entries=", Object.keys(this.research).length);
     }
 }

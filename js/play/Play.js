@@ -124,7 +124,6 @@ export default class Play {
       }))
       .setUpdateGameFromLoadedDataCallback((savedData) => {
         try {
-          console.log("Play: Decoding save. Meta:", savedData?.meta);
           this.importFromReader(new BinaryArrayReader(Base64ArrayBuffer.decode(savedData.data)));
           // console.log("Play: After import: money=", this.game.getMoney(), "rp=", this.game.getResearchPoints(), "isPremium=", this.game.getIsPremium());
 

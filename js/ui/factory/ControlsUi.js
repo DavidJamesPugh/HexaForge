@@ -93,7 +93,7 @@ export default class ControlsUi {
             if (action.canClear()) action.clear();
         });
 
-        this.resetFactoryButton.click(() => {
+        this.resetFactoryButton.addEventListener("pointerdown", () => {
             new ConfirmUi("Are you sure?", "This will remove all components from the map")
                 .setOkCallback(() => {
                     const action = new ResetFactoryAction(this.factory);

@@ -31,8 +31,7 @@ export default class ComponentLayer {
     this.canvas.width = this.tilesX * this.tileSize;
     this.canvas.height = this.tilesY * this.tileSize;
     container.append(this.canvas);
-    console.log("ComponentLayer: canvas size:", this.canvas.width, this.canvas.height);
-
+    
     this.factory.getEventManager().addListener(
       "LayerComponent",
       FactoryEvent.FACTORY_COMPONENTS_CHANGED,
@@ -64,7 +63,6 @@ export default class ComponentLayer {
       }
     }
     const mainCount = this.tilesWithComponentCache.filter(t => t.isMainComponentContainer()).length;
-    console.log("ComponentLayer: buildCache tilesWithComponentCache=", this.tilesWithComponentCache.length, "mainCount=", mainCount);
   }
 
   redraw() {
@@ -85,7 +83,6 @@ export default class ComponentLayer {
       this.strategies[strategyName].drawComponentLayer(ctx, tile);
       drawCount++;
     }
-    console.log("ComponentLayer: redraw drew main components:", drawCount);
   }
 
   destroy() {

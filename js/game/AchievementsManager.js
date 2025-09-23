@@ -138,7 +138,6 @@ export default class AchievementsManager {
 
     const length = reader.readUint16();
     this.achievements = {};
-    console.log("Achievements.import: length=", length, "bufferLen=", reader.getLength());
 
     reader.readBooleanArrayFunc(length, (index, value) => {
       if (value) {
@@ -147,6 +146,5 @@ export default class AchievementsManager {
       }
     });
     const achieved = Object.keys(this.achievements).length;
-    console.log("Achievements.import: achieved count=", achieved);
   }
 }

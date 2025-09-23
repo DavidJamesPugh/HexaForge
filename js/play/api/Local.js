@@ -23,7 +23,6 @@ export default class Local {
     init(callback) {
         this.localApi.init(callback).then(() => {
             const mainSave = this.localApi.decodeMainSave();
-            console.log("Main save bytes:", mainSave);
         });
     }
 

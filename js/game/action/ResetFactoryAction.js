@@ -11,6 +11,7 @@ export default class ResetFactoryAction {
     }
 
     reset() {
+        console.log("Resetting");
         const tiles = this.factory.getTiles();
         for (let tile of tiles) {
             const action = new SellComponentAction(tile, 1, 1);
