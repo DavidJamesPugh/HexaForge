@@ -50,7 +50,7 @@ export default class Play {
   }
 
   isDevMode() {
-    return UrlHandler.identifySite() === "localhost";
+    return UrlHandler.identifySite() === "localhost2";
   }
 
   async init(isDevMode = false, onReady = () => {}) {
@@ -65,7 +65,7 @@ export default class Play {
 
       // Initialize API
       console.log("Play: Initializing API...");
-      this.api = ApiFactory(UrlHandler.identifySite(), this.userHash.getUserHash());
+      this.api = ApiFactory(this.isDevMode(), this.userHash.getUserHash());
       await this.api.init();
       console.log("Play: API initialized");
 

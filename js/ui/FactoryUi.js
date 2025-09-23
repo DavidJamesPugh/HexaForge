@@ -54,8 +54,9 @@ export default class FactoryUi {
         this.overviewUi.display(this.container.querySelector(".overviewContainer"));
         if (this.play.isDevMode()) {
             this.mapToolsUi.display(this.container.querySelector(".mapToolsContainer"));
-        }
+        
         this.incentivizedAdButtonUi.display(this.container.querySelector(".incentivizedAd"));
+        }
     }
 
     destroy() {
@@ -64,8 +65,12 @@ export default class FactoryUi {
         this.infoUi.destroy();
         this.controlsUi.destroy();
         this.overviewUi.destroy();
-        this.mapToolsUi.destroy();
-        this.incentivizedAdButtonUi.destroy();
+        
+        if(this.play.isDevMode()) {
+            this.mapToolsUi.destroy();
+        
+            this.incentivizedAdButtonUi.destroy();
+        }
         
         if (this.mainContainer) {
             this.mainContainer.classList.toggle("fullScreen", false);

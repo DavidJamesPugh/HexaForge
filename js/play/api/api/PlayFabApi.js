@@ -1,5 +1,6 @@
 // play/api/api/PlayFabApi.js
-import * as PlayFab from "playfab";
+import * as PlayFab from "playfab-sdk";
+import logger from "../../../base/Logger.js";
 
 const MODULE = "PlayFab";
 

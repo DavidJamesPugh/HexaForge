@@ -180,10 +180,6 @@ export default class SaveManager {
       }
       try {
         const parsed = JSON.parse(raw);
-        console.log(
-          "SaveManager: Local save data length:",
-          typeof parsed?.data === "string" ? parsed.data.length : 0
-        );
         callback(parsed);
       } catch (e) {
         console.warn("SaveManager: Failed to parse local save JSON", e);

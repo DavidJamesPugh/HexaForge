@@ -140,15 +140,17 @@ export default class SettingsUi {
         .display();
     });
 
+    if(this.play.isDevMode()) {
     // Load raw save
-    this.element
-      .querySelector("#loadDataButton")
-      .addEventListener("click", () => {
-        const raw = this.element.querySelector("#loadData").value;
-        this.saveManager.updateGameFromSaveData({ data: raw });
-        this.hide();
-        this.gameUiEm.invokeEvent(GameUiEvent.SHOW_FACTORIES);
-      });
+      this.element
+        .querySelector("#loadDataButton")
+        .addEventListener("click", () => {
+          const raw = this.element.querySelector("#loadData").value;
+          this.saveManager.updateGameFromSaveData({ data: raw });
+          this.hide();
+          this.gameUiEm.invokeEvent(GameUiEvent.SHOW_FACTORIES);
+        });
+    }
 
     // Reset game
     this.element
