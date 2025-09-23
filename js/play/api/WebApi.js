@@ -2,6 +2,7 @@
 import ServerApi from "./api/ServerApi.js";
 import PlayFabApi from "/js/play/api/api/PlayFabApi.js";
 import EventManager from "/js/base/EventManager.js";
+import ApiEvent from "../../config/event/ApiEvent.js";
 
 export default class WebApi {
   constructor(userHash, apiUrl, ref) {
