@@ -1,5 +1,5 @@
 // ui/factory/componentUi/Sorter.js
-import sorterTemplate from "../../../template/factory/component/sorter.html";
+import sorterTemplate from "../../../template/factory/component/sorter.html?raw";
 import { UpdateSorterSortingResource } from "../../../game/action/UpdateSorterSortingResource.js";
 
 export default class SorterUi {

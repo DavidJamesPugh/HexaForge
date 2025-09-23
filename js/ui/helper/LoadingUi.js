@@ -1,5 +1,5 @@
 import Handlebars from "handlebars";
-import loadingTemplateHtml from "../../template/helper/loading.html";
+import loadingTemplateHtml from "../../template/helper/loading.html?raw";
 
 import UiUtils from "../utils/UiUtils.js";
 

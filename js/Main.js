@@ -36,7 +36,7 @@ export default class Main {
       console.log("Main: Play initialized successfully");
 
       // Optional dev mode check
-      this.play.isDevMode?.();
+      this.play.isDevMode();
 
       // Initialize UI
       console.log("Main: Initializing UI...");

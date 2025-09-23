@@ -1,7 +1,7 @@
 import GlobalUiEvent from "../config/event/GlobalUiEvent.js";
 import globalUiBus from "../base/GlobalUiBus.js";
 import Handlebars from "handlebars";
-import runningInBackgroundInfoUiTemplateHtml from "/js/template/runningInBackgroundInfoUi.html";
+import runningInBackgroundInfoUiTemplateHtml from "/js/template/runningInBackgroundInfoUi.html?raw";
 
 export default class RunningInBackgroundInfoUi {
     constructor() {

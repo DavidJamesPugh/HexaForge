@@ -1,5 +1,5 @@
 import Handlebars from "handlebars";
-import confirmTemplateHtml from "../../template/helper/confirm.html";
+import confirmTemplateHtml from "../../template/helper/confirm.html?raw";
 
 let confirmCounter = 0;
 

@@ -23,5 +23,5 @@ dist-ssr
 *.sw?
 *.env
 /.github/
-/public/
 original_app.js
+/dist/

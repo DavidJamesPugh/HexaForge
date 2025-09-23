@@ -1,5 +1,5 @@
 // ui/factory/InfoUi.js
-import infoTemplate from "../../template/factory/info.html";
+import infoTemplate from "../../template/factory/info.html?raw";
 import infoDetailsTemplate from "../../template/factory/infoDetails.html?raw";
 import Component from "../../game/Component.js";
 import Sorter from "../../ui/factory/componentUi/Sorter.js";
