@@ -20,12 +20,13 @@
   },
   "homepage": "https://github.com/DavidJamesPugh/HexaForge#readme",
   "devDependencies": {
-    "playfab-sdk": "^2.181.250912",
+    "playfab-web-sdk": "^1.199.250912",
     "vite": "^7.1.5",
     "vite-plugin-string": "^1.2.3"
   },
   "dependencies": {
     "handlebars": "^4.7.8",
-    "playfab": "^1.0.1"
+    "playfab": "^1.0.1",
+    "playfab-web-sdk": "^1.199.250912"
   }
 }

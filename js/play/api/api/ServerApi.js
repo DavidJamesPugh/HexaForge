@@ -1,4 +1,5 @@
 // play/api/api/ServerApi.js
+import logger from "../../../base/Logger.js";
 export default class ServerApi {
     constructor(userHash, apiUrl, ref) {
       this.userHash = userHash;
@@ -13,15 +14,19 @@ export default class ServerApi {
       }
     }
   
-    async getTimestamp() {
-      try {
-        const res = await fetch(`${this.apiUrl}/getTimestamp?user_hash=${this.userHash}`);
-        if (!res.ok) throw new Error("Failed to fetch timestamp");
-        return await res.json();
-      } catch (err) {
-        logger.error("ServerApi", "getTimestamp failed", err);
-        return null;
-      }
+    getTimestamp(callback) {
+      fetch(`${this.apiUrl}/getTimestamp?user_hash=${this.userHash}`)
+        .then(res => {
+          if (!res.ok) throw new Error("Failed to fetch timestamp");
+          return res.json();
+        })
+        .then(data => {
+          if (callback) callback(data);
+        })
+        .catch(err => {
+          logger.error("ServerApi", "getTimestamp failed", err);
+          if (callback) callback(null);
+        });
     }
   
     purchase(packageId) {
@@ -34,40 +39,51 @@ export default class ServerApi {
       document.location = url;
     }
   
-    async loadPurchases() {
+    loadPurchases(callback) {
       logger.info("ServerApi", "Load items");
-      try {
-        const res = await fetch(`${this.apiUrl}/getPurchases?user_hash=${this.userHash}`);
-        if (!res.ok) throw new Error("Failed to fetch purchases");
-        const data = await res.json();
-  
-        logger.info("ServerApi", "Items loaded", data);
-  
-        if (data.code !== 0) return [];
-        return data.data.items.map(item => ({
-          externalId: item.created,
-          productId: item.package_id,
-        }));
-      } catch (err) {
-        logger.error("ServerApi", "loadPurchases failed", err);
-        return [];
-      }
+      fetch(`${this.apiUrl}/getPurchases?user_hash=${this.userHash}`)
+        .then(res => {
+          if (!res.ok) throw new Error("Failed to fetch purchases");
+          return res.json();
+        })
+        .then(data => {
+          logger.info("ServerApi", "Items loaded", data);
+          
+          if (data.code !== 0) {
+            if (callback) callback([]);
+            return;
+          }
+          
+          const items = data.data.items.map(item => ({
+            externalId: item.created,
+            productId: item.package_id,
+          }));
+          
+          if (callback) callback(items);
+        })
+        .catch(err => {
+          logger.error("ServerApi", "loadPurchases failed", err);
+          if (callback) callback([]);
+        });
     }
   
-    async setConsumed(created) {
+    setConsumed(created, callback) {
       logger.info("ServerApi", `Set consumed ${created}`);
-      try {
-        const res = await fetch(`${this.apiUrl}/setConsumed?user_hash=${this.userHash}&created=${created}`);
-        if (!res.ok) throw new Error("Failed to set consumed");
-        const data = await res.json();
-  
-        logger.info("ServerApi", "Items consumed", data);
-  
-        return data.code === 0;
-      } catch (err) {
-        logger.error("ServerApi", "setConsumed failed", err);
-        return false;
-      }
+      fetch(`${this.apiUrl}/setConsumed?user_hash=${this.userHash}&created=${created}`)
+        .then(res => {
+          if (!res.ok) throw new Error("Failed to set consumed");
+          return res.json();
+        })
+        .then(data => {
+          logger.info("ServerApi", "Items consumed", data);
+          
+          const success = data.code === 0;
+          if (callback) callback(success);
+        })
+        .catch(err => {
+          logger.error("ServerApi", "setConsumed failed", err);
+          if (callback) callback(false);
+        });
     }
   }
   

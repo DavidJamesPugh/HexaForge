@@ -66,7 +66,9 @@ export default class Play {
       // Initialize API
       console.log("Play: Initializing API...");
       this.api = ApiFactory(this.isDevMode(), this.userHash.getUserHash());
-      await this.api.init();
+      await new Promise((resolve) => {
+        this.api.init(resolve);
+      });
       console.log("Play: API initialized");
 
       // Subscribe to incentivized ads completed event
