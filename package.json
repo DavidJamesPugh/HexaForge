@@ -21,6 +21,7 @@
   "homepage": "https://github.com/DavidJamesPugh/HexaForge#readme",
   "devDependencies": {
     "playfab-web-sdk": "^1.199.250912",
+    "rimraf": "^6.0.1",
     "vite": "^7.1.5",
     "vite-plugin-string": "^1.2.3"
   },
