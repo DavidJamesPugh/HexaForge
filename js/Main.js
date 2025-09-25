@@ -35,9 +35,6 @@ export default class Main {
       await new Promise((resolve) => this.play.init(isDevMode, resolve));
       console.log("Main: Play initialized successfully");
 
-      // Optional dev mode check
-      this.play.isDevMode();
-
       // Initialize UI
       console.log("Main: Initializing UI...");
       this.mainUi = new MainUi(this.play, this.imageMap);

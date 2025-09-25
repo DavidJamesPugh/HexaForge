@@ -7,7 +7,7 @@ export default class Local {
     em;
     localApi;
 
-    constructor(userHash, storagePrefix) {
+    constructor(userHash, storagePrefix, ref) {
         this.em = new EventManager(ApiEvent, "ApiLocal");
         this.localApi = new LocalApi(this.em, userHash, storagePrefix);
     }
@@ -21,8 +21,12 @@ export default class Local {
     }
 
     init(callback) {
-        this.localApi.init(callback).then(() => {
+        this.localApi.init().then(() => {
             const mainSave = this.localApi.decodeMainSave();
+            callback?.(); // safe optional call
+        }).catch(err => {
+            logger.warning("Local", "Init failed", err);
+            callback?.(err);
         });
     }
 
@@ -60,6 +64,10 @@ export default class Local {
 
     save(saveKey, saveData, callback) {
         this.localApi.save(saveKey, saveData, callback);
+    }
+
+    clearSave(saveKey) {
+        this.localApi.clearSave(saveKey);
     }
 
     initializeIncentivizedAds() {

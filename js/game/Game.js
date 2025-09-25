@@ -10,7 +10,8 @@ import GameContext from "../base/GameContext.js";
 import BinaryArrayWriter from "../base/BinaryArrayWriter.js";
 
 export default class Game {
-  constructor(meta, confirmedTimestamp) {
+  constructor(meta, confirmedTimestamp, isDevMode = false) {
+    
     this.meta = meta;
     this.confirmedTimestamp = confirmedTimestamp;
 
@@ -19,6 +20,7 @@ export default class Game {
 
     this.em = GameContext.gameUiBus;
     this.factories = {};
+    this.isDevMode = isDevMode;
 
     for (const key in meta.factories) {
       const f = meta.factories[key];
@@ -114,7 +116,7 @@ export default class Game {
     this.setMoney(reader.readFloat64());
     this.setResearchPoints(reader.readFloat64());
     if (version >= 7) this.setIsPremium(!!reader.readInt8());
-    else this.setIsPremium(false);
+    else this.setIsPremium(this.isPremium);
     
 
     this.researchManager.importFromReader(reader.readReader(), version);

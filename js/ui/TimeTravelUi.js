@@ -1,6 +1,6 @@
 // src/ui/TimeTravelUi.js
 import Handlebars from "handlebars";
-import template from "../template/timeTravel.html?raw"; // use ?raw for Vite/ESBuild
+import template from "../template/timeTravel.html?raw"; 
 import PassTimeAction from "/js/game/action/PassTimeAction.js";
 import GameUiEvent from "../config/event/GameUiEvent.js";
 import GameContext from "../base/GameContext.js";

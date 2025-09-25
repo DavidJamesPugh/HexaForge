@@ -27,6 +27,10 @@ export default class LocalApi {
     }
 
     _saveToLocalStorage() {
+        console.log(this.storageKey);
+        console.log(this.purchases);
+        console.log(this.savesMeta);
+        console.log(this.saves);
         localStorage.setItem(
             this.storageKey,
             JSON.stringify({
@@ -42,7 +46,6 @@ export default class LocalApi {
         this.saves = {};
         this.savesMeta = {};
         
-        const mainSave = this.decodeMainSave();
         try {
             const data = JSON.parse(localStorage.getItem(this.storageKey));
             if (data) {
@@ -53,6 +56,7 @@ export default class LocalApi {
         } catch (err) {
             logger.warning("Local", "Could not load data", err);
         }
+        const mainSave = this.decodeMainSave();
     }
 
     init() {
@@ -112,6 +116,12 @@ export default class LocalApi {
             this._saveToLocalStorage();
             callback(true);
         }, 100);
+    }
+
+    clearSave(saveKey) {
+        delete this.savesMeta[saveKey];
+        delete this.saves[saveKey];
+        this._saveToLocalStorage();
     }
 
     initializeIncentivizedAds() {

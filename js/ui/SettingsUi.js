@@ -160,6 +160,7 @@ export default class SettingsUi {
           .setCancelTitle("Yes, RESET GAME")
           .setOkTitle("Nooooo!!!")
           .setCancelCallback(() => {
+            this.saveManager.clearAllSaves(); // wipe localStorage
             MainSingleton.reset(true); // restart in dev mode, or reset save
             this.destroy();
           })

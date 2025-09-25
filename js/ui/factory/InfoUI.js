@@ -44,54 +44,54 @@ export default class InfoUi {
 
     em.addListener(this.listenerKey, FactoryEvent.FACTORY_MOUSE_MOVE, e => {
       this.selectedPosition = e;
-      this.checkWhatShouldBeDisplayed(false);
+      this.checkWhatShouldBeDisplayed();
     });
 
     em.addListener(this.listenerKey, FactoryEvent.FACTORY_MOUSE_OUT, () => {
       this.selectedPosition = null;
-      this.checkWhatShouldBeDisplayed(false);
+      this.checkWhatShouldBeDisplayed();
     });
 
     em.addListener(this.listenerKey, FactoryEvent.FACTORY_TICK, () => {
-      this.checkWhatShouldBeDisplayed(true);
+      this.checkWhatShouldBeDisplayed();
     });
 
     em.addListener(this.listenerKey, FactoryEvent.REFRESH_COMPONENT_INFO, () => {
-      this.checkWhatShouldBeDisplayed(false);
+      this.checkWhatShouldBeDisplayed();
     });
 
     em.addListener(this.listenerKey, FactoryEvent.HOVER_COMPONENT_META, id => {
       this.hoveredComponentMetaId = id;
-      this.checkWhatShouldBeDisplayed(false);
+      this.checkWhatShouldBeDisplayed();
     });
 
     em.addListener(this.listenerKey, FactoryEvent.COMPONENT_META_SELECTED, id => {
       this.selectedComponentMetaId = id;
       this.selectedComponent = null;
-      this.checkWhatShouldBeDisplayed(false);
+      this.checkWhatShouldBeDisplayed();
     });
 
     em.addListener(this.listenerKey, FactoryEvent.COMPONENT_SELECTED, comp => {
       this.selectedComponent = comp;
-      this.checkWhatShouldBeDisplayed(false);
+      this.checkWhatShouldBeDisplayed();
     });
   }
 
-  checkWhatShouldBeDisplayed(tickUpdate = false) {
-    if (this.hoveredComponentMetaId && !tickUpdate) {
+  checkWhatShouldBeDisplayed() {
+    if (this.hoveredComponentMetaId) {
       this.showComponentMetaInfo(this.hoveredComponentMetaId);
       this.hideComponentStrategy();
     } else if (this.selectedComponent) {
       this.showComponentInfo(this.selectedComponent);
       this.showComponentStrategy(this.selectedComponent);
-    } else if (this.selectedComponentMetaId && !tickUpdate) {
+    } else if (this.selectedComponentMetaId) {
       this.showComponentMetaInfo(this.selectedComponentMetaId);
       this.hideComponentStrategy();
       
     } else if (this.selectedPosition) {
       this.showLocationInfo(this.selectedPosition.x, this.selectedPosition.y);
       this.hideComponentStrategy();
-    } else if (tickUpdate) {
+    } else  {
       this.showDefaultInfo();
     }
   }
@@ -102,6 +102,8 @@ export default class InfoUi {
 
   showLocationInfo(x, y) {
     const tile = this.factory.getTile(x, y);
+    if(!tile.getComponent()) return this.showDefaultInfo();
+
     const context = {
       isLocation: true,
       tile: {

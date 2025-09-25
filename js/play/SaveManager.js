@@ -190,4 +190,18 @@ export default class SaveManager {
       callback(null);
     }
   }
+  
+  clearAllSaves() {
+    // Remove local saves
+    Object.keys(localStorage)
+      .filter((k) => k.startsWith(this.localStorageKey))
+      .forEach((k) => localStorage.removeItem(k));
+  
+    // Optionally, clear cloud save too if you implement it
+    if (this.useCloud) {
+      this.api.clearSave(this.cloudSaveName, null, () => {
+        console.log("Cloud save cleared");
+      });
+    }
+  }
 }

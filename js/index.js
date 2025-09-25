@@ -1,4 +1,5 @@
 import MainSingleton from "./MainSingleton.js";
+import UrlHandler from "./play/UrlHandler.js";
 
 const loader = {
   get messageEl() { return document.getElementById("loadingMessage"); },
@@ -14,10 +15,16 @@ const loader = {
   }
 };
 
+function isDevMode() {
+  return UrlHandler.identifySite() === "localhost";
+}
+
 function isBrowserSupported() {
   const canvas = document.createElement("canvas");
   return canvas.getContext && canvas.getContext("2d");
 }
+
+
 
 window.addEventListener("DOMContentLoaded", async () => {
   try {
@@ -29,7 +36,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     }
 
     loader.showMessage("Loading game… please wait…");
-    await MainSingleton.init(false);
+    await MainSingleton.init(isDevMode());
 
     loader.hide();
     console.log("✅ Game initialized successfully!");

@@ -7,11 +7,11 @@ import UrlHandler from "../UrlHandler.js";
 
 const ApiFactory = (devMode, userHash) => {
     if(devMode){
-        logger.info("ApiFactory", "Local API loaded");
+        logger.info("ApiFactory", "Local API loading");
         return new Local(userHash, config.api.local.storageKey, UrlHandler.identifySite());
 
     } else {
-        logger.info("ApiFactory", "Web API loaded");
+        logger.info("ApiFactory", "Web API loading");
         return new WebApi(userHash, config.api.server.url, UrlHandler.identifySite());
 
     }

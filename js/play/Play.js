@@ -50,7 +50,7 @@ export default class Play {
   }
 
   isDevMode() {
-    return UrlHandler.identifySite() === "localhost2";
+    return UrlHandler.identifySite() === "localhost";
   }
 
   async init(isDevMode = false, onReady = () => {}) {
@@ -65,7 +65,7 @@ export default class Play {
 
       // Initialize API
       console.log("Play: Initializing API...");
-      this.api = ApiFactory(this.isDevMode(), this.userHash.getUserHash());
+      this.api = ApiFactory(isDevMode, this.userHash.getUserHash());
       await new Promise((resolve) => {
         this.api.init(resolve);
       });
@@ -86,14 +86,14 @@ export default class Play {
 
       // Initialize Game instance
       console.log("Play: Initializing Game...");
-      this.game = new Game(gameConfig.meta.main, this.confirmedTimestamp);
+      this.game = new Game(gameConfig.meta.main, this.confirmedTimestamp, isDevMode);
       GameContext.game = this.game; // store in global context
       console.log("Play: Game instance created");
 
       // Initialize SaveManager
       console.log("Play: Initializing SaveManager...");
       this.saveManager = this._createSaveManager();
-      await this.saveManager.init(isDevMode);
+      await this.saveManager.init();
       console.log("Play: SaveManager initialized");
 
       // Initialize PurchasesManager

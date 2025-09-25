@@ -7,6 +7,8 @@ export default class ResearchManager {
 
     constructor(game) {
         this.game = game;
+        this.research = {};
+        
     }
 
     setResearch(id, value) {
@@ -19,6 +21,16 @@ export default class ResearchManager {
 
     getResearch(id) {
         return this.research[id] || 0;
+    }
+    
+    isResearchUnlocked(id) {
+        if(this.research.length == 0) return false;
+        const defined = this.game.getMeta().researchById?.[id];
+        if (!defined) {
+            return false; // Hide buttons for undefined achievements
+        }
+
+        return this.research[id] === true;
     }
 
     getPrice(id) {

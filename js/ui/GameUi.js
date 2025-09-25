@@ -26,6 +26,7 @@ export default class GameUi {
         this.imageMap = imageMap;
         this.focusInterval = null;
         this.currentUi = null;
+        this.game.setIsPremium(this.game.isDevMode || this.game.isPremium);
     }
 
     display(container) {
@@ -75,7 +76,6 @@ export default class GameUi {
 
     _showUi(type, factoryId) {
         this._destroyCurrentUi();
-
         switch (type) {
             case "factory":
                 this.currentUi = new FactoryUi(this.game.getFactory(factoryId), this.play, this.imageMap);

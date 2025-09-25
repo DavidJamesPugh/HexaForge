@@ -31,6 +31,7 @@ export default class AchievementsManager {
   }
 
   isAchievementUnlocked(achievementId) {
+    if(this.achievements.length == 0) return false;
     const defined = this.game.getMeta().achievementsById?.[achievementId];
     if (!defined) {
         return false; // Hide buttons for undefined achievements
