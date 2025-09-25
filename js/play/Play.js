@@ -127,17 +127,6 @@ export default class Play {
       .setUpdateGameFromLoadedDataCallback((savedData) => {
         try {
           this.importFromReader(new BinaryArrayReader(Base64ArrayBuffer.decode(savedData.data)));
-          // console.log("Play: After import: money=", this.game.getMoney(), "rp=", this.game.getResearchPoints(), "isPremium=", this.game.getIsPremium());
-
-          // Log a sample of reconstructed state
-          // const f0 = this.game.getFactory(this.game.getMeta().factories[0].id);
-          // if (f0) {
-          //   const mainTiles = f0.getTiles().filter(t => t.isMainComponentContainer());
-          //   console.log("Play: Factory 0 components count:", mainTiles.length);
-          // }
-          // console.log("Play: Research sample:", Object.keys(this.game.getResearchManager().research).slice(0,5).reduce((acc, k) => (acc[k]=this.game.getResearchManager().research[k], acc), {}));
-
-
           this.game.getTicker().addOfflineGains();
           logger.info("Play", "Game loaded from save");
         } catch (err) {

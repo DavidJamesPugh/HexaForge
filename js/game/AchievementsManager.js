@@ -30,6 +30,14 @@ export default class AchievementsManager {
     return this.achievements[achievementId];
   }
 
+  isAchievementUnlocked(achievementId) {
+    const defined = this.game.getMeta().achievementsById?.[achievementId];
+    if (!defined) {
+        return false; // Hide buttons for undefined achievements
+    }
+
+    return this.achievements[achievementId] === true;
+  }
   isVisible(achievementId) {
     const achievement = this.game.getMeta().achievementsById[achievementId];
     return !(

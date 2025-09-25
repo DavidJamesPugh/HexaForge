@@ -18,8 +18,9 @@ export default class Achievements {
                 name: "Collecting some cash",
                 spriteX: 2,
                 spriteY: 0,
+                requiresAchievement: "makingProfit",
                 bonus: { type: "custom", description: "Unlocks extras" },
-                tests: [{ type: "amountOfMoney", amount: 25000 }]
+                tests: [{ type: "amountOfMoney", amount: 5000 }]
             },
             {
                 id: "gettingSmarter",
@@ -27,6 +28,7 @@ export default class Achievements {
                 name: "Getting smarter",
                 spriteX: 2,
                 spriteY: 0,
+                requiresAchievement:  "makingProfit",
                 bonus: { type: "custom", description: "Unlocks upgrades" },
                 tests: [{ type: "researched", researchId: "researchCenter" }]
             }
@@ -39,7 +41,7 @@ export default class Achievements {
                 name: "Getting money",
                 spriteX: 2,
                 spriteY: 0,
-                requiresAchievement: i > 1 ? `money${i - 1}` : null,
+                requiresAchievement: i > 1 ? `money${i - 1}` : "collectingCash",
                 bonus: { type: "money", amount: 250 * Math.pow(10, i) },
                 tests: [{ type: "amountOfMoney", amount: 1000 * Math.pow(10, i) }]
             });

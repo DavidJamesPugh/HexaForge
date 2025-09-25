@@ -14,7 +14,7 @@ export default {
   version: 1,
   startingMoney: 2000,
   minNegativeMoney: -10000,
-  startingResearchPoints: 1,
+  startingResearchPoints: 0,
   maxBonusTicks: 7200,
   minBonusTicks: 50,
   offlineSlower: 5,

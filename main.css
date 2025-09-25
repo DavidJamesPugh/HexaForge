@@ -2,7 +2,7 @@
     overflow: hidden
 }
 
-.hidden { display: none; }
+.hidden { display: none !important; }
 
 #intro {
     font-family: sans-serif;
@@ -1311,12 +1311,26 @@ div.vis-color-picker input.vis-range {
 }
 
 .achievementsBox .item .icon {
-    width: 30px;
-    height: 30px;
-    margin-right: 5px;
+    width: 25px;
+    height: 25px;
+    margin: 2px 5px 0px 2px;
     background-color: gray;
+    background: gray url(../img/upgradeActionIcons.png) no-repeat;
+}
+.achievementsBox .achievementIcon {
+    width: 29px;
+    height: 29px;
+    margin-right: 5px;
+    border: 1px solid gray;
+    float: left;
+    border-radius: 2px;
 }
 
+.upgradesBox .upgradeGroup .head .buildingIconSelf {
+    width: 25px;
+    height: 25px;
+    margin: 2px;
+}
 .achievementsBox .item .bonus {
     float: right;
     width: 120px;

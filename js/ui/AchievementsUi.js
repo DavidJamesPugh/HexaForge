@@ -25,6 +25,9 @@ export default class AchievementsUi {
           name: achievement.name,
           requirements: this.manager.getTesterDescriptionText(achievement.id),
           bonus: this.manager.getBonusDescriptionText(achievement.id),
+          iconStyle: `background-position: -${26 * achievement.spriteX}px -${
+            26 * 0
+          }px`,
         });
       }
     }

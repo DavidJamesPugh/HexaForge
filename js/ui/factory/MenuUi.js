@@ -13,13 +13,14 @@ export default class MenuUi {
     }
 
     display(container) {
-        this.container = container;
 
+        this.container = container;
+        console.log(this.game.getMeta());
         this.container.insertAdjacentHTML("beforeend",
             Handlebars.compile(menuTemplateHtml)({
-                hasResearch: this.game.getMeta().research.length > 0,
-                hasUpgrades: this.game.getMeta().upgrades.length > 0,
-                hasAchievements: this.game.getMeta().achievements.length > 0,
+                hasResearch: this.game.getMeta().research.length>0,
+                hasUpgrades: Array.isArray(this.game.getMeta().upgrades) && this.game.getMeta().upgrades.length > 0,
+                hasAchievements:  this.game.getAchievementsManager().achievements.length > 0,
                 hasStatistics: true,
             })
         );
@@ -30,7 +31,9 @@ export default class MenuUi {
         this.container.querySelector("#factoriesButton").addEventListener("click", () => {this.gameUiEm.invokeEvent(GameUiEvent.SHOW_FACTORIES)});
         this.container.querySelector("#researchButton").addEventListener("click", () => this.gameUiEm.invokeEvent(GameUiEvent.SHOW_RESEARCH, this.factory.getMeta().id));
         this.container.querySelector("#upgradesButton").addEventListener("click", () => this.gameUiEm.invokeEvent(GameUiEvent.SHOW_UPGRADES, this.factory.getMeta().id));
-        this.container.querySelector("#achievementsButton").addEventListener("click", () => this.gameUiEm.invokeEvent(GameUiEvent.SHOW_ACHIEVEMENTS, this.factory.getMeta().id));
+        if (this.game.getAchievementsManager().achievements.length > 0){
+            this.container.querySelector("#achievementsButton").addEventListener("click", () => this.gameUiEm.invokeEvent(GameUiEvent.SHOW_ACHIEVEMENTS, this.factory.getMeta().id));
+        }
         this.container.querySelector("#helpButton").addEventListener("click", () => this.gameUiEm.invokeEvent(GameUiEvent.SHOW_HELP));
         this.container.querySelector("#statisticsButton").addEventListener("click", () => this.gameUiEm.invokeEvent(GameUiEvent.SHOW_STATISTICS));
         this.container.querySelector("#extraButton").addEventListener("click", () => this.gameUiEm.invokeEvent(GameUiEvent.SHOW_PURCHASES));
@@ -44,15 +47,8 @@ export default class MenuUi {
     }
 
     updateButtons() {
-        const achievements = this.factory.getGame().getAchievementsManager();
+        const achievementsManager = this.factory.getGame().getAchievementsManager();
     
-        this.toggleVisibility("#researchButton", achievements.getAchievement("makingProfit"));
-        this.toggleVisibility("#upgradesButton", achievements.getAchievement("gettingSmarter"));
-        this.toggleVisibility("#statisticsButton", achievements.getAchievement("collectingCash2"));
-    
-        const hasCash = achievements.getAchievement("collectingCash");
-        this.toggleVisibility("#extraButton", hasCash);
-        this.toggleVisibility("#timeTravelButton", hasCash);
 
         const visibilityMap = [
             {selector: "#researchButton", achievement:"makingProfit"},
@@ -64,8 +60,8 @@ export default class MenuUi {
         ];
 
         visibilityMap.forEach(({ selector, achievement }) => {
-            const unlocked = achievements.getAchievement(achievement);
-            this.toggleVisibility(selector, unlocked);
+            const achievementObj = achievementsManager.isAchievementUnlocked(achievement);
+            this.toggleVisibility(selector, achievementObj);
         })
 
     }
