@@ -34,7 +34,7 @@ export default class ServerApi {
         `&user_hash=${this.userHash}` +
         `&timezone=${encodeURIComponent(Intl.DateTimeFormat().resolvedOptions().timeZone)}` +
         `&back_url=${encodeURIComponent(window.location.protocol + "//" + window.location.host)}` +
-        `&site=${this.ref === "direct" ? "grestGames" : this.ref}`;
+        `&site=${this.ref === "direct" ? "alacrityGames" : this.ref}`;
   
       document.location = url;
     }
