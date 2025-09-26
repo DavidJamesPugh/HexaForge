@@ -1,4 +1,5 @@
 // src/game/action/BuyResearch.js
+import GameEvent from "../../config/event/GameEvent";
 export default class BuyResearch {
     constructor(game, researchId) {
       this.game = game;

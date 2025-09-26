@@ -1,18 +1,12 @@
 import Play from "./play/Play.js";
-import imageMap from "./config/gameAssets.js"; // <-- import the shared, pre-configured ImageMap
+import imageMap from "./config/gameAssets.js"; 
 import MainUi from "./ui/MainUi.js";
 
-// Expose events globally if truly needed
-// window.GameEvent = gameEvent;
-// window.FactoryEvent = factoryEvent;
-// window.GameUiEvent = gameUiEvent;
-// window.GlobalUiEvent = globalUiEvent;
-// window.ApiEvent = apiEvent;
 
 export default class Main {
   constructor() {
     this.play = null;
-    this.imageMap = imageMap; // use the shared ImageMap
+    this.imageMap = imageMap; 
     this.mainUi = null;
   }
 
@@ -47,9 +41,7 @@ export default class Main {
   }
 
   destroy() {
-    console.log("Main destroyed1", this);
     this.mainUi?.destroy();
     this.play?.destroy();
-    console.log("Main destroyed2", this);
   }
 }
