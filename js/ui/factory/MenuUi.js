@@ -17,12 +17,7 @@ export default class MenuUi {
         this.container = container;
         console.log(this.game.getMeta());
         this.container.insertAdjacentHTML("beforeend",
-            Handlebars.compile(menuTemplateHtml)({
-                hasResearch: this.game.getMeta().research.length>0,
-                hasUpgrades: Array.isArray(this.game.getMeta().upgrades) && this.game.getMeta().upgrades.length > 0,
-                hasAchievements:  this.game.getAchievementsManager().achievements.length > 0,
-                hasStatistics: true,
-            })
+            Handlebars.compile(menuTemplateHtml)()
         );
 
         // Button click handlers
@@ -31,9 +26,8 @@ export default class MenuUi {
         this.container.querySelector("#factoriesButton").addEventListener("click", () => {this.gameUiEm.invokeEvent(GameUiEvent.SHOW_FACTORIES)});
         this.container.querySelector("#researchButton").addEventListener("click", () => this.gameUiEm.invokeEvent(GameUiEvent.SHOW_RESEARCH, this.factory.getMeta().id));
         this.container.querySelector("#upgradesButton").addEventListener("click", () => this.gameUiEm.invokeEvent(GameUiEvent.SHOW_UPGRADES, this.factory.getMeta().id));
-        if (this.game.getAchievementsManager().achievements.length > 0){
-            this.container.querySelector("#achievementsButton").addEventListener("click", () => this.gameUiEm.invokeEvent(GameUiEvent.SHOW_ACHIEVEMENTS, this.factory.getMeta().id));
-        }
+        this.container.querySelector("#achievementsButton").addEventListener("click", () => this.gameUiEm.invokeEvent(GameUiEvent.SHOW_ACHIEVEMENTS, this.factory.getMeta().id));
+        
         this.container.querySelector("#helpButton").addEventListener("click", () => this.gameUiEm.invokeEvent(GameUiEvent.SHOW_HELP));
         this.container.querySelector("#statisticsButton").addEventListener("click", () => this.gameUiEm.invokeEvent(GameUiEvent.SHOW_STATISTICS));
         this.container.querySelector("#extraButton").addEventListener("click", () => this.gameUiEm.invokeEvent(GameUiEvent.SHOW_PURCHASES));
@@ -51,11 +45,12 @@ export default class MenuUi {
     
 
         const visibilityMap = [
+            {selector: "#achievementsButton", achievement:"makingProfit"},
             {selector: "#researchButton", achievement:"makingProfit"},
             {selector: "#upgradesButton", achievement:"gettingSmarter"},
-            {selector: "#statisticsButton", achievement:"collectingCash2"},
             {selector: "#extraButton", achievement:"collectingCash"},
-            {selector: "#timeTravelButton", achievement:"collectingCash"}
+            {selector: "#timeTravelButton", achievement:"collectingCash"},
+            {selector: "#statisticsButton", achievement:"collectingCash2"}
 
         ];
 
