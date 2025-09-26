@@ -19,9 +19,6 @@ export default class MenuUi {
         this.container.insertAdjacentHTML("beforeend",
             Handlebars.compile(menuTemplateHtml)()
         );
-
-        // Button click handlers
-        // this.container.find("#missionsButton").click(() => this.globalUiEm.invokeEvent(GlobalUiEvent.SHOW_MISSIONS));
         
         this.container.querySelector("#factoriesButton").addEventListener("click", () => {this.gameUiEm.invokeEvent(GameUiEvent.SHOW_FACTORIES)});
         this.container.querySelector("#researchButton").addEventListener("click", () => this.gameUiEm.invokeEvent(GameUiEvent.SHOW_RESEARCH, this.factory.getMeta().id));
