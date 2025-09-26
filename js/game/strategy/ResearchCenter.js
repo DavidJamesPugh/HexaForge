@@ -1,5 +1,8 @@
 import ResourceIntake from "./helper/ResourceIntake";
 import DelayedAction from "./helper/DelayedAction";
+import { lcFirst } from "/js/utils/stringHelpers.js";
+import numberFormat from "../../base/NumberFormat";
+import { arrayToHumanStr } from "/js/utils/arrayHelpers.js";
 
 export default class ResearchCenter {
     constructor(component, meta) {
@@ -40,12 +43,12 @@ export default class ResearchCenter {
         const resources = meta.strategy.resources;
         const gameResources = factory.getGame().getMeta().resourcesById;
         const bonusStr = Object.keys(resources).map(rId => 
-            `<span class='${rId}'>${gameResources[rId].name.lcFirst()}: <b>${nf(ResearchCenter.getMetaBonus(meta, rId, factory))}</b></span> `
+            `<span class='${rId}'>${lcFirst(gameResources[rId].name)}: <b>${numberFormat.formatNumber(ResearchCenter.getMetaBonus(meta, rId, factory))}</b></span> `
         );
         return {
             interval: meta.strategy.interval,
             bonusStr: arrayToHumanStr(bonusStr),
-            productionStr: `<span class='research'><b>${nf(ResearchCenter.getResearchProduction(meta, factory))}</b> research points </span>`
+            productionStr: `<span class='research'><b>${numberFormat.formatNumber(ResearchCenter.getResearchProduction(meta, factory))}</b> research points </span>`
         };
     }
 

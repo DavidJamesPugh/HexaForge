@@ -1,6 +1,7 @@
 import ResourceIntake from "./helper/ResourceIntake";
 import ResourceOutput from "./helper/ResourceOutput";
 import DelayedAction from "./helper/DelayedAction";
+import { lcFirst } from "/js/utils/stringHelpers.js";
 
 export default class Lab {
     constructor(component, meta) {
@@ -33,17 +34,17 @@ export default class Lab {
 
         for (const rId in o.inputResources) {
             const res = o.inputResources[rId];
-            inputStr.push(`<span class='${rId}'><b>${res.perOutputResource}</b> ${resourcesById[rId].nameShort.lcFirst()}</span>`);
-            storageStr.push(`<span class='${rId}'>${resourcesById[rId].nameShort.lcFirst()}: <b>${res.max}</b></span>`);
-            bonusStr.push(`<span class='${rId}'>${resourcesById[rId].nameShort.lcFirst()}: <b>${res.bonus}</b></span>`);
+            inputStr.push(`<span class='${rId}'><b>${res.perOutputResource}</b> ${lcFirst(resourcesById[rId].nameShort)}</span>`);
+            storageStr.push(`<span class='${rId}'>${lcFirst(resourcesById[rId].nameShort)}: <b>${res.max}</b></span>`);
+            bonusStr.push(`<span class='${rId}'>${lcFirst(resourcesById[rId].nameShort)}: <b>${res.bonus}</b></span>`);
             maxBonus += res.bonus;
         }
 
         for (const rId in o.production) {
             if (Lab.isProducing(factory.getGame(), o, rId)) {
                 const prod = o.production[rId];
-                outputStr.push(`<span class='${rId}'><b>${prod.amount}</b> ${resourcesById[rId].nameShort.lcFirst()}</span>`);
-                storageStr.push(`<span class='${rId}'>${resourcesById[rId].nameShort.lcFirst()}: <b>${prod.max}</b></span>`);
+                outputStr.push(`<span class='${rId}'><b>${prod.amount}</b> ${lcFirst(resourcesById[rId].nameShort)}</span>`);
+                storageStr.push(`<span class='${rId}'>${lcFirst(resourcesById[rId].nameShort)}: <b>${prod.max}</b></span>`);
             }
         }
 
