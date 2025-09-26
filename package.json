@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "build:ui": "vite build && rimraf C:\\Annex\\Projects\\IncBackEnd\\dist && xcopy dist C:\\Annex\\Projects\\IncBackEnd\\dist /E /I /Y",
+    "build:ui": "vite build && rimraf C:\\Annex\\Projects\\AlacrityGamesAPI\\dist && xcopy dist C:\\Annex\\Projects\\AlacrityGamesAPI\\dist /E /I /Y",
     "preview": "vite preview"
   },
   "repository": {
