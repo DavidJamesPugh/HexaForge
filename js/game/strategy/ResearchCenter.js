@@ -59,9 +59,9 @@ export default class ResearchCenter {
         return data;
     }
 
-    calculateInputTick() {
+    calculateInputTick(state) {
         this.inResourcesManager.takeIn();
-        this.producer.calculate();
+        this.producer.calculate(state);
     }
 
     canProduce() {
@@ -78,6 +78,7 @@ export default class ResearchCenter {
     }
 
     finishProduction(researchData) {
+        
         researchData.researchProduction += this.getResearchProduction() * this.productionBonus;
     }
 

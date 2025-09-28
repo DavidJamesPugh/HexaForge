@@ -64,6 +64,7 @@ export default class Transport {
       : this.moveInternalInputsToOutputs();
 
     ["top", "right", "bottom", "left"].forEach(dir => this.pullFromOutsideToInputs(dir, this.inputQueues[dir]));
+    
   }
 
   moveInternalInputsToOutputsBridge(e, t) {

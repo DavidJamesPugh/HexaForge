@@ -45,6 +45,7 @@ export default class Component {
 
   _checkForSurroundedInputsOutputs(x, y, direction) {
     const tile = this.factory.getTile(x, y);
+    
     const outputs = tile.getInputOutputManager().getOutputsByDirection()[direction];
     if (outputs) {
       this.surroundedOutputTiles.push({

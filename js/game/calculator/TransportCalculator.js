@@ -56,10 +56,15 @@ export default class TransportCalculator {
     buildCaches() {
       this.endTiles = [];
       const tiles = this.factory.getTiles();
-      for (const t of tiles) {
-        if (t.getComponent() &&
-           (t.getInputOutputManager().getOutputsList().length !== 0 && t.getComponent().getMeta().strategy.type === "transport")) {
-          this.endTiles.push(t);
+      for (const tile of tiles) {
+        const component = tile.getComponent();
+        if (!component) continue;
+
+        const outputs = tile.getInputOutputManager().getOutputsList();
+        const isTransport = component.getMeta().strategy.type === "transport";
+
+        if (outputs.length === 0 || !isTransport) {
+          this.endTiles.push(tile);
         }
       }
     }
