@@ -1,4 +1,6 @@
 // src/game/action/BuyUpgrade.js
+import FactoryEvent from "../../config/event/FactoryEvent.js";
+
 export default class BuyUpgrade {
     constructor(factory, upgradeId) {
       this.factory = factory;
@@ -15,6 +17,7 @@ export default class BuyUpgrade {
       this.game.addMoney(-price);
       this.factory.getUpgradesManager().addUpgrade(this.upgradeId, 1);
       this.factory.getEventManager().invokeEvent(FactoryEvent.UPGRADE_BOUGHT, this.upgradeId);
+    this.factory.getEventManager().invokeEvent(FactoryEvent.REFRESH_COMPONENT_INFO);
     }
   }
   
