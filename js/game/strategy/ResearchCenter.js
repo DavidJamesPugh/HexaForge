@@ -60,8 +60,10 @@ export default class ResearchCenter {
     }
 
     calculateInputTick(state) {
-        this.inResourcesManager.takeIn();
+    this.inResourcesManager.takeIn();
+    if (!this.component.isPaused()) {
         this.producer.calculate(state);
+    }
     }
 
     canProduce() {
@@ -69,6 +71,7 @@ export default class ResearchCenter {
     }
 
     startProduction() {
+        if (this.component.isPaused()) return;
         let bonus = 1;
         for (const rId in this.meta.resources) {
             bonus += this.inResourcesManager.getResource(rId) * this.getBonus(rId);

@@ -68,11 +68,15 @@ export default class Lab {
 
     calculateInputTick() {
         this.inResourcesManager.takeIn();
+        if (!this.component.isPaused()) {
+            this.producer.calculate();
+        }
     }
 
     calculateOutputTick() {
-        this.producer.calculate();
-        this.outResourcesManager.distribute();
+        if (!this.component.isPaused()) {
+            this.outResourcesManager.distribute();
+        }
     }
 
     canStartProduction() {
@@ -85,6 +89,7 @@ export default class Lab {
     }
 
     startProduction() {
+        if (this.component.isPaused()) return;
         let bonus = 1;
         for (const rId in this.meta.inputResources) {
             const res = this.meta.inputResources[rId];
@@ -97,6 +102,7 @@ export default class Lab {
     }
 
     finishedProduction() {
+        if (this.component.isPaused()) return;
         for (const rId in this.meta.production) {
             if (Lab.isProducing(this.component.getFactory().getGame(), this.meta, rId)) {
                 this.outResourcesManager.addResource(rId, this.meta.production[rId].amount * this.productionBonus);

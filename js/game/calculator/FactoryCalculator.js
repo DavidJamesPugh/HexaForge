@@ -20,14 +20,19 @@ export default class FactoryCalculator {
       result.isPaused = true;
     } else {
       for (const comp of this.components) {
+        const strategy = comp.getStrategy();
         comp.calculateInputTick(result);
-        comp.getStrategy().calculateInputTick?.(result);
+        if (!comp.isPaused()) {
+          strategy.calculateInputTick?.(result);
+        }
       }
 
       this.transportCalculator.calculate();
 
       for (const comp of this.components) {
-        comp.getStrategy().calculateOutputTick?.(result);
+        if (!comp.isPaused()) {
+          comp.getStrategy().calculateOutputTick?.(result);
+        }
       }
 
       this.factory.getEventManager().invokeEvent(FactoryEvent.FACTORY_TICK, result);

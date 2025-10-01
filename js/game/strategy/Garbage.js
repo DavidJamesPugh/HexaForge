@@ -70,7 +70,9 @@ export default class Garbage {
 
   calculateInputTick() {
     this.takeIn();
-    this.producer.calculate();
+    if (!this.component.isPaused()) {
+      this.producer.calculate();
+    }
   }
 
   getDescriptionData() {

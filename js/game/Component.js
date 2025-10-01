@@ -10,6 +10,7 @@ export default class Component {
     this.strategy = StrategyFactory.getForComponent(this);
     this.surroundedInputTiles = [];
     this.surroundedOutputTiles = [];
+    this._isPaused = false;
   }
 
   static getMetaDescriptionData(meta, factory, strategy) {
@@ -90,6 +91,7 @@ export default class Component {
   }
 
   calculateInputTick(e) {
+    if (this.isPaused()) return;
     if (this.meta.runningCostPerTick > 0) e.runningCosts += this.getRunningCostPerTick();
   }
 
@@ -118,10 +120,30 @@ export default class Component {
   }
 
   exportToWriter(writer) {
+    writer.writeUint8(this._isPaused ? 1 : 0);
     this.strategy.exportToWriter(writer);
   }
 
   importFromReader(reader, version) {
+    this._isPaused = !!reader.readUint8();
     this.strategy.importFromReader(reader, version);
+  }
+
+  isPaused() {
+    return this._isPaused;
+  }
+
+  setPaused(value) {
+    if (this.meta.strategy.type === "transport") return;
+    if (this._isPaused === value) return;
+    this._isPaused = value;
+    this.factory.getEventManager().invokeEvent(
+      this.factory.getEventManager().handledEvents.COMPONENT_SELECTED,
+      this
+    );
+  }
+
+  togglePaused() {
+    this.setPaused(!this._isPaused);
   }
 }

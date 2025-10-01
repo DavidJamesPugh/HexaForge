@@ -74,8 +74,10 @@ export default class Buyer {
   }
 
   calculateOutputTick(state) {
-    this.producer.calculate(state);
-    this.outResourcesManager.distribute();
+    if (!this.component.isPaused()) {
+      this.producer.calculate(state);
+      this.outResourcesManager.distribute();
+    }
   }
 
   calculatePurchasePrice() {

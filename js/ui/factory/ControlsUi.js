@@ -3,8 +3,9 @@ import controlsTemplate from "../../template/factory/controls.html?raw";
 import ClearPackagesAction from "../../game/action/ClearPackagesAction.js";
 import ResetFactoryAction from "../../game/action/ResetFactoryAction.js";
 import ConfirmUi from "../helper/ConfirmUi.js";
-import numberFormat from "/js/base/NumberFormat.js"
-import GameEvent from "/js/config/event/GameEvent.js"
+import numberFormat from "/js/base/NumberFormat.js";
+import GameEvent from "/js/config/event/GameEvent.js";
+import FactoryEvent from "../../config/event/FactoryEvent.js";
 
 const EVENT_KEY = "factoryControlsUi";
 
@@ -17,9 +18,11 @@ export default class ControlsUi {
         this.playButton = null;
         this.playFastButton = null;
         this.playNormalButton = null;
+        this.pauseComponentButton = null;
         this.bonusTicks = null;
         this.clearPackagesButton = null;
         this.resetFactoryButton = null;
+        this.component = null;
     }
 
     updateControlButtons() {
@@ -46,10 +49,24 @@ export default class ControlsUi {
             this.playButton.style.display = "none";
             this.pauseButton.style.display = "block";
         }
+        if (this.pauseComponentButton) {
+            const canPauseComponent = this.component && this.component.getMeta().strategy.type !== "transport";
+            if (canPauseComponent) {
+                this.pauseComponentButton.style.display = "block";
+                this.pauseComponentButton.textContent = this.component.isPaused() ? "Resume Component" : "Pause Component";
+            } else {
+                this.pauseComponentButton.style.display = "none";
+            }
+        }
+    }
+
+    selectComponent(component){
+        this.component = component;
+        this.updateControlButtons();
     }
 
     updateBonusTicksValue() {
-        const span = this.bonusTicks.querySelector("span")
+        const span = this.bonusTicks.querySelector("span");
         if(span){
             span.textContent = numberFormat.formatNumber(this.game.getTicker().getBonusTicks());
         }
@@ -66,6 +83,7 @@ export default class ControlsUi {
         this.playButton = this.container.querySelector("#playButton");
         this.playFastButton = this.container.querySelector("#playFastButton");
         this.playNormalButton = this.container.querySelector("#playNormalButton");
+        this.pauseComponentButton = this.container.querySelector("#pauseComponentButton");
         this.bonusTicks = this.container.querySelector("#bonusTicks");
         this.clearPackagesButton = this.container.querySelector("#clearPackages");
         this.resetFactoryButton = this.container.querySelector("#resetFactory");
@@ -88,6 +106,13 @@ export default class ControlsUi {
         this.playFastButton.addEventListener("pointerdown", () => setPaused(false, true));
         this.playNormalButton.addEventListener("pointerdown", () => setPaused(false));
 
+        this.pauseComponentButton.addEventListener("pointerdown", (event) => {
+            event.preventDefault();
+            if(!this.component || this.component.getMeta().strategy.type === "transport") return;
+            this.component.togglePaused();
+            this.updateControlButtons();
+        });
+
         this.clearPackagesButton.addEventListener("pointerdown", () => {
             const action = new ClearPackagesAction(this.factory);
             if (action.canClear()) action.clear();
@@ -105,10 +130,25 @@ export default class ControlsUi {
         this.game.getEventManager().addListener(EVENT_KEY, GameEvent.TICKS_STARTED, () => this.updateControlButtons());
         this.game.getEventManager().addListener(EVENT_KEY, GameEvent.TICKS_STOPPED, () => this.updateControlButtons());
         this.game.getEventManager().addListener(EVENT_KEY, GameEvent.BONUS_TICKS_UPDATED, () => this.updateBonusTicksValue());
+        
+        this.game.getEventManager().addListener(EVENT_KEY,
+            GameEvent.COMPONENT_SELECTED, (selected) => {
+                this.component = selected;
+                this.updateControlButtons();
+            }
+        );
+
+        this.factory.getEventManager().addListener(EVENT_KEY,
+            FactoryEvent.COMPONENT_SELECTED, (selected) => {
+                this.component = selected;
+                this.updateControlButtons();
+            }
+        );
     }
 
     destroy() {
         this.game.getEventManager().removeListenerForType(EVENT_KEY);
+        this.factory.getEventManager().removeListenerForType(EVENT_KEY);
         if (this.container) this.container.innerHTML = "";
         this.container = null;
     }

@@ -42,7 +42,8 @@ export default class TransportCalculator {
         this.doneIndex[tile.getId()] = true;
         this.log(`Calculate ${tile.getIdStr()}`);
   
-        const strategy = tile.getComponent().getStrategy();
+        const component = tile.getComponent();
+        const strategy = component.getStrategy();
         strategy.calculateTransport?.();
   
         const inputs = tile.getInputOutputManager().getInputsList();

@@ -92,8 +92,10 @@ export default class Converter {
   }
 
   calculateOutputTick() {
-    this.producer.calculate();
-    this.outResourcesManager.distribute();
+    if (!this.component.isPaused()) {
+      this.producer.calculate();
+      this.outResourcesManager.distribute();
+    }
   }
 
   canStartProduction() {

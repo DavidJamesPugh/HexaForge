@@ -94,7 +94,9 @@ export default class Seller {
 
   calculateInputTick(e) {
     this.inResourcesManager.takeIn();
-    this.producer.calculate(e);
+    if (!this.component.isPaused()) {
+      this.producer.calculate(e);
+    }
   }
 
   canStartSaleProcess() {
@@ -112,6 +114,7 @@ export default class Seller {
   }
 
   finishSale(e) {
+    if (this.component.isPaused()) return;
     for (const resourceId in this.meta.resources) {
       const amountToSell = this.getSellAmount(resourceId);
       if (this.inResourcesManager.getResource(resourceId) >= amountToSell) {
