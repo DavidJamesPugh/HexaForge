@@ -29,16 +29,36 @@ export default class DefaultStrategy {
         const y = tile.getY() * this.tileSize;
         const w = this.tileSize * meta.width;
         const h = this.tileSize * meta.height;
-        
-        const pauseColor = tile.getComponent().isPaused() ? "red" : "green"
-        const pauseIndicatorWidth = 7;
-        const pauseIndicatorX = (x - pauseIndicatorWidth) + w;
-        const pauseIndicatorY = (y - pauseIndicatorWidth) + h;
 
         ctx.drawImage(img, srcX, srcY, w, h, x, y, w, h);
-        ctx.fillStyle = pauseColor;
-        ctx.fillRect(pauseIndicatorX,pauseIndicatorY,
-            pauseIndicatorWidth,pauseIndicatorWidth);
 
+        
+        const paused = tile.getComponent().isPaused();
+        const pauseColor = paused ? "red" : "green"
+        const pauseIndicatorWidth = 8;
+        const roundness = paused ? [0,0,0,0]: [0,0,0,45];
+        const pauseIndicatorTranslateX = (x - pauseIndicatorWidth) + w;
+        const pauseIndicatorTranslateY = (y - pauseIndicatorWidth) + h;
+        let pauseIndicatorX = -2;
+        let pauseIndicatorY = -2;
+        ctx.save();
+
+        ctx.translate(
+            pauseIndicatorTranslateX,
+            pauseIndicatorTranslateY
+          );
+        if(!paused) {
+            ctx.rotate((45 * Math.PI) / 180);
+            pauseIndicatorX = -pauseIndicatorWidth/2;
+            pauseIndicatorY = -pauseIndicatorWidth/2;
+        }
+        ctx.fillStyle = pauseColor;
+
+        ctx.beginPath();
+        ctx.roundRect(pauseIndicatorX,pauseIndicatorY,
+            pauseIndicatorWidth,pauseIndicatorWidth, roundness);
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
     }
 }
