@@ -16,8 +16,7 @@ export default class BuyUpgrade {
       const price = this.factory.getUpgradesManager().getPrice(this.upgradeId);
       this.game.addMoney(-price);
       this.factory.getUpgradesManager().addUpgrade(this.upgradeId, 1);
-      this.factory.getEventManager().invokeEvent(FactoryEvent.UPGRADE_BOUGHT, this.upgradeId);
-    this.factory.getEventManager().invokeEvent(FactoryEvent.REFRESH_COMPONENT_INFO);
+    this.factory.getEventManager().invokeEvent(FactoryEvent.UPGRADE_BOUGHT, this.upgradeId);
     }
   }
   

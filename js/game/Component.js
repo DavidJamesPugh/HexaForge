@@ -137,10 +137,7 @@ export default class Component {
     if (this.meta.strategy.type === "transport") return;
     if (this._isPaused === value) return;
     this._isPaused = value;
-    this.factory.getEventManager().invokeEvent(
-      this.factory.getEventManager().handledEvents.COMPONENT_SELECTED,
-      this
-    );
+    
   }
 
   togglePaused() {

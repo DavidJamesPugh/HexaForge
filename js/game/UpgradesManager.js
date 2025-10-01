@@ -1,5 +1,6 @@
 import UpgradesFactory from "./upgrades/Factory.js";
 import BinaryArrayWriter from "/js/base/BinaryArrayWriter.js";
+import FactoryEvent from "../config/event/FactoryEvent.js";
 
 export default class UpgradesManager {
   constructor(factory) {
@@ -55,6 +56,8 @@ export default class UpgradesManager {
 
   addUpgrade(id, amount) {
     this.setUpgrade(id, this.getUpgrade(id) + amount);
+    this.factory.getEventManager().invokeEvent(FactoryEvent.UPGRADES_UPDATED, id);
+    this.factory.getEventManager().invokeEvent(FactoryEvent.REFRESH_COMPONENT_INFO);
   }
 
   getUpgrade(id) {

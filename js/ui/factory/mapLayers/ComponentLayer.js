@@ -48,6 +48,14 @@ export default class ComponentLayer {
         this.game.getTicker().getIsFocused();
       }
     );
+    
+  this.factory.getEventManager().addListener(
+    "LayerComponent",
+    FactoryEvent.COMPONENT_PAUSED,
+    (component) => {
+      this.redrawComponent(component);
+    }
+  );
 
     this.buildCache();
     this.redraw();
@@ -63,6 +71,15 @@ export default class ComponentLayer {
       }
     }
     const mainCount = this.tilesWithComponentCache.filter(t => t.isMainComponentContainer()).length;
+  }
+
+  redrawComponent(component){
+    const ctx = this.canvas.getContext("2d");
+    const tile = component.getMainTile();
+    const strategyName = tile.getComponent().getMeta().drawStrategy || "default";
+    console.log(this.strategies);
+    console.log(strategyName);
+    this.strategies[strategyName].drawComponent(ctx, tile);
   }
 
   redraw() {

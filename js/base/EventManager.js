@@ -30,6 +30,10 @@ export default class EventManager {
     }
   
     invokeEvent(type, ...args) {
+      if (args.length && typeof args[args.length - 1] === "function") {
+        console.warn("invokeEvent should not receive callbacks as final arguments; ignoring last argument.");
+        args = args.slice(0, -1);
+      }
       if (!this.events[type]) return;
       for (const callbackName in this.events[type]) {
         const callback = this.events[type][callbackName];

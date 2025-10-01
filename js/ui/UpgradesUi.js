@@ -8,6 +8,7 @@ import GameContext from "../base/GameContext.js";
 import GameUiEvent from "../config/event/GameUiEvent.js";
 import GameEvent from "../config/event/GameEvent.js";
 import numberFormat from "../base/NumberFormat.js";
+import FactoryEvent from "../config/event/FactoryEvent.js";
 
 export default class UpgradesUi {
   constructor(factory) {
@@ -99,11 +100,14 @@ export default class UpgradesUi {
     }
 
     // Upgrade click handling
+    this.tooltipDestroyers = [];
+
     this.container.querySelectorAll(".upgradeItem").forEach((el) => {
       const id = el.dataset.id;
       const actionType = el.dataset.action;
 
-      new TipUi(el, el.querySelector(".upgradePopup")).init();
+      const tip = new TipUi(el, el.querySelector(".upgradePopup")).init();
+      this.tooltipDestroyers.push(() => tip.destroy());
 
       el.addEventListener("pointerdown", () => {
         if (actionType === "sell") {
@@ -120,13 +124,58 @@ export default class UpgradesUi {
     this.game
       .getEventManager()
       .addListener("upgradeUi", GameEvent.GAME_TICK, () => this.update());
+    this.factory
+      .getEventManager()
+      .addListener("upgradeUi", FactoryEvent.UPGRADES_UPDATED, (id) => this.handleUpgradesUpdated(id));
     this.update();
   }
 
   refreshView() {
     const currentContainer = this.container;
-    this.destroy();
+    this.destroy(false);
     this.display(currentContainer);
+  }
+
+  handleUpgradesUpdated(upgradeId) {
+    this.refreshUpgrade(upgradeId);
+  }
+
+  refreshUpgrade(upgradeId) {
+    this.updateUpgradeItem(upgradeId, "buy");
+    this.updateUpgradeItem(upgradeId, "sell");
+  }
+
+  updateUpgradeItem(upgradeId, action) {
+    const item = this.container.querySelector(`.upgradeItem[data-id="${upgradeId}"][data-action="${action}"]`);
+    if (!item) return;
+
+    const upgradesManager = this.factory.getUpgradesManager();
+    const strategy = upgradesManager.getStrategy(upgradeId);
+
+    const titleEl = item.querySelector(".upgradeTitle > b");
+    if (titleEl) titleEl.textContent = strategy.getTitle();
+
+    const descriptionEl = item.querySelector(".upgradeDescription");
+    if (descriptionEl) {
+      descriptionEl.innerHTML = strategy.getDescription();
+    }
+
+    if (action === "buy") {
+      const moneyEl = item.querySelector(".money");
+      if (moneyEl) {
+        moneyEl.textContent = numberFormat.formatNumber(upgradesManager.getPrice(upgradeId));
+      }
+
+      const isMaxed = !upgradesManager.couldPurchase(upgradeId);
+      item.classList.toggle("upgradeItemMaxed", isMaxed);
+      item.classList.toggle("upgradeItemCantBuy", !isMaxed && !upgradesManager.canPurchase(upgradeId));
+    } else if (action === "sell") {
+      const moneyEl = item.querySelector(".money");
+      if (moneyEl) {
+        moneyEl.textContent = numberFormat.formatNumber(upgradesManager.getSellPrice(upgradeId));
+      }
+      item.classList.toggle("upgradeItemCantSell", !upgradesManager.canSell(upgradeId));
+    }
   }
 
   update() {
@@ -168,10 +217,13 @@ export default class UpgradesUi {
     });
   }
 
-  destroy() {
+  destroy(removeContent = true) {
     this.game.getEventManager().removeListenerForType("upgradeUi");
+    this.factory.getEventManager().removeListenerForType("upgradeUi");
     this.gameUiEm.removeListenerForType("upgradeUi");
-    if (this.container) this.container.innerHTML = "";
-    this.container = null;
+    this.tooltipDestroyers?.forEach((destroy) => destroy());
+    this.tooltipDestroyers = [];
+    if (removeContent && this.container) this.container.innerHTML = "";
+    this.container = removeContent ? null : this.container;
   }
 }

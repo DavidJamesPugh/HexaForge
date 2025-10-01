@@ -111,6 +111,8 @@ export default class ControlsUi {
             if(!this.component || this.component.getMeta().strategy.type === "transport") return;
             this.component.togglePaused();
             this.updateControlButtons();
+            this.factory.getEventManager().invokeEvent(FactoryEvent.COMPONENT_PAUSED, this.component
+            );
         });
 
         this.clearPackagesButton.addEventListener("pointerdown", () => {
@@ -131,12 +133,7 @@ export default class ControlsUi {
         this.game.getEventManager().addListener(EVENT_KEY, GameEvent.TICKS_STOPPED, () => this.updateControlButtons());
         this.game.getEventManager().addListener(EVENT_KEY, GameEvent.BONUS_TICKS_UPDATED, () => this.updateBonusTicksValue());
         
-        this.game.getEventManager().addListener(EVENT_KEY,
-            GameEvent.COMPONENT_SELECTED, (selected) => {
-                this.component = selected;
-                this.updateControlButtons();
-            }
-        );
+        
 
         this.factory.getEventManager().addListener(EVENT_KEY,
             FactoryEvent.COMPONENT_SELECTED, (selected) => {

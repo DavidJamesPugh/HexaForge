@@ -15,7 +15,7 @@ export default class MenuUi {
     display(container) {
 
         this.container = container;
-        console.log(this.game.getMeta());
+        
         this.container.insertAdjacentHTML("beforeend",
             Handlebars.compile(menuTemplateHtml)()
         );
