@@ -35,15 +35,12 @@ export default class FactoryUi {
         this.container = container;
         this.container.addEventListener("contextmenu", (event) => {
             event.preventDefault();
-          });
+        });
         this.container.insertAdjacentHTML("beforeend", Handlebars.compile(factoryTemplateHtml)());
         this.mainContainer = document.querySelector(".main");
 
         if (this.game.getIsPremium()) {
-            this.mainContainer.classList.toggle("fullScreen", true);
-            const mapContainer = this.container.querySelector(".mapContainer");
-            mapContainer.style.width = `${window.innerWidth - 250}px`;
-            mapContainer.style.height = `${window.innerHeight - 150}px`;
+            this.mainContainer.classList.add("fullScreen");
         }
 
         this.menuUi.display(this.container.querySelector(".menuContainer"));
@@ -73,7 +70,7 @@ export default class FactoryUi {
         }
         
         if (this.mainContainer) {
-            this.mainContainer.classList.toggle("fullScreen", false);
+            this.mainContainer.classList.remove("fullScreen");
         }
 
         this.game.getEventManager().removeListenerForType("FactoryUi");

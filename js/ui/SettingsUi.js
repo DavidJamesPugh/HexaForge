@@ -77,10 +77,12 @@ export default class SettingsUi {
     this.element = document.getElementById("settings");
     this.isVisible = true;
 
-    // Center horizontally
-    this.element.style.left = `${
-      (document.documentElement.offsetWidth - this.element.offsetWidth) / 2
-    }px`;
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        if (this.element) this.element.classList.add("drawer-open");
+        if (this.bg) this.bg.classList.add("drawer-open");
+      });
+    });
 
     // Events
     this.element
@@ -101,18 +103,20 @@ export default class SettingsUi {
         }
       });
 
-    this.element
-      .querySelector("#copyToClipboardButton")
-      .addEventListener("click", async () => {
+    const copyBtn = this.element.querySelector("#copyToClipboardButton");
+    if (copyBtn) {
+      copyBtn.addEventListener("click", async () => {
         const input = this.element.querySelector("#userHash");
         input.select();
         try {
           await navigator.clipboard.writeText(input.value);
-          console.log("Copied to clipboard successfully!");
+          copyBtn.value = "Copied!";
+          setTimeout(() => { copyBtn.value = "Copy to clipboard"; }, 1500);
         } catch (err) {
           console.log("Failed to copy: ", err);
         }
       });
+    }
 
     // Save to slot
     this.element.querySelectorAll(".saveToSlot").forEach((btn) => {
@@ -173,8 +177,15 @@ export default class SettingsUi {
 
   hide() {
     this.isVisible = false;
-    this.element?.remove();
-    this.bg?.remove();
+    if (this.element) this.element.classList.remove("drawer-open");
+    if (this.bg) this.bg.classList.remove("drawer-open");
+
+    setTimeout(() => {
+      this.element?.remove();
+      this.bg?.remove();
+      this.element = null;
+      this.bg = null;
+    }, 300);
   }
 
   destroy() {

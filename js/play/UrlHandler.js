@@ -20,7 +20,7 @@ const identifySite = () => {
     if (ref === "beta") return "beta";
 
     const href = window.location.href;
-    if (href.includes("localhost") || href.includes("file")) return "localhost";
+    if (href.includes("localhost2") || href.includes("file")) return "localhost";
 
     return "direct";
 };

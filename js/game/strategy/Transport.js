@@ -1,5 +1,6 @@
+import TransportSpeedModel from "./helper/TransportSpeedModel.js";
 import TransportStackingQueue from "./helper/TransportStackingQueue.js";
-
+ 
 const OPPOSITE = { top: "bottom", bottom: "top", left: "right", right: "left" };
 
 export default class Transport {
@@ -7,6 +8,7 @@ export default class Transport {
     this.component = component;
     this.meta = meta;
     this.tile = this.component.getMainTile();
+    this.speedModel = new TransportSpeedModel(this, meta);
     this.reset();
   }
 
@@ -18,6 +20,7 @@ export default class Transport {
     this.outputQueuesList = [];
     this.outputQueues = {};
     this.isBridge = false;
+    this.speedModel.reset();
   }
 
   clearContents() {
@@ -59,12 +62,19 @@ export default class Transport {
   getInputQueue(dir) { return this.inputQueues[dir]; }
 
   calculateTransport() {
-    this.isBridge
-      ? (this.moveInternalInputsToOutputsBridge("top", "bottom"), this.moveInternalInputsToOutputsBridge("left", "right"))
-      : this.moveInternalInputsToOutputs();
-
-    ["top", "right", "bottom", "left"].forEach(dir => this.pullFromOutsideToInputs(dir, this.inputQueues[dir]));
-    
+    const slowdown = this.speedModel.getSlowdownFactor();
+    const ticksToProcess = this.speedModel.consumeProgress(slowdown);
+    if (ticksToProcess === 0) return;
+ 
+    for (let step = 0; step < ticksToProcess; step++) {
+      this.isBridge
+        ? (this.moveInternalInputsToOutputsBridge("top", "bottom"), this.moveInternalInputsToOutputsBridge("left", "right"))
+        : this.moveInternalInputsToOutputs();
+ 
+      ["top", "right", "bottom", "left"].forEach(dir => this.pullFromOutsideToInputs(dir, this.inputQueues[dir]));
+    }
+ 
+    this.speedModel.afterTick();
   }
 
   moveInternalInputsToOutputsBridge(e, t) {

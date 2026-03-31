@@ -1,6 +1,6 @@
 # Settings Implementation for HexaForge
 
-This document describes the implementation of the settings button and save/load functionality based on the original Factory Idle app.
+This document describes the implementation of the settings button and save/load functionality.
 
 ## What Has Been Implemented
 

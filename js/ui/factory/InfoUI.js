@@ -170,10 +170,6 @@ export default class InfoUi {
   }
 
   showDefaultInfo() {
-    if (!this.play.isDevMode()) {
-      this.hideInfo();
-      return;
-    }
     this.showIncomesData();
   }
 
@@ -188,6 +184,15 @@ export default class InfoUi {
         <td align="center"><b class="${cls}">${label}</b></td>
         ${values.map(v => `<td align="center" class="${cls}">${v}</td>`).join("")}
       </tr>`;
+
+    const passRow = this.play.isDevMode() ? `
+        <tr>
+          <td></td>
+          <td><a href="#" class="passTime" data-amount="15">PASS</a></td>
+          <td><a href="#" class="passTime" data-amount="60">PASS</a></td>
+          <td><a href="#" class="passTime" data-amount="1440">PASS</a></td>
+          <td><a href="#" class="passTime" data-amount="10080">PASS</a></td>
+        </tr>` : "";
 
     const table = `
       <table cellspacing="0" cellpadding="0" border="0">
@@ -210,24 +215,20 @@ export default class InfoUi {
           `$${numberFormat.formatNumber(24 * 60 * 60 * moneyPerSec)}`,
           `$${numberFormat.formatNumber(7 * 24 * 60 * 60 * moneyPerSec)}`
         ], "money")}
-        <tr>
-          <td></td>
-          <td><a href="#" class="passTime" data-amount="15">PASS</a></td>
-          <td><a href="#" class="passTime" data-amount="60">PASS</a></td>
-          <td><a href="#" class="passTime" data-amount="1440">PASS</a></td>
-          <td><a href="#" class="passTime" data-amount="10080">PASS</a></td>
-        </tr>
+        ${passRow}
       </table>`;
 
     this.infoContainer.insertAdjacentHTML("beforeend", table);
 
-    this.infoContainer.querySelectorAll(".passTime").forEach(link => {
-      link.addEventListener("click", e => {
-        e.preventDefault();
-        const minutes = parseInt(e.target.dataset.amount, 10);
-        new PassTimeAction(this.game, 60 * minutes).passTime()
+    if (this.play.isDevMode()) {
+      this.infoContainer.querySelectorAll(".passTime").forEach(link => {
+        link.addEventListener("click", e => {
+          e.preventDefault();
+          const minutes = parseInt(e.target.dataset.amount, 10);
+          new PassTimeAction(this.game, 60 * minutes).passTime()
+        });
       });
-    });
+    }
   }
 
   destroy() {

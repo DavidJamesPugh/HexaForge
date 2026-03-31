@@ -6,7 +6,6 @@ import GameEvent from "../config/event/GameEvent.js";
 import globalUiBus from "../base/GlobalUiBus.js";
 import RunningInBackgroundInfoUi from "./RunningInBackgroundInfoUi.js";
 import AlertUi from "./helper/AlertUi.js";
-import GoogleAdsUi from "./GoogleAdsUi.js";
 import IntroUi from "./IntroUi.js";
 
 export default class MainUi {
@@ -52,11 +51,11 @@ export default class MainUi {
         this.setupFocusChecker();
 
         // Google Ads
-        if (this.play.getGame().getIsPremium()) {
-            console.info("MainUi: Premium version, skipping loading ads");
-         } else {
-            GoogleAdsUi();
-         }
+        // if (this.play.getGame().getIsPremium()) {
+        //     console.info("MainUi: Premium version, skipping loading ads");
+        //  } else {
+        //     GoogleAdsUi();
+        //  }
 
         // Key press listener
         window.addEventListener("keypress", (e) => {

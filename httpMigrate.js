@@ -1,6 +1,6 @@
 function httpMigration() {
-    const domain = "factoryidle.com";
-    const localstorageExistenceCheckKey = "FactoryIdleUserHash"
+    const domain = "hexaforge.io";
+    const localstorageExistenceCheckKey = "HexaForgeUserHash"
     const migrateHtmlFile = "httpMigrate.html"
     const https = "https:"
     const http = "http:"
@@ -10,7 +10,7 @@ function httpMigration() {
         inIndexFile: () => {
             setTimeout(() => {
                 // Skip migration for localhost development
-                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                if (window.location.hostname === 'localhost2' || window.location.hostname === '127.0.0.1') {
                     return;
                 }
                 if (window.location.protocol === http) {

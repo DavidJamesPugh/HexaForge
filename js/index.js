@@ -16,7 +16,7 @@ const loader = {
 };
 
 function isDevMode() {
-  return UrlHandler.identifySite() === "localhost";
+  return UrlHandler.identifySite() === "localhost2";
 }
 
 function isBrowserSupported() {

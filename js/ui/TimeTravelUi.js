@@ -55,9 +55,12 @@ export default class TimeTravelUi {
 
     if (!this.element) return;
 
-    // Center horizontally
-    const htmlWidth = document.documentElement.offsetWidth;
-    this.element.style.left = `${(htmlWidth - this.element.offsetWidth) / 2}px`;
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        if (this.element) this.element.classList.add("drawer-open");
+        if (this.bg) this.bg.classList.add("drawer-open");
+      });
+    });
 
     // Event: get more tickets
     const getMoreBtn = this.element.querySelector(".getMore");
@@ -108,15 +111,13 @@ export default class TimeTravelUi {
 
     this.isVisible = false;
 
-    if (this.element) {
-      this.element.remove();
-      this.element = null;
-    }
+    if (this.element) this.element.classList.remove("drawer-open");
+    if (this.bg) this.bg.classList.remove("drawer-open");
 
-    if (this.bg) {
-      this.bg.remove();
-      this.bg = null;
-    }
+    setTimeout(() => {
+      if (this.element) { this.element.remove(); this.element = null; }
+      if (this.bg) { this.bg.remove(); this.bg = null; }
+    }, 300);
   }
 
   destroy() {

@@ -50,7 +50,7 @@ export default class Play {
   }
 
   isDevMode() {
-    return UrlHandler.identifySite() === "localhost";
+    return UrlHandler.identifySite() === "localhost2";
   }
 
   async init(isDevMode = false, onReady = () => {}) {
@@ -115,7 +115,7 @@ export default class Play {
   }
 
   _createSaveManager() {
-    return new SaveManager(this.api, this.userHash, "FactoryIdleSave")
+    return new SaveManager(this.api, this.userHash, "HexaForgeSave")
       .setGetSaveDataCallback(() => ({
         meta: {
           ver: this.game.getTicker().getNoOfTicks(),

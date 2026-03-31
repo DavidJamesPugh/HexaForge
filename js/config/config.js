@@ -1,8 +1,9 @@
 // config.js - central game config
 import Meta from "./Meta.js";
+import TransportTuning from "./balance/TransportTuning.js";
 
 export default {
-  userHash: { key: "FactoryIdleUserHash" },
+  userHash: { key: "HexaForgeUserHash" },
   imageMap: { path: "img/",
     files: {
       yellowSelection: "mouse/yellow.png",
@@ -19,7 +20,7 @@ export default {
   api: {
     server: { url: "/api/games" },
     armorGames: { gameKey: "" },
-    local: { storageKey: "FactoryIdleLocal" }
+    local: { storageKey: "HexaForgeLocal" }
   },
   saveManager: {
     cloudSaveIntervalMs: 900000, // 15 min
@@ -27,6 +28,7 @@ export default {
   },
   meta: {
     ...Meta,
+    transportTuning: TransportTuning,
     warnToStoreUserHashAfterTicks: {
       10000: true,
       100000: true,

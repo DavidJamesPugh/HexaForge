@@ -1,10 +1,34 @@
-<div class="headerXX"> 
-    You have <span class="money">$<b id="moneyValue">{{money}}</b></span>  to spend. Isn't that nice. Average total income <span class="money">$<b id="incomeValue">{{income}}</b></span>.<br /> {{#if researchBought}} You have <span
-        class="research"><b id="researchPoints"></b></span> research points. Avg production <span class="research"><b
-            id="researchIncome"></b></span> {{/if}}</div>
-<div class="helpXX">
-    <div style="float:right"><span id="ticks"></span> ticks/sec</div> Buy more land to create even bigger empire.  
-    Go ahead, buy some!
+<div class="statusBar">
+    <div class="statusBar-group">
+        <span class="statusBar-label">Credits</span>
+        <span class="money statusBar-value">$<b id="moneyValue">{{money}}</b></span>
+    </div>
+    <div class="statusBar-divider"></div>
+    <div class="statusBar-group">
+        <span class="statusBar-label">Total Income</span>
+        <span class="money statusBar-value">$<b id="incomeValue">{{income}}</b><span class="statusBar-unit">/tick</span></span>
+    </div>
+    {{#if researchBought}}
+    <div class="statusBar-divider"></div>
+    <div class="statusBar-group">
+        <span class="statusBar-label">Research</span>
+        <span class="research statusBar-value"><b id="researchPoints"></b></span>
+    </div>
+    <div class="statusBar-divider"></div>
+    <div class="statusBar-group">
+        <span class="statusBar-label">R. Income</span>
+        <span class="research statusBar-value"><b id="researchIncome"></b><span class="statusBar-unit">/tick</span></span>
+    </div>
+    {{/if}}
+    <div class="statusBar-divider"></div>
+    <div class="statusBar-group">
+        <span class="statusBar-label">Speed</span>
+        <span class="statusBar-value ticks"><span id="ticks"></span><span class="statusBar-unit"> t/s</span></span>
+    </div>
+    <div style="flex:1"></div>
+    <div class="statusBar-group">
+        <span class="statusBar-label" style="color: var(--text-secondary)">Expand your empire!</span>
+    </div>
 </div>
 <div id="factorySelection" class="factories"> {{#each factories}} <div class="factoryButton {{design}}"
         data-id="{{id}}">

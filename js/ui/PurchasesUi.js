@@ -28,7 +28,7 @@ export default class PurchasesUi {
 
         // Base context
         const context = {
-            mainSiteVersion: site === "localhost" || site === "direct"
+            mainSiteVersion: site === "localhost2" || site === "direct"
         };
 
         // Build product sections
@@ -55,8 +55,12 @@ export default class PurchasesUi {
         this.bg = document.getElementById("purchasesBg");
         this.element = document.getElementById("purchases");
 
-        // Center UI horizontally
-        this.element.style.left = `${(document.documentElement.offsetWidth - this.element.offsetWidth) / 2}px`;
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                if (this.element) this.element.classList.add("drawer-open");
+                if (this.bg) this.bg.classList.add("drawer-open");
+            });
+        });
 
         // Events
         this.element.querySelector(".closeButton").addEventListener("click", () => this.hide());
@@ -77,14 +81,13 @@ export default class PurchasesUi {
     }
 
     hide() {
-        if (this.element) {
-            this.element.remove();
-            this.element = null;
-        }
-        if (this.bg) {
-            this.bg.remove();
-            this.bg = null;
-        }
+        if (this.element) this.element.classList.remove("drawer-open");
+        if (this.bg) this.bg.classList.remove("drawer-open");
+
+        setTimeout(() => {
+            if (this.element) { this.element.remove(); this.element = null; }
+            if (this.bg) { this.bg.remove(); this.bg = null; }
+        }, 300);
     }
 
     destroy() {

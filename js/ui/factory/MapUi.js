@@ -26,22 +26,18 @@ export default class MapUi {
   display(container) {
     this.container = container;
 
-    const containerW = this.container.clientWidth;
-    const containerH = this.container.clientHeight;
     const mapW = this.factory.getMeta().tilesX * this.tileSize;
     const mapH = this.factory.getMeta().tilesY * this.tileSize;
 
-    // Overlay div
     this.overlay = document.createElement("div");
     Object.assign(this.overlay.style, {
       overflow: "hidden",
       margin: "0",
-      width: `${Math.min(containerW, mapW)}px`,
-      height: `${Math.min(containerH, mapH)}px`,
+      width: "100%",
+      height: "100%",
       position: "relative",
     });
 
-    // Map element div
     this.element = document.createElement("div");
     Object.assign(this.element.style, {
       position: "absolute",

@@ -33,10 +33,6 @@ export default class HelpUi {
 
       if (!this.helpElement || !this.helpBg) return;
 
-      // Center horizontally
-      const htmlWidth = document.documentElement.offsetWidth;
-      this.helpElement.style.left = `${(htmlWidth - this.helpElement.offsetWidth) / 2}px`;
-
       // Close button
       const closeButton = this.helpElement.querySelector(".closeButton");
       if (closeButton) closeButton.addEventListener("click", () => this.hide());
@@ -62,16 +58,16 @@ export default class HelpUi {
       this.helpBg.addEventListener("click", () => this.hide());
     }
 
-    // Show elements
     this.helpElement.style.display = "block";
-    this.helpElement.style.opacity = "1";
+    if (this.helpBg) this.helpBg.style.display = "block";
 
-    if (this.helpBg) {
-      this.helpBg.style.display = "block";
-      this.helpBg.style.opacity = "1";
-    }
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        this.helpElement.classList.add("drawer-open");
+        if (this.helpBg) this.helpBg.classList.add("drawer-open");
+      });
+    });
 
-    // Show first section
     const gettingStarted = this.helpElement.querySelector("#gettingStarted");
     if (gettingStarted) gettingStarted.classList.add("visible");
   }
@@ -81,19 +77,17 @@ export default class HelpUi {
 
     this.isVisible = false;
 
-    // Hide all sections
     Object.values(this.menuSections).forEach((sec) =>
       sec.classList.remove("visible")
     );
 
-    // Hide background & container (no remove)
-    if (this.helpBg) {
-      this.helpBg.style.opacity = "0";
-      this.helpBg.style.display = "none";
-    }
+    this.helpElement.classList.remove("drawer-open");
+    if (this.helpBg) this.helpBg.classList.remove("drawer-open");
 
-    this.helpElement.style.opacity = "0";
-    this.helpElement.style.display = "none";
+    setTimeout(() => {
+      if (this.helpBg) this.helpBg.style.display = "none";
+      if (this.helpElement) this.helpElement.style.display = "none";
+    }, 300);
   }
 
   destroy() {

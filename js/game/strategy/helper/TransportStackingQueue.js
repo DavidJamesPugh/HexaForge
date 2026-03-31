@@ -29,6 +29,13 @@ export default class TransportStackingQueue {
   get(index) { return this.queue[index]; }
   set(index, item) { this.queue[index] = item ?? undefined; }
   getLength() { return this.queue.length; }
+  getFillRatio() {
+    const length = this.queue.length;
+    if (!length) return 0;
+    let filled = 0;
+    for (const item of this.queue) if (item) filled++;
+    return filled / length;
+  }
   toString() { return this.queue.join(","); }
 
   exportToWriter(writer) {
