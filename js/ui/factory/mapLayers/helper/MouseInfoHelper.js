@@ -72,7 +72,7 @@ export default class MouseInfoHelper {
 
     const meta = component.getMeta();
     if (!this.componentSelectedElement) {
-      this.componentSelectedElement = this.createImageElement(this.imageMap.getImage("blueSelection"));
+      this.componentSelectedElement = this.createOverlayElement("rgba(56, 189, 248, 0.35)", "blueSelection");
       this.container.appendChild(this.componentSelectedElement);
     }
 
@@ -81,9 +81,6 @@ export default class MouseInfoHelper {
       top: component.getY() * this.tileSize + "px",
       width: this.tileSize * meta.width + "px",
       height: this.tileSize * meta.height + "px",
-      opacity: 0.5,
-      pointerEvents: "none",
-      position: "absolute",
     });
   }
 
@@ -97,7 +94,7 @@ export default class MouseInfoHelper {
   updateBuildMode(componentId, pos) {
     const meta = this.game.getMeta().componentsById[componentId];
     if (!this.mouseSelectionElement) {
-      this.mouseSelectionElement = this.createImageElement(this.imageMap.getImage("yellowSelection"));
+      this.mouseSelectionElement = this.createOverlayElement("rgba(250, 204, 21, 0.4)", "yellowSelection");
       this.container.appendChild(this.mouseSelectionElement);
     }
 
@@ -106,9 +103,6 @@ export default class MouseInfoHelper {
       top: pos.y * this.tileSize + "px",
       width: this.tileSize * meta.width + "px",
       height: this.tileSize * meta.height + "px",
-      opacity: 0.5,
-      pointerEvents: "none",
-      position: "absolute",
     });
   }
 
@@ -122,7 +116,7 @@ export default class MouseInfoHelper {
   updateCantBuildMode(componentId, pos) {
     const meta = this.game.getMeta().componentsById[componentId];
     if (!this.cantPlaceElement) {
-      this.cantPlaceElement = this.createImageElement(this.imageMap.getImage("cantPlace"));
+      this.cantPlaceElement = this.createOverlayElement("rgba(248, 113, 113, 0.45)", "cantPlace");
       this.container.appendChild(this.cantPlaceElement);
     }
 
@@ -131,9 +125,6 @@ export default class MouseInfoHelper {
       top: pos.y * this.tileSize + "px",
       width: this.tileSize * meta.width + "px",
       height: this.tileSize * meta.height + "px",
-      opacity: 0.5,
-      pointerEvents: "none",
-      position: "absolute",
     });
   }
 
@@ -164,13 +155,21 @@ export default class MouseInfoHelper {
 
   // --- Helper functions ---
 
-  createImageElement(image) {
-    const img = document.createElement("img");
-    img.src = image.src; // <-- use the loaded image src
-    img.style.position = "absolute";
-    img.style.pointerEvents = "none";
-    img.style.opacity = 0.5;
-    return img;
+  createOverlayElement(color, imageName) {
+    const el = document.createElement("div");
+    el.style.position = "absolute";
+    el.style.pointerEvents = "none";
+    el.style.zIndex = "100";
+
+    const image = this.imageMap.getImage(imageName);
+    if (image && image.complete && image.naturalWidth > 0) {
+      el.style.backgroundImage = `url(${image.src})`;
+      el.style.backgroundSize = "100% 100%";
+      el.style.opacity = "0.5";
+    } else {
+      el.style.backgroundColor = color;
+    }
+    return el;
   }
 
   setElementStyle(el, styles) {

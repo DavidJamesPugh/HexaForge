@@ -25,16 +25,23 @@ export default class Calculator {
   }
 
   calculate() {
-    const result = { profit: 0, researchProduction: 0, factory_results: {} };
+    const result = { profit: 0, researchProduction: 0, unrestChange: 0, influenceChange: 0, factory_results: {} };
 
     for (const id in this.factoryCalculators) {
       const fcResult = this.factoryCalculators[id].calculate();
       result.profit += fcResult.profit;
       result.researchProduction += fcResult.researchProduction;
+      result.unrestChange += fcResult.unrestChange;
+      result.influenceChange += fcResult.influenceChange;
       result.factory_results[id] = fcResult;
     }
+
+    
+
     this.game.addMoney(result.profit);
     this.game.addResearchPoints(result.researchProduction);
+    if (result.unrestChange !== 0) this.game.addUnrest(result.unrestChange);
+    if (result.influenceChange !== 0) this.game.addInfluence(result.influenceChange);
 
     return result;
   }

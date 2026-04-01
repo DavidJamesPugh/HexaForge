@@ -7,12 +7,14 @@ import GlobalUiEvent from "../config/event/GlobalUiEvent.js";
 import GameContext from "../base/GameContext.js";
 import GlobalUiBus from "../base/GlobalUiBus.js";
 import NumberFormat from "../base/NumberFormat.js";
+import BackgroundLayer from "./factory/mapLayers/BackgroundLayer.js";
 
 export default class FactoriesUi {
-    constructor(game) {
+    constructor(game, imageMap) {
         this.globalUiEm = GlobalUiBus;
         this.gameUiEm = GameContext.gameUiBus;
         this.game = game;
+        this.imageMap = imageMap;
         this.statistics = game.getStatistics();
         this.container = null;
     }
@@ -37,6 +39,7 @@ export default class FactoriesUi {
             Handlebars.compile(factoriesTemplateHtml)({
                 factories: factoriesData,
                 researchBought: !!this.game.getResearchManager().getResearch("researchCenter"),
+                isDevMode: this.game.isDevMode,
             })
         );
 
@@ -60,11 +63,73 @@ export default class FactoriesUi {
             });
         });
 
+        this.container.querySelectorAll(".devEnterButton").forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                const factoryId = e.target.dataset.id;
+                this.gameUiEm.invokeEvent(GameUiEvent.SHOW_FACTORY, factoryId);
+            });
+        });
+
+        this._renderPreviews();
+
         // Listen for game ticks to update UI
         this.game.getEventManager().addListener("factoriesUi", GameUiEvent.GAME_TICK, () => this.update());
 
         this.update();
 
+    }
+
+    _renderPreviews() {
+        if (!this.imageMap) return;
+
+        const tileSize = 21;
+        const factoriesMeta = this.game.getMeta().factories;
+
+        for (const meta of factoriesMeta) {
+            const factory = this.game.getFactory(meta.id);
+            const showPreview = factory.getIsBought() || this.game.isDevMode;
+            if (!showPreview) continue;
+
+            const el = this.container.querySelector(`.factoryPreview[data-id="${meta.id}"]`);
+            if (!el) continue;
+
+            const tempContainer = document.createElement("div");
+            const bgLayer = new BackgroundLayer(this.imageMap, factory, { tileSize });
+            bgLayer.display(tempContainer);
+            const bgCanvas = bgLayer.getCanvas();
+
+            const thumb = document.createElement("canvas");
+            const mapW = meta.tilesX * tileSize;
+            const mapH = meta.tilesY * tileSize;
+            thumb.width = mapW;
+            thumb.height = mapH;
+            const ctx = thumb.getContext("2d");
+            ctx.drawImage(bgCanvas, 0, 0);
+
+            if (factory.getIsBought()) {
+                const compSprite = this.imageMap.getImage("components");
+                if (compSprite) {
+                    for (const tile of factory.getTiles()) {
+                        if (tile.getComponent()) {
+                            const comp = tile.getComponent();
+                            const compMeta = comp.getMeta();
+                            if (tile.getX() === comp.getX() && tile.getY() === comp.getY()) {
+                                const iconX = (compMeta.iconPosition?.[0] ?? 0) * (tileSize + 1);
+                                const iconY = (compMeta.iconPosition?.[1] ?? 0) * (tileSize + 1);
+                                const w = (compMeta.width || 1) * tileSize;
+                                const h = (compMeta.height || 1) * tileSize;
+                                ctx.drawImage(compSprite,
+                                    iconX, iconY, w, h,
+                                    tile.getX() * tileSize, tile.getY() * tileSize, w, h);
+                            }
+                        }
+                    }
+                }
+            }
+
+            bgLayer.destroy();
+            el.style.backgroundImage = `url(${thumb.toDataURL("image/png")})`;
+        }
     }
 
     updateText(selector, value) {
@@ -76,6 +141,8 @@ export default class FactoriesUi {
         this.updateText("#moneyValue", this.game.getMoney());
         
         this.updateText("#researchPoints", this.game.getResearchPoints());
+        this.updateText("#unrestValue", NumberFormat.formatNumber(this.game.getUnrest()));
+        this.updateText("#influenceValue", NumberFormat.formatNumber(this.game.getInfluence()));
 
 
         const avgProfit = this.statistics.getAvgProfit();

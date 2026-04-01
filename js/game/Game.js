@@ -17,6 +17,8 @@ export default class Game {
 
     this.money = meta.startingMoney;
     this.researchPoints = meta.startingResearchPoints;
+    this.unrest = meta.startingUnrest;
+    this.influence = meta.startingInfluence;
 
     this.em = GameContext.gameUiBus;
     this.factories = {};
@@ -67,7 +69,7 @@ export default class Game {
   getResearchProductionMultiplier() { return this.researchProductionMultiplier; }
 
   setIsPremium(val) { this.isPremium = val; }
-  getIsPremium() { return this.isPremium; }
+  getIsPremium() { return this.isPremium || this.isDevMode; }
 
   getMoney() { return this.money; }
   setMoney(val) {
@@ -86,13 +88,34 @@ export default class Game {
   }
   addResearchPoints(val) { this.setResearchPoints(this.researchPoints + (isNaN(Number(val)) ? 0 : val)); }
 
+  getUnrest() { return this.unrest; }
+  setUnrest(val) {
+    val = isNaN(Number(val)) ? 0 : val;
+    if (val < 0) val = 0;
+    this.unrest = val;
+    this.em.invokeEvent(GameEvent.UNREST_UPDATED, this.unrest);
+  }
+  addUnrest(val) { this.setUnrest(this.unrest + (isNaN(Number(val)) ? 0 : val)); }
+  isUnrestCritical() { return this.unrest >= this.meta.maxUnrest; }
+
+  getInfluence() { return this.influence; }
+  setInfluence(val) {
+    val = isNaN(Number(val)) ? 0 : val;
+    if (val < 0) val = 0;
+    this.influence = val;
+    this.em.invokeEvent(GameEvent.INFLUENCE_UPDATED, this.influence);
+  }
+  addInfluence(val) { this.setInfluence(this.influence + (isNaN(Number(val)) ? 0 : val)); }
+
   exportToWriter() {
     const writer = new BinaryArrayWriter();
     
-    writer.writeUint16(7);
+    writer.writeUint16(8);
     writer.writeFloat64(this.money);
     writer.writeFloat64(this.researchPoints);
     writer.writeInt8(this.isPremium ? 1 : 0);
+    writer.writeFloat64(this.unrest);
+    writer.writeFloat64(this.influence);
 
     writer.writeWriter(this.researchManager.exportToWriter());
     writer.writeWriter(this.achievementsManager.exportToWriter());
@@ -117,6 +140,10 @@ export default class Game {
     this.setResearchPoints(reader.readFloat64());
     if (version >= 7) this.setIsPremium(!!reader.readInt8());
     else this.setIsPremium(this.isPremium);
+    if (version >= 8) {
+      this.setUnrest(reader.readFloat64());
+      this.setInfluence(reader.readFloat64());
+    }
     
 
     this.researchManager.importFromReader(reader.readReader(), version);

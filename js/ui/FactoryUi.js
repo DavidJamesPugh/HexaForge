@@ -49,11 +49,12 @@ export default class FactoryUi {
         this.infoUi.display(this.container.querySelector(".infoContainer"));
         this.controlsUi.display(this.container.querySelector(".controlsContainer"));
         this.overviewUi.display(this.container.querySelector(".overviewContainer"));
-        if (this.play.isDevMode()) {
+        this._mapToolsDisplayed = false;
+        if (this.game.isDevMode) {
             this.mapToolsUi.display(this.container.querySelector(".mapToolsContainer"));
-        
-        this.incentivizedAdButtonUi.display(this.container.querySelector(".incentivizedAd"));
+            this._mapToolsDisplayed = true;
         }
+        this.incentivizedAdButtonUi.display(this.container.querySelector(".incentivizedAd"));
     }
 
     destroy() {
@@ -62,11 +63,10 @@ export default class FactoryUi {
         this.infoUi.destroy();
         this.controlsUi.destroy();
         this.overviewUi.destroy();
+        this.incentivizedAdButtonUi.destroy();
         
-        if(this.play.isDevMode()) {
+        if (this._mapToolsDisplayed) {
             this.mapToolsUi.destroy();
-        
-            this.incentivizedAdButtonUi.destroy();
         }
         
         if (this.mainContainer) {

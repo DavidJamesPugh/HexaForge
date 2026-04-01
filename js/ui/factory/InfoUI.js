@@ -185,11 +185,12 @@ export default class InfoUi {
         ${values.map(v => `<td align="center" class="${cls}">${v}</td>`).join("")}
       </tr>`;
 
-    const passRow = this.play.isDevMode() ? `
+    const passRow = this.game.isDevMode ? `
         <tr>
           <td></td>
           <td><a href="#" class="passTime" data-amount="15">PASS</a></td>
           <td><a href="#" class="passTime" data-amount="60">PASS</a></td>
+          <td><a href="#" class="passTime" data-amount="180">PASS</a></td>
           <td><a href="#" class="passTime" data-amount="1440">PASS</a></td>
           <td><a href="#" class="passTime" data-amount="10080">PASS</a></td>
         </tr>` : "";
@@ -200,18 +201,21 @@ export default class InfoUi {
           <td width="100"></td>
           <td width="100"><b>15min</b></td>
           <td width="100"><b>1h</b></td>
+          <td width="100"><b>3h</b></td>
           <td width="100"><b>24h</b></td>
           <td width="100"><b>1 week</b></td>
         </tr>
         ${makeRow("Research:", [
           numberFormat.formatNumber(15 * 60 * researchPerSec),
           numberFormat.formatNumber(60 * 60 * researchPerSec),
+          numberFormat.formatNumber(3 * 60 * 60 * researchPerSec),
           numberFormat.formatNumber(24 * 60 * 60 * researchPerSec),
           numberFormat.formatNumber(7 * 24 * 60 * 60 * researchPerSec)
         ], "research")}
         ${makeRow("Money", [
           `$${numberFormat.formatNumber(15 * 60 * moneyPerSec)}`,
           `$${numberFormat.formatNumber(60 * 60 * moneyPerSec)}`,
+          `$${numberFormat.formatNumber(3 * 60 * 60 * moneyPerSec)}`,
           `$${numberFormat.formatNumber(24 * 60 * 60 * moneyPerSec)}`,
           `$${numberFormat.formatNumber(7 * 24 * 60 * 60 * moneyPerSec)}`
         ], "money")}
@@ -220,7 +224,7 @@ export default class InfoUi {
 
     this.infoContainer.insertAdjacentHTML("beforeend", table);
 
-    if (this.play.isDevMode()) {
+    if (this.game.isDevMode) {
       this.infoContainer.querySelectorAll(".passTime").forEach(link => {
         link.addEventListener("click", e => {
           e.preventDefault();

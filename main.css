@@ -22,6 +22,8 @@
 
     --money-color: #fbbf24;
     --research-color: #38bdf8;
+    --unrest-color: #f87171;
+    --influence-color: #a78bfa;
     --success-color: #34d399;
     --danger-color: #f87171;
     --warning-color: #fb923c;
@@ -80,6 +82,25 @@
     border-left: 1px solid var(--border-primary);
     border-radius: 0;
     background: var(--bg-panel-solid);
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-primary) transparent;
+}
+
+.drawer-panel::-webkit-scrollbar {
+    width: 6px;
+}
+
+.drawer-panel::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.drawer-panel::-webkit-scrollbar-thumb {
+    background: var(--border-primary);
+    border-radius: 3px;
+}
+
+.drawer-panel::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-primary);
     box-shadow: -8px 0 32px rgba(0, 0, 0, 0.5);
     margin: 0;
     padding: 24px;
@@ -1702,6 +1723,38 @@ div.vis-color-picker input.vis-range {
     color: var(--research-color);
 }
 
+.unrest {
+    color: var(--unrest-color);
+}
+
+.influence {
+    color: var(--influence-color);
+}
+
+.sellerType {
+    text-transform: uppercase;
+    font-weight: 600;
+    font-size: 0.75em;
+    padding: 1px 6px;
+    border-radius: var(--radius-sm);
+    letter-spacing: 0.05em;
+}
+
+.sellerType.military {
+    background: rgba(248, 113, 113, 0.15);
+    color: var(--unrest-color);
+}
+
+.sellerType.local {
+    background: rgba(52, 211, 153, 0.15);
+    color: var(--success-color);
+}
+
+.sellerType.export {
+    background: rgba(167, 139, 250, 0.15);
+    color: var(--influence-color);
+}
+
 .ironOre {
     color: rgb(118,101,97);
 }
@@ -1837,16 +1890,19 @@ div.vis-color-picker input.vis-range {
 
 .factories {
     margin: 10px 0 10px 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 8px;
 }
 
 .factories .factoryButton {
-    display: block;
+    display: flex;
+    flex-direction: column;
     border: 1px solid var(--border-primary);
     border-radius: var(--radius-lg);
     width: 148px;
-    height: 150px;
-    float: left;
-    margin: 5px;
+    min-height: 150px;
     padding: 8px;
     text-align: center;
     background: var(--bg-panel);
@@ -1861,9 +1917,28 @@ div.vis-color-picker input.vis-range {
     transform: translateY(-2px);
 }
 
+.factories .factoryButton .factoryPreview {
+    width: 100%;
+    height: 56px;
+    border-radius: var(--radius-sm);
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.75;
+    flex-shrink: 0;
+    border: 1px solid var(--border-primary);
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.factories .factoryButton:hover .factoryPreview {
+    opacity: 1;
+    border-color: var(--border-accent);
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.3), 0 0 6px rgba(56, 189, 248, 0.15);
+}
+
 .factories .factoryButton .name {
     text-align: center;
-    padding-top: 8px;
+    padding-top: 4px;
     color: var(--text-primary);
     font-weight: 600;
     font-size: 0.95em;
@@ -1908,9 +1983,97 @@ div.vis-color-picker input.vis-range {
     transform: translateY(-1px);
 }
 
+.factories .factoryButton .selectButton,
+.factories .factoryButton .buyButton {
+    margin-top: auto;
+}
+
 .factories .factoryButton .buyButton {
     background: linear-gradient(135deg, var(--success-color), #10b981);
-    margin: 36px auto 0 auto;
+}
+
+.factories .factoryButton .devEnterButton {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    margin: 8px auto 0 auto;
+    font-size: 0.7em;
+    letter-spacing: 0.08em;
+}
+
+.devModeToggle {
+    position: fixed;
+    bottom: 12px;
+    right: 12px;
+    z-index: 9999;
+    padding: 8px 14px;
+    border-radius: var(--radius-md);
+    font-family: var(--font-primary);
+    cursor: pointer;
+    border: 1px solid var(--border-primary);
+    background: var(--bg-secondary);
+    opacity: 0.5;
+    transition: opacity var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast);
+    min-width: 110px;
+}
+
+.devModeToggle:hover {
+    opacity: 1;
+}
+
+.devModeToggle.active {
+    border-color: #f59e0b;
+    background: rgba(245, 158, 11, 0.08);
+    opacity: 0.9;
+}
+
+.devModeToggle.active:hover {
+    opacity: 1;
+}
+
+.devToggle-row {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.devToggle-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    flex-shrink: 0;
+    transition: background var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.devToggle-indicator.on {
+    background: #f59e0b;
+    box-shadow: 0 0 6px #f59e0b;
+}
+
+.devToggle-label {
+    font-size: 0.8em;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--text-primary);
+}
+
+.devToggle-status {
+    font-size: 0.65em;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    margin-top: 3px;
+    padding-left: 15px;
+}
+
+.devToggle-status.purchased {
+    color: var(--success-color);
+}
+
+.devToggle-status.devGranted {
+    color: #f59e0b;
+}
+
+.devToggle-status.free {
+    color: var(--text-muted);
 }
 
 .factories .factoryButton .cantBuy {
@@ -2029,6 +2192,25 @@ div.vis-color-picker input.vis-range {
     border-right: 1px solid var(--border-secondary);
     padding: 6px;
     background: var(--bg-secondary);
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-primary) transparent;
+}
+
+.factoryGrid-sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.factoryGrid-sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.factoryGrid-sidebar::-webkit-scrollbar-thumb {
+    background: var(--border-primary);
+    border-radius: 3px;
+}
+
+.factoryGrid-sidebar::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-primary);
 }
 
 .factoryGrid-main {
@@ -2888,6 +3070,10 @@ div.vis-color-picker input.vis-range {
     background-color: rgba(52, 211, 153, 0.1);
 }
 
+#areasLayer {
+    z-index: 20;
+}
+
 #areasLayer .mapBuyArea {
     background-color: var(--bg-primary);
     opacity: 0.5;
@@ -2931,6 +3117,25 @@ div.vis-color-picker input.vis-range {
     flex: 1;
     overflow-y: auto;
     overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-primary) transparent;
+}
+
+.componentsBox .componentsList::-webkit-scrollbar {
+    width: 6px;
+}
+
+.componentsBox .componentsList::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.componentsBox .componentsList::-webkit-scrollbar-thumb {
+    background: var(--border-primary);
+    border-radius: 3px;
+}
+
+.componentsBox .componentsList::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-primary);
     display: flex;
     flex-direction: column;
     gap: 2px;
@@ -3252,12 +3457,14 @@ div.vis-color-picker input.vis-range {
     background-color: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
+    z-index: 1000;
 }
 
 .alert {
     width: 300px;
     margin: 0 auto 0 auto;
     position: absolute;
+    z-index: 1001;
     border-radius: var(--radius-lg);
     padding: 20px;
     color: var(--text-primary);
@@ -3309,12 +3516,14 @@ div.vis-color-picker input.vis-range {
     background-color: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
+    z-index: 1000;
 }
 
 .confirm {
     width: 300px;
     margin: 0 auto 0 auto;
     position: absolute;
+    z-index: 1001;
     border-radius: var(--radius-lg);
     padding: 20px;
     color: var(--text-primary);

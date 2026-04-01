@@ -28,7 +28,7 @@ export default class PurchasesUi {
 
         // Base context
         const context = {
-            mainSiteVersion: site === "localhost2" || site === "direct"
+            mainSiteVersion: site === "localhost" || site === "direct"
         };
 
         // Build product sections

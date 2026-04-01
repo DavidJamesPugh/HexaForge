@@ -14,7 +14,7 @@ export default class FactoryCalculator {
   calculate() {
     if (!this.cachesOk) this.buildCaches();
 
-    const result = { runningCosts: 0, resourceCosts: 0, resourceSales: 0, researchProduction: 0, profit: 0 };
+    const result = { runningCosts: 0, resourceCosts: 0, resourceSales: 0, researchProduction: 0, profit: 0, unrestChange: 0, influenceChange: 0 };
 
     if (this.factory.getIsPaused()) {
       result.isPaused = true;

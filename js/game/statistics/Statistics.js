@@ -14,27 +14,27 @@ export default class Statistics {
         this.gameCollector = new StatisticsCollector({
             max_values_length: 80,
             sample_interval: 10,
-            fields: ["profit", "researchProduction"]
+            fields: ["profit", "researchProduction", "unrestChange", "influenceChange"]
         });
 
         for (const factory of this.game.getMeta().factories) {
             this.factoryCollectors[factory.id] = new StatisticsCollector({
                 max_values_length: 80,
                 sample_interval: 10,
-                fields: ["profit", "researchProduction"]
+                fields: ["profit", "researchProduction", "unrestChange", "influenceChange"]
             });
         }
     }
 
     init() {
         this.game.getEventManager().addListener("Statistics", GameEvent.GAME_TICK, (tickData) => {
-            let data = { profit: tickData.profit, researchProduction: tickData.researchProduction };
+            let data = { profit: tickData.profit, researchProduction: tickData.researchProduction, unrestChange: tickData.unrestChange, influenceChange: tickData.influenceChange };
             this.gameCollector.handleInput(data);
 
             for (const factory of this.game.getMeta().factories) {
                 const result = tickData.factory_results[factory.id];
                 if (result && !result.isPaused) {
-                    data = { profit: result.profit, researchProduction: result.researchProduction };
+                    data = { profit: result.profit, researchProduction: result.researchProduction, unrestChange: result.unrestChange || 0, influenceChange: result.influenceChange || 0 };
                     this.factoryCollectors[factory.id].handleInput(data);
                 }
             }

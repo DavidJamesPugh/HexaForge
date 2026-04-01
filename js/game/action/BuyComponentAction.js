@@ -8,11 +8,13 @@ export default class BuyComponentAction {
   }
 
   static possibleToBuy(factory, componentMeta) {
-    return !componentMeta.requiresResearch || 
+    return factory.getGame().isDevMode ||
+           !componentMeta.requiresResearch || 
            factory.getGame().getResearchManager().getResearch(componentMeta.requiresResearch) > 0;
   }
 
   canBuy() {
+    const isDevMode = this.factory.getGame().isDevMode;
     return (
       this.factory.isPossibleToBuildOnTypeWithSize(
         this.tile.getX(),
@@ -21,14 +23,14 @@ export default class BuyComponentAction {
         this.componentMeta.height,
         this.componentMeta
       ) &&
-      !(this.componentMeta.price > this.factory.getGame().getMoney()) &&
+      (isDevMode || !(this.componentMeta.price > this.factory.getGame().getMoney())) &&
       BuyComponentAction.possibleToBuy(this.factory, this.componentMeta) &&
-      this.factory.getAreasManager().canBuildAt(
+      (isDevMode || this.factory.getAreasManager().canBuildAt(
         this.tile.getX(),
         this.tile.getY(),
         this.componentMeta.width,
         this.componentMeta.height
-      )
+      ))
     );
   }
 

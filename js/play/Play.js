@@ -50,7 +50,7 @@ export default class Play {
   }
 
   isDevMode() {
-    return UrlHandler.identifySite() === "localhost2";
+    return UrlHandler.identifySite() === "localhost";
   }
 
   async init(isDevMode = false, onReady = () => {}) {

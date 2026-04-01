@@ -11,7 +11,7 @@ export default {
       redSelection: "mouse/red.png",
       blueSelection: "mouse/selected.png",
       cantPlace: "mouse/cantPlace.png",
-      terrains: "terrains.png",
+      terrains: "terrains1.png",
       components: "components.png",
       componentIcons: "componentIcons.png",
       transportLine: "transportLine.png",

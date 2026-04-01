@@ -26,7 +26,6 @@ export default class GameUi {
         this.imageMap = imageMap;
         this.focusInterval = null;
         this.currentUi = null;
-        this.game.setIsPremium(this.game.isDevMode || this.game.isPremium);
     }
 
     display(container) {
@@ -35,7 +34,7 @@ export default class GameUi {
         this.container = container;
         this.setupEvents();
 
-        this.helpUi = new HelpUi().init();
+        this.helpUi = new HelpUi(this.game).init();
         this.purchasesUi = new PurchasesUi(this.play).init();
         this.settingsUi = new SettingsUi(this.play, this.game, this.play.getUserHash(), this.play.getSaveManager()).init();
         this.timeTravelUi = new TimeTravelUi(this.play).init();
@@ -81,7 +80,7 @@ export default class GameUi {
                 this.currentUi = new FactoryUi(this.game.getFactory(factoryId), this.play, this.imageMap);
                 break;
             case "factories":
-                this.currentUi = new FactoriesUi(this.game);
+                this.currentUi = new FactoriesUi(this.game, this.imageMap);
                 break;
             case "research":
                 this.currentUi = new ResearchUi(this.game);

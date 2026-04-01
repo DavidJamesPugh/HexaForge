@@ -94,8 +94,60 @@ export default class MainUi {
             }
         });
 
+        // Dev mode toggle (only on localhost)
+        if (this.play.isDevMode()) {
+            this._createDevToggle();
+        }
+
         // Show main game UI by default
         this._showUi("mainGame");
+    }
+
+    _createDevToggle() {
+        const game = this.play.getGame();
+
+        this.devToggle = document.createElement("div");
+        this.devToggle.className = "devModeToggle";
+        this.devToggle.innerHTML = `
+            <div class="devToggle-row">
+                <span class="devToggle-indicator"></span>
+                <span class="devToggle-label"></span>
+            </div>
+            <div class="devToggle-status"></div>
+        `;
+        this.devToggle.addEventListener("click", () => {
+            game.isDevMode = !game.isDevMode;
+            this._updateDevToggle();
+            setTimeout(() => this._showUi("mainGame"), 0);
+        });
+        document.body.appendChild(this.devToggle);
+        this._updateDevToggle();
+    }
+
+    _updateDevToggle() {
+        const game = this.play.getGame();
+        const devOn = game.isDevMode;
+        const hasPurchase = game.isPremium;
+
+        this.devToggle.classList.toggle("active", devOn);
+
+        const label = this.devToggle.querySelector(".devToggle-label");
+        label.textContent = devOn ? "DEV MODE" : "DEV OFF";
+
+        const indicator = this.devToggle.querySelector(".devToggle-indicator");
+        indicator.classList.toggle("on", devOn);
+
+        const status = this.devToggle.querySelector(".devToggle-status");
+        if (hasPurchase) {
+            status.textContent = "PREMIUM (purchased)";
+            status.className = "devToggle-status purchased";
+        } else if (devOn) {
+            status.textContent = "PREMIUM (dev)";
+            status.className = "devToggle-status devGranted";
+        } else {
+            status.textContent = "FREE";
+            status.className = "devToggle-status free";
+        }
     }
 
     _showUi(type, mission) {
@@ -118,6 +170,10 @@ export default class MainUi {
         this.runningInBackgroundInfoUi.destroy();
         this.globalUiEm.removeListenerForType("MainUi");
         this.play.getGame().getEventManager().removeListenerForType("MainUi");
+        if (this.devToggle) {
+            this.devToggle.remove();
+            this.devToggle = null;
+        }
         this.container = null;
         clearInterval(this.focusInterval);
     }

@@ -159,7 +159,7 @@ const scale = (base, exponent) => base * Math.pow(1000, exponent);
                     price: 100,
                     priceRefund: 1,
                     requiresResearch: null,
-                    strategy: { type: "seller", resources: { iron: { amount: 2, sellPrice: 2.5, sellMargin: 0 } }, interval: 10 },
+                    strategy: { type: "seller", sellerType: "local", unrestPerSale: -1, resources: { iron: { amount: 2, sellPrice: 2.5, sellMargin: 0 } }, interval: 10 },
                 },
                 {
                     id: "coalBuyer",
@@ -207,7 +207,7 @@ const scale = (base, exponent) => base * Math.pow(1000, exponent);
                     price: 1500,
                     priceRefund: 1,
                     requiresResearch: "steelComponents",
-                    strategy: { type: "seller", resources: { steel: { amount: 2, sellPrice: 0, sellMargin: 0.6 } }, interval: 10 },
+                    strategy: { type: "seller", sellerType: "local", unrestPerSale: -2, resources: { steel: { amount: 2, sellPrice: 0, sellMargin: 0.6 } }, interval: 10 },
                 },
                 {
                     id: "oilBuyer",
@@ -278,7 +278,7 @@ const scale = (base, exponent) => base * Math.pow(1000, exponent);
                     price: 18e4,
                     priceRefund: 1,
                     requiresResearch: "plasticComponents",
-                    strategy: { type: "seller", resources: { plastic: { amount: 1, sellPrice: 0, sellMargin: 0.6 } }, interval: 10 },
+                    strategy: { type: "seller", sellerType: "export", influencePerSale: 1, resources: { plastic: { amount: 1, sellPrice: 0, sellMargin: 0.6 } }, interval: 10 },
                 },
                 {
                     id: "siliconBuyer",
@@ -333,7 +333,7 @@ const scale = (base, exponent) => base * Math.pow(1000, exponent);
                     price: scale(80, 2),
                     priceRefund: 1,
                     requiresResearch: "electronicsComponents",
-                    strategy: { type: "seller", resources: { electronics: { amount: 1, sellPrice: 0, sellMargin: 2.1 } }, interval: 10 },
+                    strategy: { type: "seller", sellerType: "export", influencePerSale: 3, resources: { electronics: { amount: 1, sellPrice: 0, sellMargin: 2.1 } }, interval: 10 },
                 },
                 {
                     id: "explosivesBuyer",
@@ -397,7 +397,7 @@ const scale = (base, exponent) => base * Math.pow(1000, exponent);
                     price: scale(400, 2),
                     priceRefund: 1,
                     requiresResearch: "gunComponents",
-                    strategy: { type: "seller", resources: { guns: { amount: 2, sellPrice: 0, sellMargin: 2.1 } }, interval: 20 },
+                    strategy: { type: "seller", sellerType: "military", unrestPerSale: 5, resources: { guns: { amount: 2, sellPrice: 0, sellMargin: 2.1 } }, interval: 20 },
                 },
                 {
                     id: "aluminiumBuyer",
@@ -452,7 +452,7 @@ const scale = (base, exponent) => base * Math.pow(1000, exponent);
                     price: scale(8, 3),
                     priceRefund: 1,
                     requiresResearch: "engineComponents",
-                    strategy: { type: "seller", resources: { engine: { amount: 1, sellPrice: 0, sellMargin: 2.1 } }, interval: 10 },
+                    strategy: { type: "seller", sellerType: "export", influencePerSale: 5, resources: { engine: { amount: 1, sellPrice: 0, sellMargin: 2.1 } }, interval: 10 },
                 },
                 {
                     id: "tankHullMaker",
@@ -530,6 +530,8 @@ const scale = (base, exponent) => base * Math.pow(1000, exponent);
                     requiresResearch: "tankComponents",
                     strategy: {
                         type: "seller",
+                        sellerType: "military",
+                        unrestPerSale: 20,
                         resources: {
                             tank: { amount: 1, sellPrice: 0, sellMargin: 2.1 },
                             diesel: { amount: 8, sellPrice: 0, sellMargin: 2.6, bonus: !0, requiresResearch: "dieselRefinery" },
@@ -708,6 +710,8 @@ const scale = (base, exponent) => base * Math.pow(1000, exponent);
                     requiresResearch: "droneComponents",
                     strategy: {
                         type: "seller",
+                        sellerType: "military",
+                        unrestPerSale: 50,
                         resources: {
                             drone: { amount: 4, sellPrice: 0, sellMargin: 1.9 },
                             droneControlRoom: { amount: 2, sellPrice: 0, sellMargin: 1.9 },

@@ -31,7 +31,6 @@ class OverviewUi {
 
   update() {
     if (!this.container) return;
-    // Update money and research points
     const { game, statistics, factory, container } = this;
     const money = this.container.querySelector('#money');
     money.textContent = numberFormat.formatNumber(this.game.getMoney());
@@ -39,6 +38,11 @@ class OverviewUi {
     if (research && game.getResearchPoints()) {
       research.textContent = numberFormat.formatNumber(game.getResearchPoints());
     }
+
+    const unrestEl = container.querySelector('#unrest');
+    if (unrestEl) unrestEl.textContent = numberFormat.formatNumber(game.getUnrest());
+    const influenceEl = container.querySelector('#influence');
+    if (influenceEl) influenceEl.textContent = numberFormat.formatNumber(game.getInfluence());
 
     // Income
     const avgProfit = statistics.getFactoryAvgProfit(factory.getMeta().id);

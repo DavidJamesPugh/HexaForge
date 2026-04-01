@@ -53,7 +53,7 @@ export default class MenuUi {
 
         visibilityMap.forEach(({ selector, achievement }) => {
             const achievementObj = achievementsManager.isAchievementUnlocked(achievement);
-            this.toggleVisibility(selector, achievementObj);
+            this.toggleVisibility(selector, achievementObj || this.game.isDevMode);
         })
 
     }

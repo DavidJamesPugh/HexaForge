@@ -3,8 +3,8 @@ const products =
       timeTravelTicketValue: 3,
       layout: {
         specials: ["researchproduction", "researchproduction2", "extraticks", "extraprofit"],
-        bonusTicks: ["bonusticks1", "bonusticks2", "bonusticks3", "bonusticks4", "bonusticks5"],
-        timeTravelTickets: ["timetravel1", "timetravel2", "timetravel3", "timetravel4", "timetravel5"],
+        bonusTicks: ["bonusticks1", "bonusticks2"],
+        timeTravelTickets: ["timetravel1", "timetravel2"],
       },
       items: [
         { id: "bonusticks1", idNum: 1, name: "80 000 bonus ticks", description: "Getting there faster", consumable: true, strategy: { type: "bonusTicks", amount: 80000 }, priceStr: { local: "1u", web: "$2.99", kongregate: "25 Kreds" } },

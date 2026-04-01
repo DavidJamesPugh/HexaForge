@@ -30,8 +30,11 @@ class MouseLayer {
     
     Object.assign(this.element.style, {
       position: "absolute",
+      left: "0px",
+      top: "0px",
       width: `${this.tilesX * this.tileSize}px`,
-      height: `${this.tilesY * this.tileSize}px`
+      height: `${this.tilesY * this.tileSize}px`,
+      zIndex: "10"
     });
     this.container.append(this.element);
 
