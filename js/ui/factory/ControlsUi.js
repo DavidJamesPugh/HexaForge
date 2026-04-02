@@ -68,9 +68,26 @@ export default class ControlsUi {
     updateBonusTicksValue() {
         const span = this.bonusTicks.querySelector("span");
         if(span){
-            span.textContent = numberFormat.formatNumber(this.game.getTicker().getBonusTicks());
+            const ticker = this.game.getTicker();
+            const ticks = ticker.getBonusTicks();
+            const ticksPerSec = ticker.getTicksPerSec();
+            const totalSeconds = Math.floor(ticks / ticksPerSec);
+            const timeStr = this._formatTime(totalSeconds);
+            span.textContent = `${numberFormat.formatNumber(ticks)} (${timeStr})`;
         }
         this.updateControlButtons();
+    }
+
+    _formatTime(totalSeconds) {
+        if (totalSeconds < 60) return `${totalSeconds}s`;
+        if (totalSeconds < 3600) {
+            const m = Math.floor(totalSeconds / 60);
+            const s = totalSeconds % 60;
+            return s > 0 ? `${m}m ${s}s` : `${m}m`;
+        }
+        const h = Math.floor(totalSeconds / 3600);
+        const m = Math.floor((totalSeconds % 3600) / 60);
+        return m > 0 ? `${h}h ${m}m` : `${h}h`;
     }
 
     display(container) {

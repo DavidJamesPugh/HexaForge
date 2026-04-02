@@ -2,6 +2,7 @@ import ResourceIntake from "./helper/ResourceIntake";
 import ResourceOutput from "./helper/ResourceOutput";
 import DelayedAction from "./helper/DelayedAction";
 import { lcFirst } from "/js/utils/stringHelpers.js";
+import { arrayToHumanStr } from "/js/utils/arrayHelpers.js";
 
 export default class Lab {
     constructor(component, meta) {

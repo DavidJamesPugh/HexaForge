@@ -10,7 +10,9 @@ const GlobalUiEvent = {
     SHOW_TIME_TRAVEL: "SHOW_TIME_TRAVEL",
     SHOW_PURCHASES: "SHOW_PURCHASES",
     SHOW_HELP: "SHOW_HELP",
-    OPEN_SCREENSHOT_VIEW: "SHOW_SCREENSHOT_VIEW"
+    OPEN_SCREENSHOT_VIEW: "SHOW_SCREENSHOT_VIEW",
+    /** Dev: factory map tile x,y overlay visibility changed (toggle in MainUi). */
+    TILE_COORDS_CHANGED: "TILE_COORDS_CHANGED"
 
   };
   

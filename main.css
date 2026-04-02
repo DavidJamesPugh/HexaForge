@@ -84,6 +84,8 @@
     background: var(--bg-panel-solid);
     scrollbar-width: thin;
     scrollbar-color: var(--border-primary) transparent;
+    box-sizing: border-box;
+    padding: 20px 22px 24px 24px;
 }
 
 .drawer-panel::-webkit-scrollbar {
@@ -101,15 +103,16 @@
 
 .drawer-panel::-webkit-scrollbar-thumb:hover {
     background: var(--accent-primary);
-    box-shadow: -8px 0 32px rgba(0, 0, 0, 0.5);
-    margin: 0;
-    padding: 24px;
-    color: var(--text-primary);
-    font-family: var(--font-primary);
 }
 
 .drawer-panel.drawer-open {
     transform: translateX(0);
+}
+
+/* Full-height drawers for in-game panels (research, upgrades, achievements, stats) */
+.drawer-panel.drawer-panel-game {
+    width: var(--drawer-width-lg);
+    max-width: min(840px, calc(100vw - 48px));
 }
 
 .drawer-panel .drawer-header {
@@ -1936,6 +1939,12 @@ div.vis-color-picker input.vis-range {
     box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.3), 0 0 6px rgba(56, 189, 248, 0.15);
 }
 
+.factories .factoryButton .factoryPreview.locked {
+    background: var(--bg-tertiary) url('img/previewLock.png') no-repeat center center;
+    background-size: 24px 24px;
+    opacity: 0.4;
+}
+
 .factories .factoryButton .name {
     text-align: center;
     padding-top: 4px;
@@ -1999,11 +2008,18 @@ div.vis-color-picker input.vis-range {
     letter-spacing: 0.08em;
 }
 
-.devModeToggle {
+.devToolsBar {
     position: fixed;
     bottom: 12px;
     right: 12px;
     z-index: 9999;
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    align-items: flex-end;
+}
+
+.devModeToggle {
     padding: 8px 14px;
     border-radius: var(--radius-md);
     font-family: var(--font-primary);
@@ -2026,6 +2042,32 @@ div.vis-color-picker input.vis-range {
 }
 
 .devModeToggle.active:hover {
+    opacity: 1;
+}
+
+.devTileCoordsToggle {
+    padding: 8px 12px;
+    border-radius: var(--radius-md);
+    font-family: var(--font-primary);
+    cursor: pointer;
+    border: 1px solid var(--border-primary);
+    background: var(--bg-secondary);
+    opacity: 0.5;
+    transition: opacity var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast);
+    min-width: 72px;
+}
+
+.devTileCoordsToggle:hover {
+    opacity: 1;
+}
+
+.devTileCoordsToggle.active {
+    border-color: #38bdf8;
+    background: rgba(56, 189, 248, 0.1);
+    opacity: 0.9;
+}
+
+.devTileCoordsToggle.active:hover {
     opacity: 1;
 }
 
@@ -2250,6 +2292,19 @@ div.vis-color-picker input.vis-range {
     flex-wrap: wrap;
 }
 
+.statusBar-factoryName {
+    flex: 0 1 auto;
+    max-width: min(280px, 40vw);
+    padding: 2px 8px 2px 4px;
+    font-size: 1.05em;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .statusBar-group {
     display: flex;
     flex-direction: column;
@@ -2295,13 +2350,35 @@ div.vis-color-picker input.vis-range {
 #help {
     width: var(--drawer-width-lg);
     font-size: 0.9em;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+}
+
+/* Two columns: nav | article (FAQ and all topics), one row below the header */
+#help .help-two-col {
+    display: grid;
+    grid-template-columns: 200px minmax(0, 1fr);
+    grid-template-rows: 1fr;
+    align-items: start;
+    column-gap: 20px;
+    flex: 1 1 auto;
+    min-height: 0;
+    min-width: 0;
 }
 
 #help .menu {
-    width: 200px;
-    float: left;
-    padding: 0 15px 0 0;
+    grid-column: 1;
+    width: auto;
+    float: none;
+    padding: 0 12px 0 0;
     border-right: 1px solid var(--border-secondary);
+}
+
+#help .help-content {
+    grid-column: 2;
+    min-width: 0;
 }
 
 #help .menu a {
@@ -2322,12 +2399,14 @@ div.vis-color-picker input.vis-range {
 }
 
 #help .section {
-    width: 580px;
-    float: right;
-    margin: 0 5px 0 5px;
+    width: auto;
+    max-width: 100%;
+    float: none;
+    margin: 0;
     display: none;
     color: var(--text-secondary);
     line-height: 1.6;
+    min-width: 0;
 }
 
 #help .title {
@@ -2504,7 +2583,7 @@ div.vis-color-picker input.vis-range {
 }
 
 #purchases .timeTravelTable {
-    width: 400px;
+    width: 370px;
     float: left;
 }
 
@@ -3070,11 +3149,14 @@ div.vis-color-picker input.vis-range {
     background-color: rgba(52, 211, 153, 0.1);
 }
 
+/* Below MouseLayer (z-index 25 in JS) so panes/sell/buy hit the mouse layer first.
+   Area purchase is handled via FactoryEvent.ATTEMPT_AREA_PURCHASE from MouseLayer. */
 #areasLayer {
-    z-index: 20;
+    z-index: 14;
 }
 
 #areasLayer .mapBuyArea {
+    pointer-events: none;
     background-color: var(--bg-primary);
     opacity: 0.5;
     position: absolute;

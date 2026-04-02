@@ -106,6 +106,9 @@ export default class MainUi {
     _createDevToggle() {
         const game = this.play.getGame();
 
+        this.devToolsBar = document.createElement("div");
+        this.devToolsBar.className = "devToolsBar";
+
         this.devToggle = document.createElement("div");
         this.devToggle.className = "devModeToggle";
         this.devToggle.innerHTML = `
@@ -120,8 +123,38 @@ export default class MainUi {
             this._updateDevToggle();
             setTimeout(() => this._showUi("mainGame"), 0);
         });
-        document.body.appendChild(this.devToggle);
+
+        this.tileCoordsToggle = document.createElement("div");
+        this.tileCoordsToggle.className = "devTileCoordsToggle";
+        this.tileCoordsToggle.title = "Show or hide tile x,y labels on the factory map";
+        this.tileCoordsToggle.innerHTML = `
+            <div class="devToggle-row">
+                <span class="devToggle-indicator"></span>
+                <span class="devToggle-label"></span>
+            </div>
+        `;
+        this.tileCoordsToggle.addEventListener("click", (e) => {
+            e.stopPropagation();
+            game.showTileCoords = !game.showTileCoords;
+            this._updateTileCoordsToggle();
+            this.globalUiEm.invokeEvent(GlobalUiEvent.TILE_COORDS_CHANGED);
+        });
+
+        this.devToolsBar.append(this.devToggle, this.tileCoordsToggle);
+        document.body.appendChild(this.devToolsBar);
         this._updateDevToggle();
+        this._updateTileCoordsToggle();
+    }
+
+    _updateTileCoordsToggle() {
+        if (!this.tileCoordsToggle) return;
+        const game = this.play.getGame();
+        const on = game.showTileCoords;
+        this.tileCoordsToggle.classList.toggle("active", on);
+        const label = this.tileCoordsToggle.querySelector(".devToggle-label");
+        label.textContent = on ? "XY ON" : "XY OFF";
+        const indicator = this.tileCoordsToggle.querySelector(".devToggle-indicator");
+        indicator.classList.toggle("on", on);
     }
 
     _updateDevToggle() {
@@ -170,9 +203,11 @@ export default class MainUi {
         this.runningInBackgroundInfoUi.destroy();
         this.globalUiEm.removeListenerForType("MainUi");
         this.play.getGame().getEventManager().removeListenerForType("MainUi");
-        if (this.devToggle) {
-            this.devToggle.remove();
+        if (this.devToolsBar) {
+            this.devToolsBar.remove();
+            this.devToolsBar = null;
             this.devToggle = null;
+            this.tileCoordsToggle = null;
         }
         this.container = null;
         clearInterval(this.focusInterval);

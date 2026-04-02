@@ -58,7 +58,7 @@ export default class HelpUi {
       this.helpBg.addEventListener("click", () => this.hide());
     }
 
-    this.helpElement.style.display = "block";
+    this.helpElement.style.display = "";
     if (this.helpBg) this.helpBg.style.display = "block";
 
     requestAnimationFrame(() => {

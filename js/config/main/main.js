@@ -12,7 +12,7 @@ export default {
   id: 0,
   name: "Main idle",
   version: 1,
-  startingMoney: 2000,
+  startingMoney: 1000,
   minNegativeMoney: -10000,
   startingResearchPoints: 0,
   startingUnrest: 0,

@@ -10,6 +10,8 @@ const GameUiEvent = {
         SHOW_PURCHASES: "SHOW_PURCHASES",
         SHOW_SETTINGS: "SHOW_SETTINGS",
         SHOW_TIME_TRAVEL: "SHOW_TIME_TRAVEL",
+        /** Close the research/upgrades/achievements/statistics drawer overlay (factory view stays). */
+        CLOSE_GAME_DRAWER: "CLOSE_GAME_DRAWER",
     GAME_TICK: "GAME_TICK",
     MONEY_UPDATED: "MONEY_UPDATED",
     RESEARCH_POINTS_UPDATED: "RESEARCH_POINTS_UPDATED",

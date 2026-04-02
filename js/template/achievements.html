@@ -1,4 +1,10 @@
-<div class="achievementsBox"> <span class="backButton" id="backToReactor">Back to factory</span> <br /> {{#each achievements}} {{#if changeGroup}} <br style="clear:left" /><br /> {{/if}} <div class="item" data-id="{{id}}">
+<div id="achievementsBg" class="drawer-bg"></div>
+<div id="achievementsDrawer" class="drawer-panel drawer-panel-game">
+  <div class="drawer-header">
+    <span class="drawer-title">Achievements</span>
+    <a href="javascript:void(0);" class="drawer-close closeButton">&times;</a>
+  </div>
+  <div class="achievementsBox"> {{#each achievements}} {{#if changeGroup}} <br style="clear:left" /><br /> {{/if}} <div class="item" data-id="{{id}}">
     
         <div class="achievementIcon">
             <div class="icon {{icon}}" style="float:left;{{iconStyle}}"></div>
@@ -7,3 +13,4 @@
         <div class="name"> {{name}} </div> <br />
         <div class="requirements"> {{{requirements}}} </div>
     </div> {{/each}}</div>
+</div>

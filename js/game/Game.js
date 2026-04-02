@@ -23,6 +23,8 @@ export default class Game {
     this.em = GameContext.gameUiBus;
     this.factories = {};
     this.isDevMode = isDevMode;
+    /** Dev: show/hide factory map tile coordinate overlay (MainUi toggle). */
+    this.showTileCoords = Boolean(isDevMode);
 
     for (const key in meta.factories) {
       const f = meta.factories[key];

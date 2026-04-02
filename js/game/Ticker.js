@@ -34,7 +34,6 @@ export default class Ticker {
         this.game.getEventManager().addListener("Ticker", GameEvent.BLUR, () => this.startBackgroundModeTimer());
         this.game.getEventManager().addListener("Ticker", GameEvent.RESEARCH_BOUGHT, () => this.updateInterval());
 
-        logger.info("Ticker", `Ticker initialized for game ${this.game.getMeta()?.id}`);
         this.benchmarker.init();
         return this;
     }
@@ -148,7 +147,6 @@ export default class Ticker {
 
     addOfflineGains() {
         const gains = this.calculateOfflineGains();
-        logger.info("Ticker", `Bonus ticks gained: ${gains}`);
         this.addBonusTicks(gains);
     }
 

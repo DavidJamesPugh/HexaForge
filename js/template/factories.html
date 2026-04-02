@@ -8,7 +8,7 @@
         <span class="statusBar-label">Total Income</span>
         <span class="money statusBar-value">$<b id="incomeValue">{{income}}</b><span class="statusBar-unit">/tick</span></span>
     </div>
-    <div class="statusBar-divider"></div>
+    <!-- <div class="statusBar-divider"></div>
     <div class="statusBar-group">
         <span class="statusBar-label">Unrest</span>
         <span class="unrest statusBar-value"><b id="unrestValue">0</b></span>
@@ -17,7 +17,7 @@
     <div class="statusBar-group">
         <span class="statusBar-label">Influence</span>
         <span class="influence statusBar-value"><b id="influenceValue">0</b></span>
-    </div>
+    </div> -->
     {{#if researchBought}}
     <div class="statusBar-divider"></div>
     <div class="statusBar-group">
@@ -36,9 +36,9 @@
         <span class="statusBar-value ticks"><span id="ticks"></span><span class="statusBar-unit"> t/s</span></span>
     </div>
     <div style="flex:1"></div>
-    <div class="statusBar-group">
+    <!-- <div class="statusBar-group">
         <span class="statusBar-label" style="color: var(--text-secondary)">Expand your empire!</span>
-    </div>
+    </div> -->
 </div>
 <div id="factorySelection" class="factories"> {{#each factories}} <div class="factoryButton {{design}}"
         data-id="{{id}}">

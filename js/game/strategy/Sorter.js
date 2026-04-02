@@ -21,6 +21,10 @@ export default class Sorter {
     this.producer.finished = this.finishedSorting.bind(this);
   }
 
+  static getMetaDescriptionData(meta, factory) {
+    return {};
+  }
+
   clearContents() {
     this.inputTileIndex = 0;
     this.inItem = null;

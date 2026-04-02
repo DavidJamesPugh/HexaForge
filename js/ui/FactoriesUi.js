@@ -3,6 +3,7 @@ import factoriesTemplateHtml from "../template/factories.html?raw";
 import AlertUi from "./helper/AlertUi.js";
 import BuyFactoryAction from "../game/action/BuyFactoryAction.js";
 import GameUiEvent from "../config/event/GameUiEvent.js";
+import GameEvent from "../config/event/GameEvent.js";
 import GlobalUiEvent from "../config/event/GlobalUiEvent.js";
 import GameContext from "../base/GameContext.js";
 import GlobalUiBus from "../base/GlobalUiBus.js";
@@ -72,8 +73,7 @@ export default class FactoriesUi {
 
         this._renderPreviews();
 
-        // Listen for game ticks to update UI
-        this.game.getEventManager().addListener("factoriesUi", GameUiEvent.GAME_TICK, () => this.update());
+        this.game.getEventManager().addListener("factoriesUi", GameEvent.GAME_TICK, () => this.update());
 
         this.update();
 
@@ -87,11 +87,15 @@ export default class FactoriesUi {
 
         for (const meta of factoriesMeta) {
             const factory = this.game.getFactory(meta.id);
-            const showPreview = factory.getIsBought() || this.game.isDevMode;
-            if (!showPreview) continue;
-
             const el = this.container.querySelector(`.factoryPreview[data-id="${meta.id}"]`);
             if (!el) continue;
+
+            const isBought = factory.getIsBought();
+
+            if (!isBought && !this.game.isDevMode) {
+                el.classList.add("locked");
+                continue;
+            }
 
             const tempContainer = document.createElement("div");
             const bgLayer = new BackgroundLayer(this.imageMap, factory, { tileSize });
@@ -106,7 +110,7 @@ export default class FactoriesUi {
             const ctx = thumb.getContext("2d");
             ctx.drawImage(bgCanvas, 0, 0);
 
-            if (factory.getIsBought()) {
+            if (isBought) {
                 const compSprite = this.imageMap.getImage("components");
                 if (compSprite) {
                     for (const tile of factory.getTiles()) {
@@ -146,21 +150,37 @@ export default class FactoriesUi {
 
 
         const avgProfit = this.statistics.getAvgProfit();
-
-        this.updateText("#incomeValue", avgProfit ? NumberFormat.formatNumber(avgProfit) : " ? ");
+        this.updateText(
+            "#incomeValue",
+            avgProfit == null || Number.isNaN(avgProfit) ? " ? " : NumberFormat.formatNumber(avgProfit)
+        );
 
         const avgResearch = this.statistics.getAvgResearchPointsProduction();
-        this.updateText("#researchIncome", avgResearch ? NumberFormat.formatNumber(avgResearch) : " ? ");
+        this.updateText(
+            "#researchIncome",
+            avgResearch == null || Number.isNaN(avgResearch) ? " ? " : NumberFormat.formatNumber(avgResearch)
+        );
 
-        this.container.querySelectorAll(".factoryButton").forEach(el => {
+        this.container.querySelectorAll(".factoryButton").forEach((el) => {
             const factoryId = el.getAttribute("data-id");
 
+            const incomeLine = el.querySelector(".textLine.money[data-key='income']");
             const avgIncome = this.statistics.getFactoryAvgProfit(factoryId);
-            this.updateText(".money[data-key='income']", avgIncome ? NumberFormat.formatNumberPlus(avgIncome) : " ? ");
+            if (incomeLine) {
+                incomeLine.textContent =
+                    avgIncome == null || Number.isNaN(avgIncome)
+                        ? " ? "
+                        : NumberFormat.formatNumberPlus(avgIncome);
+            }
 
-            // Research production
+            const researchLine = el.querySelector(".textLine.research[data-key='researchProduction']");
             const avgResearchPoints = this.statistics.getFactoryAvgResearchPointsProduction(factoryId);
-            this.updateText(".research[data-key='researchProduction']", avgResearchPoints ? NumberFormat.formatNumberPlus(avgResearchPoints) : " ? ");
+            if (researchLine) {
+                researchLine.textContent =
+                    avgResearchPoints == null || Number.isNaN(avgResearchPoints)
+                        ? " ? "
+                        : NumberFormat.formatNumberPlus(avgResearchPoints);
+            }
 
             // Buy button
             const canBuy = new BuyFactoryAction(this.game, factoryId).canBuy();

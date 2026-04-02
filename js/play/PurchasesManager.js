@@ -11,35 +11,35 @@ export default class PurchasesManager {
         apply: ({ amount }) => {
           this.game.getTicker().addBonusTicks(amount);
           this.game.setIsPremium(true);
-          logger.info("PurchasesManager", `Added ${amount} bonus ticks`);
+          logger.info("PM", `Added ${amount} bonus ticks`);
         },
       },
       timeTravelTickets: {
         apply: ({ amount }) => {
           this.game.getTicker().addTimeTravelTickets(amount);
           this.game.setIsPremium(true);
-          logger.info("PurchasesManager", `Added ${amount} time travel tickets`);
+          logger.info("PM", `Added ${amount} time travel tickets`);
         },
       },
       researchProductionBonus: {
         apply: ({ bonus }) => {
           this.game.setResearchProductionMultiplier(this.game.getResearchProductionMultiplier() * bonus);
           this.game.setIsPremium(true);
-          logger.info("PurchasesManager", "Set research production bonus");
+          logger.info("PM", "Set research production bonus");
         },
       },
       extraTicks: {
         apply: ({ bonus }) => {
           this.game.getTicker().setPurchaseBonusTicks(bonus);
           this.game.setIsPremium(true);
-          logger.info("PurchasesManager", "Set extra ticks");
+          logger.info("PM", "Set extra ticks");
         },
       },
       extraProfit: {
         apply: ({ bonus }) => {
           this.game.setProfitMultiplier(bonus);
           this.game.setIsPremium(true);
-          logger.info("PurchasesManager", "Set extra profit");
+          logger.info("PM", "Set extra profit");
         },
       },
     };
@@ -61,7 +61,7 @@ export default class PurchasesManager {
 
   loadPurchases(callback = () => {}) {
     this.play.getApi().loadPurchases((purchases) => {
-      logger.info("PurchasesManager", "Purchases loaded", purchases);
+      logger.info("PM", "Purchases loaded", purchases);
       this.handlePurchases(purchases);
       callback();
     });
@@ -88,28 +88,28 @@ export default class PurchasesManager {
   handlePurchase(purchase) {
     const product = this.play.getMeta().productsById[purchase.productId];
     if (!product) {
-      logger.warning("PurchasesManager", `Unknown product with id ${purchase.productId}`, purchase);
+      logger.warning("PM", `Unknown product with id ${purchase.productId}`, purchase);
       return;
     }
 
     const strategy = this.strategies[product.strategy.type];
     if (strategy) {
       strategy.apply(product.strategy);
-      logger.info("PurchasesManager", `Applied consumable strategy ${product.strategy.type} for purchase ${purchase.productId}`);
+      logger.info("PM", `Applied consumable strategy ${product.strategy.type} for purchase ${purchase.productId}`);
 
       if (product.consumable) {
         this.play.getSaveManager().saveAuto(() => {
           this.play.getApi().setConsumed(purchase.externalId, () => {
-            logger.info("PurchasesManager", `Purchase ${purchase.externalId} set to consumed`);
+            logger.info("PM", `Purchase ${purchase.externalId} set to consumed`);
           });
         });
       } else {
         this.unlocks[purchase.productId] = true;
-        logger.info("PurchasesManager", `Purchase unlocked ${purchase.productId} with external id ${purchase.externalId}`);
+        logger.info("PM", `Purchase unlocked ${purchase.productId} with external id ${purchase.externalId}`);
       }
     } else {
       logger.error(
-        "PurchasesManager",
+        "PM",
         `Invalid consumable strategy ${product.strategy.type} for purchase ${purchase.productId}. Could not handle purchase.`
       );
     }

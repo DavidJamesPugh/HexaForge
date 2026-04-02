@@ -1,5 +1,7 @@
 import FactoriesUi from "./FactoriesUi.js";
 import FactoryUi from "./FactoryUi.js";
+
+const DRAWER_TYPES = new Set(["research", "upgrades", "achievements", "statistics"]);
 import ResearchUi from "./ResearchUi.js";
 import UpgradesUi from "./UpgradesUi.js";
 import AchievementsUi from "./AchievementsUi.js";
@@ -26,6 +28,7 @@ export default class GameUi {
         this.imageMap = imageMap;
         this.focusInterval = null;
         this.currentUi = null;
+        this.drawerOverlayUi = null;
     }
 
     display(container) {
@@ -65,6 +68,8 @@ export default class GameUi {
         this.gameUiEm.addListener("GameUi", GameUiEvent.SHOW_ACHIEVEMENTS, () => this._showUi("achievements"));
         this.gameUiEm.addListener("GameUi", GameUiEvent.SHOW_STATISTICS, () => this._showUi("statistics", lastFactoryId));
 
+        this.gameUiEm.addListener("GameUi", GameUiEvent.CLOSE_GAME_DRAWER, () => this._closeDrawerOverlay());
+
         this.game.getEventManager().addListener("GameUi", GameEvent.ACHIEVEMENT_RECEIVED, (achievement) => {
             new AchievementPopupUi(this.game, achievement).display();
         });
@@ -74,6 +79,30 @@ export default class GameUi {
     }
 
     _showUi(type, factoryId) {
+        if (!DRAWER_TYPES.has(type)) {
+            this._closeDrawerOverlay();
+        }
+
+        if (DRAWER_TYPES.has(type) && this.currentUi instanceof FactoryUi) {
+            this._closeDrawerOverlay();
+            switch (type) {
+                case "research":
+                    this.drawerOverlayUi = new ResearchUi(this.game);
+                    break;
+                case "upgrades":
+                    this.drawerOverlayUi = new UpgradesUi(this.game.getFactory(factoryId));
+                    break;
+                case "achievements":
+                    this.drawerOverlayUi = new AchievementsUi(this.game);
+                    break;
+                case "statistics":
+                    this.drawerOverlayUi = new StatisticsUi(this.game.getFactory(factoryId), this.imageMap);
+                    break;
+            }
+            this.drawerOverlayUi.display();
+            return;
+        }
+
         this._destroyCurrentUi();
         switch (type) {
             case "factory":
@@ -99,7 +128,14 @@ export default class GameUi {
         this.currentUi?.display(this.container);
     }
 
+    _closeDrawerOverlay() {
+        if (!this.drawerOverlayUi) return;
+        this.drawerOverlayUi.destroy();
+        this.drawerOverlayUi = null;
+    }
+
     _destroyCurrentUi() {
+        this._closeDrawerOverlay();
         if (this.currentUi) {
             this.currentUi.destroy();
             this.currentUi = null;

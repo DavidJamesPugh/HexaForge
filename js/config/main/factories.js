@@ -1,95 +1,100 @@
 const factories = [
-        {
-            id: "level1",
-            idNum: 1,
-            name: "Workshop",
-            tilesX: 68,
-            tilesY: 38,
-            startX: 8,
-            startY: 10,
-            price: 100,
-            terrains: { G: "grass", X: "wall", ".": "road", " ": "floor" },
-            buildableTerrains: { floor: !0 },
-            terrainMap: 'XXXXXXXXXXXX.GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG.GGGGGGGGGG.GGGGGGGGGGX          X.XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXG.GXXXXXXXXX.XXXXXXXXXGX          X.X        X         X           XG.GX        .        XGX           .         X         X            G.G         .        XGX           .         X                      G.G       XX.XX      XGX          X.X        X                     XG.GX      XG.GX      XGX          X.X        X                     XG.GXXX XXXXG.GX      XGX          X.X      X XX X                  XG.GX      XXXXX      XGX           .       X    X      X           XG.GX                 XGXXXX    XXXX.X      X    X      X           XG.GX                 XG.............X      X    X      XXXXXXXXXXXXXG.GXXXXXXXXXX  XXX  XXGXXXX    XXXX.X      X    X      X...................................X          X.X      X    X      X.GGGGGGXXXXXXXXXXXXXXX.XX  XXX  XXXX          X.X                  X.GGGGGGX              .           XX          X.XXX   XXXXXXXXX   XX.GGGGGGX             X.X          XX          X......................GGGGGGXX           XX.XX         XX          X.XXX   XXXXXXXXX   XX.GGGGGGGX           XG.GX         XX     X    X.X                  X.GGGGGGXX           XX.XX         XX     X    X.X                  X.GGGGGGX              .           XX     X    X.X            X     X.GGGGGGX             X.X          XX     XXXXXX.X            X     X.GGGGGGXX           XX.XX         XX         XG.X            X     X.GGGGGGGX           XG.GX         XXX         G.             X     X.GGGGGGXX           XX.XX         XGX         G.             X     X.GGGGGGX              .           XGX         G.             X     X.XXXGXXX             X.X          XGX         G.             X     X.X XXX              XX.XX         XGX        XG.X                   .                   XG.GX         XGXXXX  XXXXG.X                   .                   XX.XX         XGGGGGGGGGGGG.XXXXXXXX   XXX   XXX.X                    .           X...................GGGGGGGGGGGGGG.X                    .           XGGGGX  XXXXG.XXXXX................X                    .           XGXXXX     XX.X   XXXX   XXX   XXX.X                    .           XGX          .       X           X.X                  XX.X          XGX          .                    .                   X..X          XGX          .                    .      XXXXXXXX     X.XX          XGX        XX.X      X            .      XGGGGGGX     X.X           XGXXXXXXXXXXG.X      X           X.XXXXXXXGGGGGGXXXXXXX.X           XGGGGGGGGGGGG.XXXXXXXXXXXXXXXXXXXX.GGGGGGGGGGGGGGGGGGGG.XXXXXXXXXXXXXG',
-buildMap: 'XXXXXXXXXXXX--------------------------------------------------------X          X-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX---XXXXXXXXXXXXXXXXXXX-X          X-X        X         X           X---X        -        X-X           -         X         X            ---         -        X-X           -         X                      ---       XXXXX      X-X          X-X        X                     X---X      XXXXX      X-X          X-X        X                     X---XXX XXXXXXXX      X-X          X-X      X XX X                  X---X      XXXXX      X-X           -       X    X      X           X---X                 X-XXXX    XXXX-X      X    X      X           X---X                 X--------------X      X    X      XXXXXXXXXXXXX---XXXXXXXXXX  XXX  XX-XXXX    XXXX-X      X    X      X-----------------------------------X          X-X      X    X      X-XXXXXXXXXXXXXXXXXXXXX-XX  XXX  XXXX          X-X                  X-XXXXXXX              -           XX          X-XXX   XXXXXXXXX   XX-XXXXXXX             X-X          XX          X----------------------XXXXXXXX           XX-XX         XX          X-XXX   XXXXXXXXX   XX-XXXXXXXX           XX-XX         XX     X    X-X                  X-XXXXXXXX           XX-XX         XX     X    X-X                  X-XXXXXXX              -           XX     X    X-X            X     X-XXXXXXX             X-X          XX     XXXXXX-X            X     X-XXXXXXXX           XX-XX         XX         XX-X            X     X-XXXXXXXX           XX-XX         XXX         --             X     X-XXXXXXXX           XX-XX         XXX         --             X     X-XXXXXXX              -           XXX         --             X     X-XXXXXXX             X-X          XXX         --             X     X-X XXX              XX-XX         XXX        X--X                   -                   XX-XX         XXXXXX  XXXX--X                   -                   XX-XX         X-------------XXXXXXXX   XXX   XXX-X                    -           X----------------------------------X                    -           XXXXXX  XXXXX-XXXXX----------------X                    -           XXXXXX     XX-X   XXXX   XXX   XXX-X                    -           XXX          -       X           X-X                  XX-X          XXX          -                    -                   X--X          XXX          -                    -      XXXXXXXX     X-XX          XXX        XX-X      X            -      XXXXXXXX     X-X           XXXXXXXXXXXXX-X      X           X-XXXXXXXXXXXXXXXXXXXX-X           XXXXXXXXXXXXX-XXXXXXXXXXXXXXXXXXXX----------------------XXXXXXXXXXXXX',
+    
+    {
+        id: "level8",
+        idNum: 8,
+        name: "Workshop",
+        tilesX: 60,
+        tilesY: 36,
+        startX: 15,
+        startY: 15,
+        price: 100,
+        terrains: { G: "grass", X: "wall", ".": "road", " ": "floor" },
+        buildableTerrains: { floor: !0 },
+        terrainMap: 'GGGXXXXXXXXXXXXGGXXXXXXXXXXXXXXXXG      G  XXXXXXXXXXXXXXXXXGGXX           GGX              XG     XG G                XGXX            GG                G     XG                  XXX             GG                G     XG G                XX              GG      X         G     XG                  XX              GG      X        XG  G  XG   GG   GG    GG  XX              GG      X        XG      G                  XX              GG      XXXXXX   XG   XXXG                  XGGG   GGGGGG   GG                G   XGGG                  XGGG   GGGGGG   GG                G   XG                    XX              GG               XG   XG      XX    XX      XX             XGGX              XG   XG       XXXXXX       XX            XXGGX              XG   XG       X    X       XXXXX        XXGGGXXX  XXXX  XXXXXG  XXGGG     X    X       XGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG                    XX                   XGGXXXXXGXXXXGXXXGG                    XX                   XGG             XGG                    XX                   XG              XGG  XX                XX                   XG              XGGGGGX   G    G    G  XXXX               XXXG      XXX XXX GGGGGGX   G    G    G  XGGX    GGGGG      XGGG      XGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGX     GGG       XGX       XGGGG         XXXX XXXX XXXX XXXGGX     GGG       XGX        GGG   X                       XGGGGGGGGGGGGGGGGGGGGXXXX     GGX   XXXXXXX                 XGGGGGGGGGGGGGGGGGGGGGGGX     GGX                           XXXXX XXXX XGGX        GX     GXX                           XX         XGGX        GX     GGG     G               GXXXXXXX         XGGX        G      GXX                           XX         XXXX        G      GGX                X          XX                     G      GGX                X          XX                     G      GGX                X          XX                     G      GGXX               X          XX                     GX    XGGGX               X          XX         XXXX        GX    XGGGX               X          XX         XGGX        GX    XGGGX               X          XXXXXXXXXXXXGGX        GXXXXXXGGGXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+buildMap: '---XXXXXXXXXXXX--XXXXXXXXXXXXXXXX-      -  XXXXXXXXXXXXXXXXX--XX           --X              X-     X- -                X-XX            --                -     X-                  XXX             --                -     X- -                XX              --      X         -     X-                  XX              --      X        X-  -  X-   --   --    --  XX              --      X        X-      -                  XX              --      XXXXXX   X-   XXX-                  X---   ------   --                -   X---                  X---   ------   --                -   X-                    XX              --               X-   X-      XX    XX      XX             X--X              X-   X-       XXXXXX       XX            XX--X              X-   X-       X    X       XXXXX        XX---XXX  XXXX  XXXXX-  XX---     X    X       X---------------------------------------                    XX                   X--XXXXX-XXXX-XXX--                    XX                   X--             X--                    XX                   X-              X--  XX                XX                   X-              X-----X   -    -    -  XXXX               XXX-      XXX XXX ------X   -    -    -  X--X    -----      X---      X------------------------------X--X     ---       X-X       X----         XXXX XXXX XXXX XXX--X     ---       X-X        ---   X                       X--------------------XXXX     --X   XXXXXXX                 X-----------------------X     --X                           XXXXX XXXX X--X        -X     -XX                           XX         X--X        -X     ---     -               -XXXXXXX         X--X        -      -XX                           XX         XXXX        -      --X                X          XX                     -      --X                X          XX                     -      --X                X          XX                     -      --XX               X          XX                     -X    X---X               X          XX         XXXX        -X    X---X               X          XX         X--X        -X    X---X               X          XXXXXXXXXXXX--X        -XXXXXX---XXXXXXXXXXXXXXXXXXXXXXXXXXXX',
 
-            areas: [
-                { id: "a2", name: "A2", idNum: 1, price: 1200, locations: [{ x: 0, y: 0, x2: 11, y2: 9 }] },
-                { id: "a4", name: "A4", idNum: 2, price: 25e4, locations: [{ x: 0, y: 11, x2: 11, y2: 27 }] },
-                { id: "a1", name: "A1", idNum: 3, price: 700, locations: [{ x: 0, y: 30, x2: 11, y2: 37 }] },
-                { id: "a5", name: "A5", idNum: 4, price: 26e6, locations: [{ x: 13, y: 1, x2: 32, y2: 14 }] },
-                { id: "a6", name: "A6", idNum: 5, price: 32e6, locations: [{ x: 33, y: 1, x2: 44, y2: 10 }] },
-                {
-                    id: "a3",
-                    name: "A3",
-                    idNum: 6,
-                    price: 12e3,
-                    locations: [
-                        { x: 13, y: 31, x2: 32, y2: 37 },
-                        { x: 13, y: 30, x2: 17, y2: 30 },
-                    ],
-                },
-                { id: "a7", name: "A7", idNum: 7, price: 14e7, locations: [{ x: 48, y: 1, x2: 66, y2: 10 }] },
-                {
-                    id: "a9",
-                    name: "A9",
-                    idNum: 8,
-                    price: 4e10,
-                    locations: [
-                        { x: 34, y: 12, x2: 53, y2: 36 },
-                        { x: 54, y: 12, x2: 54, y2: 32 },
-                    ],
-                },
-                {
-                    id: "a8",
-                    name: "A8",
-                    idNum: 9,
-                    price: 29e8,
-                    locations: [
-                        { x: 56, y: 12, x2: 67, y2: 37 },
-                        { x: 55, y: 34, x2: 55, y2: 37 },
-                    ],
-                },
-            ],
-            startComponents: [
-                { id: "ironBuyer", x: 15, y: 18 },
-                { id: "ironFoundry", x: 19, y: 18 },
-                { id: "ironSeller", x: 25, y: 18 },
-                { id: "transportLine", x: 17, y: 18 },
-                { id: "transportLine", x: 18, y: 18 },
-                { id: "transportLine", x: 23, y: 18 },
-                { id: "transportLine", x: 24, y: 18 },
-            ],
-            transportLineConnections: [
-                { fromX: 16, fromY: 18, toX: 17, toY: 18 },
-                { fromX: 17, fromY: 18, toX: 18, toY: 18 },
-                { fromX: 18, fromY: 18, toX: 19, toY: 18 },
-                { fromX: 22, fromY: 18, toX: 23, toY: 18 },
-                { fromX: 23, fromY: 18, toX: 24, toY: 18 },
-                { fromX: 24, fromY: 18, toX: 25, toY: 18 },
-            ],
-        },
+
+        areas: [
+            { id: "nA1", name: "A1", idNum: 1, price: 700, locations: [{ x: 0, y: 15, x2: 20, y2: 19 },{ x: 2, y: 20, x2: 18, y2: 22 }] },
+            
+            { id: "nA2", name: "A2", idNum: 2, price: 25e4, locations: [{ x: 0, y: 25, x2: 10, y2: 35 },{ x: 11, y: 28, x2: 12, y2: 33 }] },
+            { id: "nA3", name: "A3", idNum: 3, price: 75e4, locations: [{ x: 13, y: 25, x2: 21, y2: 35 }]},
+            { id: "nA4", name: "A4", idNum: 4, price: 12e5, locations: [{ x: 17, y: 0, x2: 32, y2: 13 }]},
+            { id: "nA5", name: "A5", idNum: 5, price: 100, locations: [{ x: 34, y: 0, x2: 39, y2: 7 },{ x: 34, y: 8, x2: 37, y2: 13 }]  },
+            { id: "nA6", name: "A6", idNum: 6, price: 25e6, locations: [{ x: 23, y: 15, x2: 28, y2: 35 },{ x: 29, y: 15, x2: 36, y2: 19 },
+                { x: 22, y: 17, x2: 22, y2: 23 },
+                { x: 20, y: 21, x2: 21, y2: 23 }
+            ]  },
+            { id: "nA7", name: "A7", idNum: 7, price: 3e9, locations: [{ x: 41, y: 0, x2: 59, y2: 19 },{ x: 39, y: 9, x2: 40, y2: 19 }
+            ]  },
+            { id: "nA8", name: "A8", idNum: 8, price: 8e9, locations: [{ x: 30, y: 21, x2: 59, y2: 35 }
+            ]  }
+        ],
+        
+        startComponents: [
+            { id: "ironBuyer", x: 4, y: 1 },
+            { id: "ironFoundry", x: 7, y: 1 },
+            { id: "ironSeller", x: 13, y: 1 },
+            { id: "transportLine", x: 6, y: 1 },
+            { id: "transportLine", x: 11, y: 1 },
+            { id: "transportLine", x: 12, y: 1 }
+        ],
+        transportLineConnections: [
+            { fromX: 5, fromY: 1, toX: 6, toY: 1 },
+            { fromX: 6, fromY: 1, toX: 7, toY: 1 },
+            { fromX: 10, fromY: 1, toX: 11, toY: 1 },
+            { fromX: 11, fromY: 1, toX: 12, toY: 1 },
+            { fromX: 12, fromY: 1, toX: 13, toY: 1 }
+        ],
+    },
+       
         {
             id: "level2",
             idNum: 2,
-            name: "Foundry",
-            tilesX: 50,
-            tilesY: 35,
+            name: "Archipelago",
+            tilesX: 55,
+            tilesY: 32,
             startX: 12,
             startY: 0,
-            price: 3500,
+            price: 50e6,
             terrains: { G: "grass", X: "wall", ".": "road", " ": "floor" },
             buildableTerrains: { floor: !0 },
-            terrainMap:
-                "GGGGGGGGGGGGGGG.GGGGGGGGGGGGGGGGGGGG.GGGGGGGGGGGGGGXXXXXXXXXXXXGG.GXXXXXXXXXXXXXXXXXXX.XXXXXXXXXXXXGGX          XGG.GX                 X.X          XGGX          XGG.GX                 X.X          XGGX          XGG.GX                 X.X          XGGX          XGG.GX                 X.X          XGGX           GG.G                   .           XGGX          XGG.GX                 X.X          XGGX           GG.G                   .           XGGX          XGG.GX                 X.X          XGGX           GG.G                   .           XGGX          XGG.GX                 X.X          XGGX           GG.G                   .           XGGX          XGG.GX                 X.X          XGGX           GG.G                   .           XGGX          XGG.GX                 X.X          XGGX          XGG.GX                 X.X          XGGX          XGG.GX                 X.X          XGGXXXX    XXXXGG.GXXXXX  X  XXX  X  X.XXXXXXXXXXXXG................GGGGGG  G  GGG  G  G.GGGGGGGGGGGGGGXXXX    XXXXGG.GGGGGGGGGGGGGGGGGGGG.GGGGGGGGGGGGGGX          XGG......................GGGGGGG GGGGGGX          XGG.GGGGGG  G  G.G  G  GGGGGGGG   GGGGGX          XGG.GXXXXX  X  X.X  X  XXXXXGGGG GGGGGGX          XGG.GX         X.X         XGGGGGGGGGGGX          XGG.GX         X.X         XGGGGGGGGGGGX          XGG.GX         X.X         XGGGG GGGGGGX          XGG.GX         X.X         XGGG   GGGGGX          XGG.GX         X.X         XGGGG GGGGGGX          XGG.GX         X.X         XGGGGGGGGGGGX          XGG.GX         X.X         XGGGGGGGGGGGX          XGG.GX        XX.XX        XGGGG GGGGGGX          XGG.GX        XG.GX        XGGG   GGGGGXXXXXXXXXXXXGG.GXXXXXXXXXXG.GXXXXXXXXXXGGGG GGGGGGGGGGGGGGGGGGGG.GGGGGGGGGGGG.GGGGGGGGGGGGGGGGGGGGG",
-            buildMap:
-                "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX          XXXXXX                 XXX          XXXX          XXXXXX                 XXX          XXXX          XXXXXX                 XXX          XXXX          XXXXXX                 XXX          XXXX           ----                   -           XXXX          X----X                 X-X          XXXX           ----                   -           XXXX          X----X                 X-X          XXXX           ----                   -           XXXX          X----X                 X-X          XXXX           ----                   -           XXXX          X----X                 X-X          XXXX           ----                   -           XXXX          XXXXXX                 XXX          XXXX          XXXXXX                 XXX          XXXX          XXXXXX                 XXX          XXXXXXX    XXXXXXXXXXXXX  X  XXX  X  XXXXXXXXXXXXXXXXXXXX----XXXXXXXXXXXXX  -  XXX  -  XXXXXXXXXXXXXXXXXXXX    XXXXXXXXXXXXX-----XXX-----XXXXXXXXXXXXXXXXX          XXXXXXXXXX-----XXX-----XXXXXXXXX XXXXXXX          XXXXXXXXXX  -  XXX  -  XXXXXXXX   XXXXXX          XXXXXXXXXX  X  XXX  X  XXXXXXXXX XXXXXXX          XXXXXX         XXX         XXXXXXXXXXXXX          XXXXXX         XXX         XXXXXXXXXXXXX          XXXXXX         XXX         XXXXX XXXXXXX          XXXXXX         XXX         XXXX   XXXXXX          XXXXXX         XXX         XXXXX XXXXXXX          XXXXXX         XXX         XXXXXXXXXXXXX          XXXXXX         XXX         XXXXXXXXXXXXX          XXXXXX        XXXXX        XXXXX XXXXXXX          XXXXXX        XXXXX        XXXX   XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+            terrainMap: 'GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGXXXXXXXXX.XXXXXXXXGG             GGXXXXXXXX.XXXXXXXXXGGX        .       XGG             GGX       .        XGGX        .       XGG             GGX       .        XGGX        .       XGG             GGX       .        XGGX        .       XGG             GGX       .        XGGX        .       XGG             GGX       .        XGGX        .       XGGGGGGGGGGGGGGGGGX       .        XGGX        .       XGGGGGGGGGGGGGGGGGX       .        XGGX        .       XGGGGGGGGGGGGGGGGGX       .        XGGXXXXX XXX.XXX XXXXGGGGGGGGGGGGGGGGGXXXX XXX.XXX XXXXXGGX        .GGGGGGGG                 GGGGGGGG.        XGGX        .GGGGGGGG        X        G                XGGX        .GGGGGGGG        X        G                XGGX        .GGGGGGGG        X        G                XGGX        .GG.....G.               G.                XGGX        .GGG....G.               G.                XGGX        .GGGGGGGG        X        G                XGGX        .GGGGGGGG        X        G                XGGX        .GGGGGGGG        X        G                XGGX        .GGGGGGGG                 GGGGGGGG.        XGGXXXXX XXX.XXX XXXXGGGGGGGGGGGGGGGGGXXXX XXX.        XGGX        .       XGGGGGGGGGGGGGGGGGX       .        XGGX        .       XGGGGGGGGGGGGGGGGGX       .        XGGX        .       XGGGGGGGGGGGGGGGGGX       .        XGGX        .       XGG             GGX       .        XGGX        .       XGG             GGX       .        XGGX        .       XGG             GGX       .        XGGX        .       XGG             GGX       .        XGGX        .       XGG             GGX       .        XGGXXXXXXXXX.XXXXXXXXGG             GGXXXXXXXX.XXXXXXXXXGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG',
+buildMap: '--------------------------------------------------------XXXXXXXXX-XXXXXXXX--             --XXXXXXXX-XXXXXXXXX--X        -       X--             --X       -        X--X        -       X--             --X       -        X--X        -       X--             --X       -        X--X        -       X--             --X       -        X--X        -       X--             --X       -        X--X        -       X-----------------X       -        X--X        -       X-----------------X       -        X--X        -       X-----------------X       -        X--XXXXX XXX-XXX XXXX-----------------XXXX XXX-XXX XXXXX--X        ---------                 ---------        X--X        ---------        X        -                X--X        ---------        X        -                X--X        ---------        X        -                X--X        ----------               --                X--X        ----------               --                X--X        ---------        X        -                X--X        ---------        X        -                X--X        ---------        X        -                X--X        ---------                 ---------        X--XXXXX XXX-XXX XXXX-----------------XXXX XXX-        X--X        -       X-----------------X       -        X--X        -       X-----------------X       -        X--X        -       X-----------------X       -        X--X        -       X--             --X       -        X--X        -       X--             --X       -        X--X        -       X--             --X       -        X--X        -       X--             --X       -        X--X        -       X--             --X       -        X--XXXXXXXXX-XXXXXXXX--             --XXXXXXXX-XXXXXXXXX--------------------------------------------------------',
+
+
             areas: [
-                { id: "b3", name: "B3", idNum: 1, price: 12e9, locations: [{ x: 1, y: 1, x2: 12, y2: 18 }] },
-                { id: "b1", name: "B1", idNum: 2, price: 25e8, locations: [{ x: 16, y: 22, x2: 27, y2: 34 }] },
-                { id: "b2", name: "B2", idNum: 3, price: 25e8, locations: [{ x: 29, y: 22, x2: 39, y2: 34 }] },
-                { id: "b5", name: "B5", idNum: 4, price: 8e11, locations: [{ x: 37, y: 1, x2: 48, y2: 18 }] },
-                { id: "b4", name: "B4", idNum: 5, price: 26e10, locations: [{ x: 1, y: 20, x2: 12, y2: 33 }] },
+                { id: "nb1", name: "B1", idNum: 1, price: 10e6, locations: [{ x: 1, y: 1, x2: 9, y2: 30 }] },
+                { id: "nb2", name: "B2", idNum: 2, price: 10e6, locations: [{ x: 11, y: 1, x2: 18, y2: 10 }] },
+                { id: "nb3", name: "B3", idNum: 3, price: 10e9, locations: [{ x: 19, y: 11, x2: 35, y2: 20 }] },
+                { id: "nb4", name: "B4", idNum: 4, price: 25e6, locations: [{ x: 36, y: 1, x2: 43, y2: 10 }] },
+                { id: "nb5", name: "B5", idNum: 5, price: 150e6, locations: [{ x: 45, y: 1, x2: 53, y2: 10 }] },
+                { id: "nb6", name: "B6", idNum: 6, price: 15e6, locations: [{ x: 36, y: 21, x2: 43, y2: 30 }] },
+                { id: "nb7", name: "B7", idNum: 7, price: 5e6, locations: [{ x: 11, y: 21, x2: 18, y2: 30 }] },
+            ],
+        },
+        {
+            id: "level6",
+            idNum: 6,
+            name: "Depot",
+            tilesX: 68,
+            tilesY: 42,
+            startX: 8,
+            startY: 15,
+            price: 65e8,
+            terrains: { G: "grass", X: "wall", ".": "road", " ": "floor" },
+            buildableTerrains: { floor: !0 },
+            terrainMap: 'GXXXXXXXXXXXXXXXXXXGG.GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGX                 GGGGXXXXXXXXXXXXXXXXXXGGGGGGGGGGGGGGGGGGGGGGGGGGGGX                 GGGGX                 GGGGGGGGGGGGGGGGGGGGGGGGGGGGX       X         GGGGX                 GGGGGGGGGGGGGGGGGGGGGGGGGGGGX       X         GGGGX                 GG.GGGGGGGGGGGGGGGGGGGGGGGGGX       X         GGGGX                 GGGGGGGGGGGGGGGGGGGGGGGGGGGGX                 GGGGX                 GGGGGGGGGGGGGGGGGGGGGGGGGGGGX   X  X  X X  X  GGGG                  GGGGGGG.GGGGGGGGGGGGGGGGGGGGX                 GGGG                  GGGGGGGGGGGGGGGGGGGGGGGGGGGGX                 GGGGX                 GGGGGGGGGGGGGGGGGGGGGGGGGGGGX                 GGGGX                XGGGGGGGGGGGGGGGGGGGGGGGGGGGGX                 GGGGXXXXXXXXXXXXXXXXXXGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG.GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGX        XXXXXXXXXGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGXXXXXXXXXXXXXXXXGGGX                XGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG               XXGGX                XGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG                XGGX                XGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG                XGGX                XGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG                XGGX                XGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG                XGGXXXXXXXXXX       XGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG                XGG                 XGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG                XGG                 XGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG                XGG                 XGGGGGGGGGGGGGGGGGGGGGGGGGGGGG                  XGG             XXXXXGGGGGGGGGXXXXXXGGGGGGGGGGGGGG                  XGG              GGGGGGGGGGGGG     XXXGGGGGGGGGGGG                  XGG              GGGGGGGGGGGGG          GGGGGGGGGG                  XGG     GGGGGGG  GGGG  XXXXXXXX          XGGGGGGGG                  XGG     GGGGGGG  GGGG                    XGGGGGGGGGG                XGG              GGGG                    XGGGGGGGGGG                XGX    XXXXXXXX  XXXX                    XGGGGGGGGGG                  X                 X                      GGGGGGG                    X                 X                      GGGGGGG   G GGGGG GGG  GG  X                 X                      XGGGGGGXX                  X                                        XGGGGGGX                   X                                        XGGGGGGX                 XGX                 X                      XGGGGGGX                 XGXX                X                      XGGGGGGX                 XGGX                                XXXXXXXXGGGGGGXXXXXXXXXXXXXXXXXXXGGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG',
+buildMap: '-XXXXXXXXXXXXXXXXXX--------------------------------------------------X                 ----XXXXXXXXXXXXXXXXXX----------------------------X                 ----X                 ----------------------------X       X         ----X                 ----------------------------X       X         ----X                 ----------------------------X       X         ----X                 ----------------------------X                 ----X                 ----------------------------X   X  X  X X  X  ----                  ----------------------------X                 ----                  ----------------------------X                 ----X                 ----------------------------X                 ----X                X----------------------------X                 ----XXXXXXXXXXXXXXXXXX------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------X        XXXXXXXXX-------------------------------XXXXXXXXXXXXXXXX---X                X-------------------------------               XX--X                X-------------------------------                X--X                X-------------------------------                X--X                X-------------------------------                X--X                X-------------------------------                X--XXXXXXXXXX       X-------------------------------                X--                 X-------------------------------                X--                 X-------------------------------                X--                 X-----------------------------                  X--             XXXXX---------XXXXXX--------------                  X--              -------------     XXX------------                  X--              -------------          ----------                  X--     -------  ----  XXXXXXXX          X--------                  X--     -------  ----                    X----------                X--              ----                    X----------                X-X    XXXXXXXX  XXXX                    X----------                  X                 X                      -------                    X                 X                      -------   - ----- ---  --  X                 X                      X------XX                  X                                        X------X                   X                                        X------X                 X-X                 X                      X------X                 X-XX                X                      X------X                 X--X                                XXXXXXXX------XXXXXXXXXXXXXXXXXXX--XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX---------------------------------',
+
+
+
+            areas: [
+                { id: "d1", name: "D1", idNum: 1, price: 2e9, locations: [{ x: 1, y: 0, x2: 18, y2: 11 }] },
+                { id: "d2", name: "D2", idNum: 2, price: 15e9, locations: [{ x: 23, y: 1, x2: 40, y2: 11 }] },
+                { id: "d3", name: "D3", idNum: 3, price: 74e9, locations: [{ x: 1, y: 16, x2: 18, y2: 26 },{ x: 1, y: 27, x2: 14, y2: 31 }] },
+                { id: "d4", name: "D4", idNum: 4, price: 6.5e11, locations: [{ x: 48, y: 16, x2: 67, y2: 40 }] }
             ],
         },
         {
@@ -167,75 +172,8 @@ buildMap: 'XXXXXXXXXXXX--------------------------------------------------------X
                 "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX                       XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX                       XX                       XXXXXXXXXXXXXX-XX-XXXXXXXXXXXXXX                       XX                       XXXXX                      XXXXX                       XX                       XXXXX                      XXXXX                       XX                       XXXXX                      XXXXX                       XX                        ---                        ---                        XX                       XXXXX                      XXXXX                       XX                       XXXXX                      XXXXX                       XX                       XXXXX                      XXXXX                       XX                       XXXXX                      XXXXX                       XX                       XXXXX                      XXXXX                       XX                       XXXXX                      XXXXX                       XX                       XXXXX                      XXXXX                       XX                       XXXXX                      XXXXX                       XX                       XXXXX                      XXXXX                       XX                        ---                        ---                        XX                        ---                        ---                        XX                        ---                        ---                        XX                        ---                        ---                        XX                        ---                        ---                        XX                        ---                        ---                        XX                        ---                        ---                        XX                        ---                        ---                        XX                        ---                        ---                        XX                       XXXXX                      XXXXX                       XX                       XXXXX                      XXXXX                       XX                       XXXXX                      XXXXX                       XX                       XXXXX                      XXXXX                       XX                       XXXXX                      XXXXX                       XX                       XXXXX                      XXXXX                       XX                       XXXXX                      XXXXX                       XX                       XXXXX                      XXXXX                       XX                       XXXXX                      XXXXX                       XX                        ---                        ---                        XX                       XXXXX                      XXXXX                       XX                       XXXXX                      XXXXX                       XX                       XXXXX                      XXXXX                       XX                       XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX                       XX                       XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX                       XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
             areas: [],
         },
-        {
-            id: "level6",
-            idNum: 6,
-            name: "Depot",
-            tilesX: 42,
-            tilesY: 28,
-            startX: 8,
-            startY: 15,
-            price: 65e8,
-            terrains: { G: "grass", X: "wall", ".": "road", " ": "floor" },
-            buildableTerrains: { floor: !0 },
-            terrainMap:
-                "GGGGGGGGGGGGGGGGGGGG..GGGGGGGGGGGGGGGGGGGGGXXXXXXXXXXXXXXXXXXX..XXXXXXXXXXXXXXXXXXXGGXXXXXXXXXXXXXXXXXXX..XXXXXXXXXXXXXXXXXXXGGXX       X        X..X        X       XXGGXX       X        X..X        X       XXGGXX       X        X..X        X       XXGGXX       X        X..X        X       XXGGXX                ....                XXGGXX   XXXX XXX     X..X    XXXX XXX    XXGGXX                X..X                XXGGXX                X..X                XXGGXX                X..X                XXGGXXXXXXXXXXXXXXXXXXX..XXXXXXXXXXXXXXXXXXXGGXGGGGGGGGGGGGGGGGGG..GGGGGGGGGGGGGGGGGGXGGXGGGGGGGGGGGGGGGGGG..GGGGGGGGGGGGGGGGGGXGGXXXXXXXXXXXXXXXXXXX..XXXXXXXXXXXXXXXXXXXGGXX                X..X                XXGGXX                X..X                XXGGXX                X..X                XXGGXX                X..X                XXGGXX                ....                XXGGXX                X..X                XXGGXX                X..X                XXGGXX                X..X                XXGGXX                X..X                XXGGXX                X..X                XXGGXXXXXXXXXXXXXXXXXXX..XXXXXXXXXXXXXXXXXXXGGGGGGGGGGGGGGGGGGGGG..GGGGGGGGGGGGGGGGGGGG",
-            buildMap:
-                "XXXXXXXXXXXXXXXXXXXX--XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX--XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX--XXXXXXXXXXXXXXXXXXXXXXX       X        X--X        X       XXXXXX       X        X--X        X       XXXXXX       X        X--X        X       XXXXXX       X        X--X        X       XXXXXX                ----                XXXXXX   XXXX XXX     X--X    XXXX XXX    XXXXXX                X--X                XXXXXX                X--X                XXXXXX                X--X                XXXXXXXXXXXXXXXXXXXXXXX--XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX--XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX--XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX--XXXXXXXXXXXXXXXXXXXXXXX                X--X                XXXXXX                X--X                XXXXXX                X--X                XXXXXX                X--X                XXXXXX                ----                XXXXXX                X--X                XXXXXX                X--X                XXXXXX                X--X                XXXXXX                X--X                XXXXXX                X--X                XXXXXXXXXXXXXXXXXXXXXXX--XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX--XXXXXXXXXXXXXXXXXXXX",
-            areas: [
-                { id: "d1", name: "D1", idNum: 1, price: 8e20, locations: [{ x: 3, y: 3, x2: 18, y2: 11 }] },
-                { id: "d2", name: "D2", idNum: 2, price: 8e20, locations: [{ x: 23, y: 3, x2: 38, y2: 11 }] },
-                { id: "d3", name: "D3", idNum: 3, price: 4e21, locations: [{ x: 23, y: 16, x2: 38, y2: 25 }] },
-            ],
-        },
-        {
-            id: "level7",
-            idNum: 7,
-            name: "Facility",
-            tilesX: 55,
-            tilesY: 32,
-            startX: 3,
-            startY: 15,
-            price: 25e10,
-            terrains: { G: "grass", X: "wall", ".": "road", " ": "floor" },
-            buildableTerrains: { floor: !0 },
-            terrainMap:
-                "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGXXXXXXXXX.XXXXXXXXGGGGGGGGGGGGGGGGGXXXXXXXX.XXXXXXXXXGGX        .       XGGGGGGGGGGGGGGGGGX       .        XGGX        .       XGGGGGGGGGGGGGGGGGX       .        XGGX        .       XGGGGGGGGGGGGGGGGGX       .        XGGX        .       XGGGGGGGGGGGGGGGGGX       .        XGGX        .       XGGGGGGGGGGGGGGGGGX       .        XGGX        .       XGGGGGGGGGGGGGGGGGX       .        XGGX        .       XGGGGGGGGGGGGGGGGGX       .        XGGX        .       XGGGGGGGGGGGGGGGGGX       .        XGGXXXXX XXX.XXX XXXXGGGGGGGGGGGGGGGGGXXXX XXX.XXX XXXXXGGX        .       XXXXXXXXXXXXXXXXXXX       .        XGGX        .       XX       X       XX       .        XGGX        .       XX       X       XX       .        XGGX        .       XX       X       XX       .        XGGX        ..........               ..........        XGGX        ..........               ..........        XGGX        .       XX       X       XX       .        XGGX        .       XX       X       XX       .        XGGX        .       XX       X       XX       .        XGGX        .       XXXXXXXXXXXXXXXXXXX       .        XGGXXXXX XXX.XXX XXXXGGGGGGGGGGGGGGGGGXXXX XXX.XXX XXXXXGGX        .       XGGGGGGGGGGGGGGGGGX       .        XGGX        .       XGGGGGGGGGGGGGGGGGX       .        XGGX        .       XGGGGGGGGGGGGGGGGGX       .        XGGX        .       XGGGGGGGGGGGGGGGGGX       .        XGGX        .       XGGGGGGGGGGGGGGGGGX       .        XGGX        .       XGGGGGGGGGGGGGGGGGX       .        XGGX        .       XGGGGGGGGGGGGGGGGGX       .        XGGX        .       XGGGGGGGGGGGGGGGGGX       .        XGGXXXXXXXXX.XXXXXXXXGGGGGGGGGGGGGGGGGXXXXXXXX.XXXXXXXXXGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG",
-            buildMap:
-                "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX-XXXXXXXXXXXX        -       XXXXXXXXXXXXXXXXXXX       -        XXXX        -       XXXXXXXXXXXXXXXXXXX       -        XXXX        -       XXXXXXXXXXXXXXXXXXX       -        XXXX        -       XXXXXXXXXXXXXXXXXXX       -        XXXX        -       XXXXXXXXXXXXXXXXXXX       -        XXXX        -       XXXXXXXXXXXXXXXXXXX       -        XXXX        -       XXXXXXXXXXXXXXXXXXX       -        XXXX        -       XXXXXXXXXXXXXXXXXXX       -        XXXXXXXX XXX-XXX XXXXXXXXXXXXXXXXXXXXXXXXX XXX-XXX XXXXXXXX        -       XXXXXXXXXXXXXXXXXXX       -        XXXX        -       XX       X       XX       -        XXXX        -       XX       X       XX       -        XXXX        -       XX       X       XX       -        XXXX        ----------               ----------        XXXX        ----------               ----------        XXXX        -       XX       X       XX       -        XXXX        -       XX       X       XX       -        XXXX        -       XX       X       XX       -        XXXX        -       XXXXXXXXXXXXXXXXXXX       -        XXXXXXXX XXX-XXX XXXXXXXXXXXXXXXXXXXXXXXXX XXX-XXX XXXXXXXX        -       XXXXXXXXXXXXXXXXXXX       -        XXXX        -       XXXXXXXXXXXXXXXXXXX       -        XXXX        -       XXXXXXXXXXXXXXXXXXX       -        XXXX        -       XXXXXXXXXXXXXXXXXXX       -        XXXX        -       XXXXXXXXXXXXXXXXXXX       -        XXXX        -       XXXXXXXXXXXXXXXXXXX       -        XXXX        -       XXXXXXXXXXXXXXXXXXX       -        XXXX        -       XXXXXXXXXXXXXXXXXXX       -        XXXXXXXXXXXX-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-            areas: [
-                { id: "e1", name: "E1", idNum: 1, price: 2e24, locations: [{ x: 2, y: 2, x2: 9, y2: 9 }] },
-                { id: "e2", name: "E2", idNum: 2, price: 2e24, locations: [{ x: 11, y: 2, x2: 17, y2: 9 }] },
-                { id: "e3", name: "E3", idNum: 3, price: 6e24, locations: [{ x: 20, y: 12, x2: 34, y2: 19 }] },
-                { id: "e4", name: "E4", idNum: 4, price: 5e24, locations: [{ x: 37, y: 2, x2: 43, y2: 9 }] },
-                { id: "e5", name: "E5", idNum: 5, price: 5e24, locations: [{ x: 45, y: 2, x2: 52, y2: 9 }] },
-                { id: "e6", name: "E6", idNum: 6, price: 15e24, locations: [{ x: 37, y: 22, x2: 52, y2: 29 }] },
-            ],
-        },
-        {
-            id: "level8",
-            idNum: 8,
-            name: "Compound",
-            tilesX: 60,
-            tilesY: 36,
-            startX: 15,
-            startY: 15,
-            price: 9e12,
-            terrains: { G: "grass", X: "wall", ".": "road", " ": "floor" },
-            buildableTerrains: { floor: !0 },
-            terrainMap:
-                "GGGGGGGGGGGGGGGGGGGGGGGGGGGGG..GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG..GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGXXXXXXXXXXXXXXXXXXXXXXXXXXX..XXXXXXXXXXXXXXXXXXXXXXXXXXXGGGGXXXXXXXXXXXXXXXXXXXXXXXXXXX..XXXXXXXXXXXXXXXXXXXXXXXXXXXGGGGXXXXXXXXX                  ..                  XXXXXXXXXGGGGXXX     X                  ..                  X     XXXGGGGXXX     X                  ..                  X     XXXGGGGXXX     X                  ..                  X     XXXGGGGXXXXX.XXX                  ..                  XXX.XXXXXGGGGXX                         ..                         XXGGGGXX                         ..                         XXGGGGXX                  XXXXXXX..XXXXXXX                  XXGGGGXX                  X              X                  XXGGGGXX                  X              X                  XXGGGGXX                  X              X                  XXGGGGXX                  X              X                  XXGGGGXX                  X              X                  XXGGGGXX...................              ...................XXGGGGXX                  X              X                  XXGGGGXX                  X              X                  XXGGGGXX                  X              X                  XXGGGGXX                  X              X                  XXGGGGXX                  X              X                  XXGGGGXX                  XXXXXXX..XXXXXXX                  XXGGGGXX                         ..                         XXGGGGXX                         ..                         XXGGGGXX                         ..                         XXGGGGXXXXX.XXX                  ..                  XXX.XXXXXGGGGXXX     X                  ..                  X     XXXGGGGXXX     X                  ..                  X     XXXGGGGXXX     X                  ..                  X     XXXGGGGXXXXXXXXX                  ..                  XXXXXXXXXGGGGXXXXXXXXXXXXXXXXXXXXXXXXXXX..XXXXXXXXXXXXXXXXXXXXXXXXXXXGGGGXXXXXXXXXXXXXXXXXXXXXXXXXXX..XXXXXXXXXXXXXXXXXXXXXXXXXXXGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG..GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG..GGGGGGGGGGGGGGGGGGGGGGGGGGGGG",
-            buildMap:
-                "XXXXXXXXXXXXXXXXXXXXXXXXXXXXX--XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX--XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX--XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX--XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX                  --                  XXXXXXXXXXXXXXXX     X                  --                  X     XXXXXXXXXX     X                  --                  X     XXXXXXXXXX     X                  --                  X     XXXXXXXXXXXX-XXX                  --                  XXX-XXXXXXXXXXX                         --                         XXXXXXXX                         --                         XXXXXXXX                  XXXXXXX--XXXXXXX                  XXXXXXXX                  X              X                  XXXXXXXX                  X              X                  XXXXXXXX                  X              X                  XXXXXXXX                  X              X                  XXXXXXXX                  X              X                  XXXXXXXX-------------------              -------------------XXXXXXXX                  X              X                  XXXXXXXX                  X              X                  XXXXXXXX                  X              X                  XXXXXXXX                  X              X                  XXXXXXXX                  X              X                  XXXXXXXX                  XXXXXXX--XXXXXXX                  XXXXXXXX                         --                         XXXXXXXX                         --                         XXXXXXXX                         --                         XXXXXXXXXXX-XXX                  --                  XXX-XXXXXXXXXXXX     X                  --                  X     XXXXXXXXXX     X                  --                  X     XXXXXXXXXX     X                  --                  X     XXXXXXXXXXXXXXXX                  --                  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX--XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX--XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX--XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX--XXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-            areas: [
-                { id: "f1", name: "F1", idNum: 1, price: 8e27, locations: [{ x: 5, y: 5, x2: 9, y2: 7 }] },
-                { id: "f2", name: "F2", idNum: 2, price: 8e27, locations: [{ x: 50, y: 5, x2: 54, y2: 7 }] },
-                { id: "f3", name: "F3", idNum: 3, price: 2e28, locations: [{ x: 23, y: 12, x2: 36, y2: 22 }] },
-                { id: "f4", name: "F4", idNum: 4, price: 5e28, locations: [{ x: 31, y: 4, x2: 54, y2: 16 }] },
-                { id: "f5", name: "F5", idNum: 5, price: 5e28, locations: [{ x: 31, y: 18, x2: 54, y2: 31 }] },
-                { id: "f6", name: "F6", idNum: 6, price: 12e28, locations: [{ x: 5, y: 27, x2: 9, y2: 30 }, { x: 50, y: 27, x2: 54, y2: 30 }] },
-            ],
-        },
+        
+        
         {
             id: "level9",
             idNum: 9,
@@ -402,6 +340,101 @@ buildMap: 'XXXXXXXXXXXX--------------------------------------------------------X
                 { id: "m7", name: "M7", idNum: 7, price: 2e24, locations: [{ x: 58, y: 9, x2: 68, y2: 34 }] },
             ],
         },
+        {
+            id: "level16",
+            idNum: 16,
+            name: "Seven Halls",
+            tilesX: 48,
+            tilesY: 32,
+            startX: 22,
+            startY: 15,
+            price: 5e24,
+            terrains: { G: "grass", X: "wall", ".": "road", " ": "floor" },
+            buildableTerrains: { floor: !0 },
+            terrainMap:
+                "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXGGX      X              X      XXXXXXXXXXXXXXXXXGGX      X              X      XXXXXXXXXXXXXXXXXGGX      X              X      XXXXXXXXXXXXXXXXXGGX      X              X      XXXXXXXXXXXXXXXXXGGX      X              X      XXXXXXXXXXXXXXXXXGGX      X              X      XXXXXXXXXXXXXXXXXGGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXGGX              XXXXXXXXXXXXXXXX              XGGX              XXXXXXXXXXXXXXXX              XGGX              X            XXX              XGGX              X            XXX              XGGX              X            XXX              XGGX              X            XXX              XGGX              X            XXX              XGGX              X            XXX              XGGX              X            XXX              XGGX              X            XXX              XGGX              X            XXX              XGGX              X            XXX              XGGX              XXXXXXXXXXXXXXXX              XGGX              XXXXXXXXXXXXXXXX              XGGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXGGXXXXXXXXXXXXXXX                  XXXXXXXXXXXXXGGXXXXXXXXXXXXXXX                  XXXXXXXXXXXXXGGXXXXXXXXXXXXXXX                  XXXXXXXXXXXXXGGXXXXXXXXXXXXXXX                  XXXXXXXXXXXXXGGXXXXXXXXXXXXXXX                  XXXXXXXXXXXXXGGXXXXXXXXXXXXXXX                  XXXXXXXXXXXXXGGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG",
+            buildMap:
+                "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX------X--------------X------XXXXXXXXXXXXXXXXXXXX------X--------------X------XXXXXXXXXXXXXXXXXXXX------X--------------X------XXXXXXXXXXXXXXXXXXXX------X--------------X------XXXXXXXXXXXXXXXXXXXX------X--------------X------XXXXXXXXXXXXXXXXXXXX------X--------------X------XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX--------------XXXXXXXXXXXXXXXX--------------XXXX--------------XXXXXXXXXXXXXXXX--------------XXXX--------------X------------XXX--------------XXXX--------------X------------XXX--------------XXXX--------------X------------XXX--------------XXXX--------------X------------XXX--------------XXXX--------------X------------XXX--------------XXXX--------------X------------XXX--------------XXXX--------------X------------XXX--------------XXXX--------------X------------XXX--------------XXXX--------------X------------XXX--------------XXXX--------------X------------XXX--------------XXXX--------------XXXXXXXXXXXXXXXX--------------XXXX--------------XXXXXXXXXXXXXXXX--------------XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX------------------XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX------------------XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX------------------XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX------------------XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX------------------XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX------------------XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+            areas: [
+                { id: "n1", name: "N1", idNum: 1, price: 1e25, locations: [{ x: 2, y: 2, x2: 7, y2: 7 }] },
+                { id: "n2", name: "N2", idNum: 2, price: 1e25, locations: [{ x: 24, y: 2, x2: 29, y2: 7 }] },
+                { id: "n3", name: "N3", idNum: 3, price: 2e25, locations: [{ x: 9, y: 2, x2: 22, y2: 7 }] },
+                { id: "n4", name: "N4", idNum: 4, price: 3e25, locations: [{ x: 17, y: 11, x2: 28, y2: 20 }] },
+                { id: "n5", name: "N5", idNum: 5, price: 25e24, locations: [{ x: 16, y: 24, x2: 33, y2: 29 }] },
+                { id: "n6", name: "N6", idNum: 6, price: 8e25, locations: [{ x: 2, y: 9, x2: 15, y2: 22 }] },
+                { id: "n7", name: "N7", idNum: 7, price: 8e25, locations: [{ x: 32, y: 9, x2: 45, y2: 22 }] },
+            ],
+        }, {
+            id: "level1",
+            idNum: 1,
+            name: "Factory",
+            tilesX: 68,
+            tilesY: 38,
+            startX: 8,
+            startY: 10,
+            price: 100,
+            terrains: { G: "grass", X: "wall", ".": "road", " ": "floor" },
+            buildableTerrains: { floor: !0 },
+            terrainMap: 'XXXXXXXXXXXX.GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG.GGGGGGGGGG.GGGGGGGGGGX          X.XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXG.GXXXXXXXXX.XXXXXXXXXGX          X.X        X         X           XG.GX        .        XGX           .         X         X            G.G         .        XGX           .         X                      G.G       XX.XX      XGX          X.X        X                     XG.GX      XG.GX      XGX          X.X        X                     XG.GXXX XXXXG.GX      XGX          X.X      X XX X                  XG.GX      XXXXX      XGX           .       X    X      X           XG.GX                 XGXXXX    XXXX.X      X    X      X           XG.GX                 XG.............X      X    X      XXXXXXXXXXXXXG.GXXXXXXXXXX  XXX  XXGXXXX    XXXX.X      X    X      X...................................X          X.X      X    X      X.GGGGGGXXXXXXXXXXXXXXX.XX  XXX  XXXX          X.X                  X.GGGGGGX              .           XX          X.XXX   XXXXXXXXX   XX.GGGGGGX             X.X          XX          X......................GGGGGGXX           XX.XX         XX          X.XXX   XXXXXXXXX   XX.GGGGGGGX           XG.GX         XX     X    X.X                  X.GGGGGGXX           XX.XX         XX     X    X.X                  X.GGGGGGX              .           XX     X    X.X            X     X.GGGGGGX             X.X          XX     XXXXXX.X            X     X.GGGGGGXX           XX.XX         XX         XG.X            X     X.GGGGGGGX           XG.GX         XXX         G.             X     X.GGGGGGXX           XX.XX         XGX         G.             X     X.GGGGGGX              .           XGX         G.             X     X.XXXGXXX             X.X          XGX         G.             X     X.X XXX              XX.XX         XGX        XG.X                   .                   XG.GX         XGXXXX  XXXXG.X                   .                   XX.XX         XGGGGGGGGGGGG.XXXXXXXX   XXX   XXX.X                    .           X...................GGGGGGGGGGGGGG.X                    .           XGGGGX  XXXXG.XXXXX................X                    .           XGXXXX     XX.X   XXXX   XXX   XXX.X                    .           XGX          .       X           X.X                  XX.X          XGX          .                    .                   X..X          XGX          .                    .      XXXXXXXX     X.XX          XGX        XX.X      X            .      XGGGGGGX     X.X           XGXXXXXXXXXXG.X      X           X.XXXXXXXGGGGGGXXXXXXX.X           XGGGGGGGGGGGG.XXXXXXXXXXXXXXXXXXXX.GGGGGGGGGGGGGGGGGGGG.XXXXXXXXXXXXXG',
+buildMap: 'XXXXXXXXXXXX--------------------------------------------------------X          X-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX---XXXXXXXXXXXXXXXXXXX-X          X-X        X         X           X---X        -        X-X           -         X         X            ---         -        X-X           -         X                      ---       XXXXX      X-X          X-X        X                     X---X      XXXXX      X-X          X-X        X                     X---XXX XXXXXXXX      X-X          X-X      X XX X                  X---X      XXXXX      X-X           -       X    X      X           X---X                 X-XXXX    XXXX-X      X    X      X           X---X                 X--------------X      X    X      XXXXXXXXXXXXX---XXXXXXXXXX  XXX  XX-XXXX    XXXX-X      X    X      X-----------------------------------X          X-X      X    X      X-XXXXXXXXXXXXXXXXXXXXX-XX  XXX  XXXX          X-X                  X-XXXXXXX              -           XX          X-XXX   XXXXXXXXX   XX-XXXXXXX             X-X          XX          X----------------------XXXXXXXX           XX-XX         XX          X-XXX   XXXXXXXXX   XX-XXXXXXXX           XX-XX         XX     X    X-X                  X-XXXXXXXX           XX-XX         XX     X    X-X                  X-XXXXXXX              -           XX     X    X-X            X     X-XXXXXXX             X-X          XX     XXXXXX-X            X     X-XXXXXXXX           XX-XX         XX         XX-X            X     X-XXXXXXXX           XX-XX         XXX         --             X     X-XXXXXXXX           XX-XX         XXX         --             X     X-XXXXXXX              -           XXX         --             X     X-XXXXXXX             X-X          XXX         --             X     X-X XXX              XX-XX         XXX        X--X                   -                   XX-XX         XXXXXX  XXXX--X                   -                   XX-XX         X-------------XXXXXXXX   XXX   XXX-X                    -           X----------------------------------X                    -           XXXXXX  XXXXX-XXXXX----------------X                    -           XXXXXX     XX-X   XXXX   XXX   XXX-X                    -           XXX          -       X           X-X                  XX-X          XXX          -                    -                   X--X          XXX          -                    -      XXXXXXXX     X-XX          XXX        XX-X      X            -      XXXXXXXX     X-X           XXXXXXXXXXXXX-X      X           X-XXXXXXXXXXXXXXXXXXXX-X           XXXXXXXXXXXXX-XXXXXXXXXXXXXXXXXXXX----------------------XXXXXXXXXXXXX',
+
+            areas: [
+                { id: "a2", name: "A2", idNum: 1, price: 1200, locations: [{ x: 0, y: 0, x2: 11, y2: 9 }] },
+                { id: "a4", name: "A4", idNum: 2, price: 25e4, locations: [{ x: 0, y: 11, x2: 11, y2: 27 }] },
+                { id: "a1", name: "A1", idNum: 3, price: 700, locations: [{ x: 0, y: 30, x2: 11, y2: 37 }] },
+                { id: "a5", name: "A5", idNum: 4, price: 26e6, locations: [{ x: 13, y: 1, x2: 32, y2: 14 }] },
+                { id: "a6", name: "A6", idNum: 5, price: 32e6, locations: [{ x: 33, y: 1, x2: 44, y2: 10 }] },
+                {
+                    id: "a3",
+                    name: "A3",
+                    idNum: 6,
+                    price: 12e3,
+                    locations: [
+                        { x: 13, y: 31, x2: 32, y2: 37 },
+                        { x: 13, y: 30, x2: 17, y2: 30 },
+                    ],
+                },
+                { id: "a7", name: "A7", idNum: 7, price: 14e7, locations: [{ x: 48, y: 1, x2: 66, y2: 10 }] },
+                {
+                    id: "a9",
+                    name: "A9",
+                    idNum: 8,
+                    price: 4e10,
+                    locations: [
+                        { x: 34, y: 12, x2: 53, y2: 36 },
+                        { x: 54, y: 12, x2: 54, y2: 32 },
+                    ],
+                },
+                {
+                    id: "a8",
+                    name: "A8",
+                    idNum: 9,
+                    price: 29e8,
+                    locations: [
+                        { x: 56, y: 12, x2: 67, y2: 37 },
+                        { x: 55, y: 34, x2: 55, y2: 37 },
+                    ],
+                },
+            ],
+            startComponents: [
+                { id: "ironBuyer", x: 15, y: 18 },
+                { id: "ironFoundry", x: 19, y: 18 },
+                { id: "ironSeller", x: 25, y: 18 },
+                { id: "transportLine", x: 17, y: 18 },
+                { id: "transportLine", x: 18, y: 18 },
+                { id: "transportLine", x: 23, y: 18 },
+                { id: "transportLine", x: 24, y: 18 },
+            ],
+            transportLineConnections: [
+                { fromX: 16, fromY: 18, toX: 17, toY: 18 },
+                { fromX: 17, fromY: 18, toX: 18, toY: 18 },
+                { fromX: 18, fromY: 18, toX: 19, toY: 18 },
+                { fromX: 22, fromY: 18, toX: 23, toY: 18 },
+                { fromX: 23, fromY: 18, toX: 24, toY: 18 },
+                { fromX: 24, fromY: 18, toX: 25, toY: 18 },
+            ],
+        },
+
     ];
 
 export default factories;

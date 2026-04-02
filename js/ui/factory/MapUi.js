@@ -4,8 +4,10 @@ import ComponentLayer from "./mapLayers/ComponentLayer.js";
 import PackageLayer from "./mapLayers/PackageLayer.js";
 import MouseLayer from "./mapLayers/MouseLayer.js";
 import AreasLayer from "./mapLayers/AreasLayer.js";
+import TileCoordsLayer from "./mapLayers/TileCoordsLayer.js";
 import ScreenShotUi from "./ScreenShotUi.js";
 import GlobalUiBus from "../../base/GlobalUiBus.js";
+import GlobalUiEvent from "../../config/event/GlobalUiEvent.js";
 import FactoryEvent from "../../config/event/FactoryEvent.js"; // assuming
 
 export default class MapUi {
@@ -21,6 +23,7 @@ export default class MapUi {
     this.packageLayer = new PackageLayer(this.imageMap, factory, { tileSize: this.tileSize });
     this.mouseLayer = new MouseLayer(this.imageMap, factory, { tileSize: this.tileSize });
     this.areasLayer = new AreasLayer(this.imageMap, factory, { tileSize: this.tileSize });
+    this.tileCoordsLayer = this.game.isDevMode ? new TileCoordsLayer(factory, { tileSize: this.tileSize }) : null;
   }
 
   display(container) {
@@ -53,6 +56,7 @@ export default class MapUi {
     this.setupMapDragging();
 
     this.backgroundLayer.display(this.element);
+    if (this.tileCoordsLayer) this.tileCoordsLayer.display(this.element);
     this.componentLayer.display(this.element);
     
     this.packageLayer.display(this.element);
@@ -67,6 +71,10 @@ export default class MapUi {
         this.componentLayer.getCanvas(),
         this.packageLayer.getCanvas()
       ).open();
+    });
+
+    this.globalUiEm.addListener("FactoryMapUi", GlobalUiEvent.TILE_COORDS_CHANGED, () => {
+      if (this.tileCoordsLayer) this.tileCoordsLayer.setVisible(this.game.showTileCoords);
     });
   }
 
@@ -136,8 +144,10 @@ export default class MapUi {
   }
 
   destroy() {
+    this.globalUiEm.removeListener("FactoryMapUi", GlobalUiEvent.TILE_COORDS_CHANGED);
     this.factory.getEventManager().removeListenerForType("FactoryMapUi");
     this.backgroundLayer.destroy();
+    if (this.tileCoordsLayer) this.tileCoordsLayer.destroy();
     this.componentLayer.destroy();
     this.packageLayer.destroy();
     this.mouseLayer.destroy();

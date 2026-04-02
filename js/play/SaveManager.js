@@ -65,17 +65,17 @@ export default class SaveManager {
   }
 
   _startInterval() {
-    this.cloudSaveInterval = setInterval(() => {
-      this.saveAutoCloud(() => {
-        logger.info(MODULE_NAME, "Auto saved to cloud");
-      });
-    }, this.cloudSaveIntervalMs);
+    // this.cloudSaveInterval = setInterval(() => {
+    //   this.saveAutoCloud(() => {
+    //     logger.info(MODULE_NAME, "Auto saved to cloud");
+    //   });
+    // }, this.cloudSaveIntervalMs);
 
-    this.localSaveInterval = setInterval(() => {
-      this.saveAutoLocal(() => {
-        logger.info(MODULE_NAME, "Auto saved to local");
-      });
-    }, this.localSaveIntervalMs);
+    // this.localSaveInterval = setInterval(() => {
+    //   this.saveAutoLocal(() => {
+    //     logger.info(MODULE_NAME, "Auto saved to local");
+    //   });
+    // }, this.localSaveIntervalMs);
   }
 
   destroy() {

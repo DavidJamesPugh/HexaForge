@@ -9,6 +9,7 @@ import GameUiEvent from "../config/event/GameUiEvent.js";
 import GameEvent from "../config/event/GameEvent.js";
 import numberFormat from "../base/NumberFormat.js";
 import FactoryEvent from "../config/event/FactoryEvent.js";
+import bindDrawerOverlayClose, { openDrawerAnimation } from "./helper/bindDrawerOverlayClose.js";
 
 export default class UpgradesUi {
   constructor(factory) {
@@ -16,10 +17,11 @@ export default class UpgradesUi {
     this.factory = factory;
     this.game = factory.getGame();
     this.container = null;
+    this.bg = null;
+    this.panel = null;
   }
 
-  display(container) {
-    this.container = container;
+  display() {
     const upgradesManager = this.factory.getUpgradesManager();
     const groups = [];
 
@@ -49,15 +51,11 @@ export default class UpgradesUi {
             action: "sell",
             isSell: true,
             canSell: upgradesManager.canSell(upgradeMeta.id),
-            sellPrice: numberFormat.formatNumber(
-              upgradesManager.getSellPrice(upgradeMeta.id)
-            ),
+            sellPrice: numberFormat.formatNumber(upgradesManager.getSellPrice(upgradeMeta.id)),
             refund: `${100 * upgradeMeta.refund}%`,
             title: strategy.getTitle(),
             description: strategy.getDescription(),
-            iconStyle: `background-position: -${26 * upgradeMeta.iconX}px -${
-              26 * upgradeMeta.iconY
-            }px`,
+            iconStyle: `background-position: -${26 * upgradeMeta.iconX}px -${26 * upgradeMeta.iconY}px`,
           });
         }
 
@@ -66,14 +64,10 @@ export default class UpgradesUi {
           action: "buy",
           isBuy: true,
           isMaxed: !upgradesManager.couldPurchase(upgradeMeta.id),
-          buyPrice: numberFormat.formatNumber(
-            upgradesManager.getPrice(upgradeMeta.id)
-          ),
+          buyPrice: numberFormat.formatNumber(upgradesManager.getPrice(upgradeMeta.id)),
           title: strategy.getTitle(),
           description: strategy.getDescription(),
-          iconStyle: `background-position: -${26 * upgradeMeta.iconX}px -${
-            26 * upgradeMeta.iconY
-          }px`,
+          iconStyle: `background-position: -${26 * upgradeMeta.iconX}px -${26 * upgradeMeta.iconY}px`,
         });
       }
       if (upgrades.length > 0) {
@@ -81,25 +75,20 @@ export default class UpgradesUi {
         groups.push({
           name: groupMeta.name,
           upgrades,
-          iconStyle: `background-position: -${26 * groupMeta.iconX}px -${
-            26 * groupMeta.iconY
-          }px`,
+          iconStyle: `background-position: -${26 * groupMeta.iconX}px -${26 * groupMeta.iconY}px`,
         });
       }
     }
-    
-    // Render into container
-    this.container.innerHTML = Handlebars.compile(template)({ groups });
 
-    // Back button
-    const backBtn = this.container.querySelector(".backButton");
-    if (backBtn) {
-      backBtn.addEventListener("pointerdown", () => {
-        this.gameUiEm.invokeEvent(GameUiEvent.SHOW_FACTORY);
-      });
-    }
+    document.body.insertAdjacentHTML("beforeend", Handlebars.compile(template)({ groups }));
 
-    // Upgrade click handling
+    this.bg = document.getElementById("upgradesBg");
+    this.panel = document.getElementById("upgradesDrawer");
+    this.container = this.panel?.querySelector(".upgradesBox") ?? null;
+
+    bindDrawerOverlayClose(this.bg, this.panel, this.gameUiEm);
+    openDrawerAnimation(this.bg, this.panel);
+
     this.tooltipDestroyers = [];
 
     this.container.querySelectorAll(".upgradeItem").forEach((el) => {
@@ -121,9 +110,7 @@ export default class UpgradesUi {
       });
     });
 
-    this.game
-      .getEventManager()
-      .addListener("upgradeUi", GameEvent.GAME_TICK, () => this.update());
+    this.game.getEventManager().addListener("upgradeUi", GameEvent.GAME_TICK, () => this.update());
     this.factory
       .getEventManager()
       .addListener("upgradeUi", FactoryEvent.UPGRADES_UPDATED, (id) => this.handleUpgradesUpdated(id));
@@ -131,9 +118,8 @@ export default class UpgradesUi {
   }
 
   refreshView() {
-    const currentContainer = this.container;
-    this.destroy(false);
-    this.display(currentContainer);
+    this.destroy();
+    this.display();
   }
 
   handleUpgradesUpdated(upgradeId) {
@@ -146,7 +132,9 @@ export default class UpgradesUi {
   }
 
   updateUpgradeItem(upgradeId, action) {
-    const item = this.container.querySelector(`.upgradeItem[data-id="${upgradeId}"][data-action="${action}"]`);
+    const item = this.container.querySelector(
+      `.upgradeItem[data-id="${upgradeId}"][data-action="${action}"]`
+    );
     if (!item) return;
 
     const upgradesManager = this.factory.getUpgradesManager();
@@ -179,7 +167,8 @@ export default class UpgradesUi {
   }
 
   update() {
-    const moneyEl = document.querySelector("#money");
+    if (!this.container) return;
+    const moneyEl = this.container.querySelector("#money");
     if (moneyEl) {
       moneyEl.textContent = numberFormat.formatNumber(this.game.getMoney());
     }
@@ -217,13 +206,20 @@ export default class UpgradesUi {
     });
   }
 
-  destroy(removeContent = true) {
+  destroy() {
     this.game.getEventManager().removeListenerForType("upgradeUi");
     this.factory.getEventManager().removeListenerForType("upgradeUi");
     this.gameUiEm.removeListenerForType("upgradeUi");
     this.tooltipDestroyers?.forEach((destroy) => destroy());
     this.tooltipDestroyers = [];
-    if (removeContent && this.container) this.container.innerHTML = "";
-    this.container = removeContent ? null : this.container;
+    if (this.bg) {
+      this.bg.remove();
+      this.bg = null;
+    }
+    if (this.panel) {
+      this.panel.remove();
+      this.panel = null;
+    }
+    this.container = null;
   }
 }

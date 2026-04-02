@@ -32,6 +32,18 @@ export default class InfoUi {
     this.controlsContainer = null;
 
     this.listenerKey = "componentInfoUi";
+
+    /** Delegated handler: the income table is replaced every FACTORY_TICK, so listeners on individual PASS links are removed before click completes. */
+    this._onInfoContainerClick = (e) => {
+      if (!this.game.isDevMode) return;
+      const el = e.target instanceof Element ? e.target : e.target.parentElement;
+      const link = el?.closest?.("a.passTime");
+      if (!link) return;
+      e.preventDefault();
+      const minutes = parseInt(link.dataset.amount, 10);
+      if (!Number.isFinite(minutes)) return;
+      new PassTimeAction(this.game, 60 * minutes).passTime();
+    };
   }
 
   display(container) {
@@ -39,6 +51,8 @@ export default class InfoUi {
     this.container.insertAdjacentHTML("beforeend",Handlebars.compile(infoTemplate)({}));
     this.infoContainer = this.container.querySelector(".componentInfo");
     this.controlsContainer = this.container.querySelector(".componentControls");
+
+    this.infoContainer.addEventListener("click", this._onInfoContainerClick);
 
     const em = this.factory.getEventManager();
 
@@ -223,21 +237,16 @@ export default class InfoUi {
       </table>`;
 
     this.infoContainer.insertAdjacentHTML("beforeend", table);
-
-    if (this.game.isDevMode) {
-      this.infoContainer.querySelectorAll(".passTime").forEach(link => {
-        link.addEventListener("click", e => {
-          e.preventDefault();
-          const minutes = parseInt(e.target.dataset.amount, 10);
-          new PassTimeAction(this.game, 60 * minutes).passTime()
-        });
-      });
-    }
   }
 
   destroy() {
     this.factory.getEventManager().removeListenerForType(this.listenerKey);
+    if (this.infoContainer && this._onInfoContainerClick) {
+      this.infoContainer.removeEventListener("click", this._onInfoContainerClick);
+    }
     this.container.innerHTML = "";
+    this.infoContainer = null;
+    this.controlsContainer = null;
     this.container = null;
   }
 }

@@ -8,7 +8,7 @@ const getDateTime = () => {
 const output = (source, level, message, data) => {
   const parts = [getDateTime(), level, source, message];
   if (data !== undefined) parts.push(JSON.stringify(data));
-  console.log(parts.join(" | "));
+  console.log(parts.join("-"));
 };
 
 const logger = {
@@ -19,19 +19,19 @@ const logger = {
   },
 
   debug(source, message, data) {
-      output(source, "debug", message, data);
+      output(source, "D", message, data);
   },
 
   info(source, message, data) {
-      output(source, "info", message, data);
+      output(source, "I", message, data);
   },
 
   warning(source, message, data) {
-      output(source, "warning", message, data);
+      output(source, "W", message, data);
   },
 
   error(source, message, data) {
-      output(source, "error", message, data);
+      output(source, "E", message, data);
   },
 };
 

@@ -16,7 +16,9 @@
     UPGRADE_BOUGHT: "UPGRADE_BOUGHT",
     UPGRADES_UPDATED: "UPGRADES_UPDATED",
     OPEN_SCREENSHOT_VIEW: "SHOW_SCREENSHOT_VIEW",
-    COMPONENT_PAUSED: "COMPONENT_PAUSED"
+    COMPONENT_PAUSED: "COMPONENT_PAUSED",
+    /** Payload: { x, y } tile — left-click on map to try buying an unlock area (mouse layer is above area overlays). */
+    ATTEMPT_AREA_PURCHASE: "ATTEMPT_AREA_PURCHASE",
 };
 
 export default FactoryEvent;

@@ -17,6 +17,7 @@ class OverviewUi {
     // Render the template with initial data
     this.container.insertAdjacentHTML("beforeend", 
       Handlebars.compile(template)({
+        factoryName: this.factory.getMeta().name,
         researchBought: Boolean(this.game.getResearchManager().getResearch('researchCenter')),
       })
     );

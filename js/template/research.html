@@ -1,5 +1,10 @@
-<div class="researchBox">
-  <span class="backButton" id="backToReactor">Back to factory</span>
+<div id="researchBg" class="drawer-bg"></div>
+<div id="researchDrawer" class="drawer-panel drawer-panel-game">
+  <div class="drawer-header">
+    <span class="drawer-title">Research</span>
+    <a href="javascript:void(0);" class="drawer-close closeButton">&times;</a>
+  </div>
+  <div class="researchBox">
   <div class="header"> You have <b id="researchPoints" class="research">????</b> research points and <b class="money">$ <span id="money"></span>
     </b>. Use it wisely! You have researched <b>{{have}} of {{max}}</b> technologies. <br />
     <span class="miniText">Research applies to every factory.</span>
@@ -9,7 +14,7 @@
       <br /> {{/if}}
     <div class="researchItem" data-id="{{id}}">
       <div class="icon">
-        <div class="iconSelf" "{{iconStyle}}"></div>
+        <div class="iconSelf" style="{{iconStyle}}"></div>
       </div>
       <div class="buyButton" data-id="{{id}}">BUY</div> {{name}} {{#if showBoughtAndMax}}
         <span class="bought"></span>/{{max}} {{/if}} &nbsp;&nbsp;&nbsp;&nbsp; {{#if price}}
@@ -21,4 +26,5 @@
       <div class="description"> {{description}} </div>
     </div>
   {{/each}}
+  </div>
 </div>

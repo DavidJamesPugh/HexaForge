@@ -21,7 +21,9 @@ class UpdateTileAction {
     if (type === "terrain") {
       this.tile.setTerrain(value);
 
-      if (this.tile.getFactory().getMeta().buildableTerrains[value]) {
+      if (value === "grass") {
+        this.tile.setBuildableType(Tile.BUILDABLE_PARTIAL);
+      } else if (this.tile.getFactory().getMeta().buildableTerrains[value]) {
         this.tile.setBuildableType(Tile.BUILDABLE_YES);
       } else {
         this.tile.setBuildableType(Tile.BUILDABLE_NO);

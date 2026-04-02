@@ -31,7 +31,7 @@ export default class SellComponentAction {
         const y = component.getY();
         let refundable = true;
 
-        for (let startComp of this.factory.getMeta().startComponents) {
+        for (let startComp of this.factory.getMeta().startComponents ?? []) {
             if (startComp.id === meta.id && startComp.x === x && startComp.y === y) {
                 refundable = false;
             }

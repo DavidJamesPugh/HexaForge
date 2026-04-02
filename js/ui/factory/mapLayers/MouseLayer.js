@@ -4,7 +4,7 @@ import SellComponentAction from "../../../game/action/SellComponentAction.js";
 import UpdateComponentInputOutputAction from "../../../game/action/UpdateComponentInputOutputAction.js";
 import UpdateTileAction from "../../../game/action/UpdateTileAction.js";
 import MouseInfoHelper from "./helper/MouseInfoHelper.js";
-import FactoryEvent from "/js/config/event/FactoryEvent.js"; // assuming
+import FactoryEvent from "/js/config/event/FactoryEvent.js";
 
 const LAYER_MOUSE = "LayerMouse";
 
@@ -22,19 +22,42 @@ class MouseLayer {
     this.mouseInfoHelper = new MouseInfoHelper(factory, imageMap, options.tileSize);
   }
 
+  /** Same tile math as pointermove — use real client coords so down/up match the cursor (fixes stale 0,0). */
+  _tilePointerEventFromClient(e) {
+    let size = { width: 1, height: 1 };
+    if (this.selectedComponentMetaId) {
+      size = this.game.getMeta().componentsById[this.selectedComponentMetaId];
+    }
+    const rect = this.element.getBoundingClientRect();
+    const localX = e.clientX - rect.left - (this.tileSize * size.width) / 2;
+    const localY = e.clientY - rect.top - (this.tileSize * size.height) / 2;
+    let x = Math.round(localX / this.tileSize);
+    let y = Math.round(localY / this.tileSize);
+    x = Math.min(this.tilesX - size.width, Math.max(0, x));
+    y = Math.min(this.tilesY - size.height, Math.max(0, y));
+    return {
+      x,
+      y,
+      leftMouseDown: (e.buttons & 1) === 1,
+      rightMouseDown: (e.buttons & 2) === 2,
+      shiftKeyDown: e.shiftKey,
+      altKeyDown: e.altKey,
+      pointerType: e.pointerType,
+    };
+  }
+
   display(container) {
     this.selectedComponentMetaId = null;
     this.container = container;
-    const windowXY = this.tilesX * this.tileSize;
     this.element = document.createElement("div");
-    
+
     Object.assign(this.element.style, {
       position: "absolute",
       left: "0px",
       top: "0px",
       width: `${this.tilesX * this.tileSize}px`,
       height: `${this.tilesY * this.tileSize}px`,
-      zIndex: "10"
+      zIndex: "25",
     });
     this.container.append(this.element);
 
@@ -116,7 +139,7 @@ class MouseLayer {
       FactoryEvent.FACTORY_MOUSE_UP,
       (event) => {
         if (downEvent && downEvent.x === event.x && downEvent.y === event.y) {
-          let comp = this.factory.getTile(event.x, event.y).getComponent();
+          const comp = this.factory.getTile(event.x, event.y).getComponent();
           if (downEvent.altKeyDown) {
             this.updateTileMeta(event);
           } else if (this.selectedComponentMetaId) {
@@ -141,6 +164,17 @@ class MouseLayer {
               comp
             );
             lastClickedComponent = comp;
+          } else if (
+            downEvent.leftMouseDown &&
+            !downEvent.shiftKeyDown &&
+            !downEvent.rightMouseDown
+          ) {
+            this.factory
+              .getEventManager()
+              .invokeEvent(FactoryEvent.ATTEMPT_AREA_PURCHASE, {
+                x: event.x,
+                y: event.y,
+              });
           }
         }
         downEvent = null;
@@ -219,8 +253,8 @@ class MouseLayer {
 
   _setupNativePointerEvents() {
     let lastEvent = null;
-    const element = this.element; // must be a real DOM element
-  
+    const element = this.element;
+
     element.addEventListener("pointerout", () => {
       this.factory.getEventManager().invokeEvent(
         FactoryEvent.FACTORY_MOUSE_OUT,
@@ -228,69 +262,38 @@ class MouseLayer {
       );
       lastEvent = null;
     });
-  
+
     element.addEventListener("pointermove", (e) => {
-      let size = { width: 1, height: 1 };
-  
-      if (this.selectedComponentMetaId) {
-        size = this.game.getMeta().componentsById[this.selectedComponentMetaId];
-      }
-  
-      const rect = element.getBoundingClientRect();
-      const localX = e.clientX - rect.left - (this.tileSize * size.width) / 2;
-      const localY = e.clientY - rect.top - (this.tileSize * size.height) / 2;
-  
-      const pointerEvent = {
-        x: Math.round(localX / this.tileSize),
-        y: Math.round(localY / this.tileSize),
-        leftMouseDown: e.buttons === 1,
-        rightMouseDown: e.buttons === 2,
-        shiftKeyDown: e.shiftKey,
-        altKeyDown: e.altKey,
-        pointerType: e.pointerType, // "mouse", "touch", "pen"
-      };
-  
-      pointerEvent.x = Math.min(
-        this.tilesX - size.width,
-        Math.max(0, pointerEvent.x)
-      );
-      pointerEvent.y = Math.min(
-        this.tilesY - size.height,
-        Math.max(0, pointerEvent.y)
-      );
-  
-      if (!lastEvent || lastEvent.x !== pointerEvent.x || lastEvent.y !== pointerEvent.y) {
-        this.factory.getEventManager().invokeEvent(
-          FactoryEvent.FACTORY_MOUSE_MOVE,
-          pointerEvent
-        );
+      const pointerEvent = this._tilePointerEventFromClient(e);
+
+      if (
+        !lastEvent ||
+        lastEvent.x !== pointerEvent.x ||
+        lastEvent.y !== pointerEvent.y
+      ) {
+        this.factory
+          .getEventManager()
+          .invokeEvent(FactoryEvent.FACTORY_MOUSE_MOVE, pointerEvent);
         lastEvent = pointerEvent;
       }
     });
-  
+
     element.addEventListener("pointerdown", (e) => {
-      this.factory.getEventManager().invokeEvent(
-        FactoryEvent.FACTORY_MOUSE_DOWN,
-        {
-          x: lastEvent?.x ?? 0,
-          y: lastEvent?.y ?? 0,
-          leftMouseDown: e.buttons === 1,
-          rightMouseDown: e.buttons === 2,
-          shiftKeyDown: e.shiftKey,
-          altKeyDown: e.altKey,
-          pointerType: e.pointerType,
-        }
-      );
+      const pointerEvent = this._tilePointerEventFromClient(e);
+      lastEvent = pointerEvent;
+      this.factory
+        .getEventManager()
+        .invokeEvent(FactoryEvent.FACTORY_MOUSE_DOWN, pointerEvent);
     });
-  
-    element.addEventListener("pointerup", () => {
-      this.factory.getEventManager().invokeEvent(
-        FactoryEvent.FACTORY_MOUSE_UP,
-        lastEvent
-      );
+
+    element.addEventListener("pointerup", (e) => {
+      const pointerEvent = this._tilePointerEventFromClient(e);
+      lastEvent = pointerEvent;
+      this.factory
+        .getEventManager()
+        .invokeEvent(FactoryEvent.FACTORY_MOUSE_UP, pointerEvent);
     });
   }
-  
 
   destroy() {
     this.mouseInfoHelper.destroy();
