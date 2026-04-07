@@ -65,13 +65,13 @@ buildMap: '--------------------------------------------------------XXXXXXXXX-XXX
 
 
             areas: [
-                { id: "nb1", name: "B1", idNum: 1, price: 10e6, locations: [{ x: 1, y: 1, x2: 9, y2: 30 }] },
+                { id: "nb1", name: "B1", idNum: 1, price: 10e7, locations: [{ x: 1, y: 1, x2: 9, y2: 30 }] },
                 { id: "nb2", name: "B2", idNum: 2, price: 10e6, locations: [{ x: 11, y: 1, x2: 18, y2: 10 }] },
                 { id: "nb3", name: "B3", idNum: 3, price: 10e9, locations: [{ x: 19, y: 11, x2: 35, y2: 20 }] },
                 { id: "nb4", name: "B4", idNum: 4, price: 25e6, locations: [{ x: 36, y: 1, x2: 43, y2: 10 }] },
                 { id: "nb5", name: "B5", idNum: 5, price: 150e6, locations: [{ x: 45, y: 1, x2: 53, y2: 10 }] },
                 { id: "nb6", name: "B6", idNum: 6, price: 15e6, locations: [{ x: 36, y: 21, x2: 43, y2: 30 }] },
-                { id: "nb7", name: "B7", idNum: 7, price: 5e6, locations: [{ x: 11, y: 21, x2: 18, y2: 30 }] },
+                { id: "nb7", name: "B7", idNum: 7, price: 5e7, locations: [{ x: 11, y: 21, x2: 18, y2: 30 }] },
             ],
         },
         {
@@ -85,8 +85,12 @@ buildMap: '--------------------------------------------------------XXXXXXXXX-XXX
             price: 65e8,
             terrains: { G: "grass", X: "wall", ".": "road", " ": "floor" },
             buildableTerrains: { floor: !0 },
-            terrainMap: 'GXXXXXXXXXXXXXXXXXXGG.GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGX                 GGGGXXXXXXXXXXXXXXXXXXGGGGGGGGGGGGGGGGGGGGGGGGGGGGX                 GGGGX                 GGGGGGGGGGGGGGGGGGGGGGGGGGGGX       X         GGGGX                 GGGGGGGGGGGGGGGGGGGGGGGGGGGGX       X         GGGGX                 GG.GGGGGGGGGGGGGGGGGGGGGGGGGX       X         GGGGX                 GGGGGGGGGGGGGGGGGGGGGGGGGGGGX                 GGGGX                 GGGGGGGGGGGGGGGGGGGGGGGGGGGGX   X  X  X X  X  GGGG                  GGGGGGG.GGGGGGGGGGGGGGGGGGGGX                 GGGG                  GGGGGGGGGGGGGGGGGGGGGGGGGGGGX                 GGGGX                 GGGGGGGGGGGGGGGGGGGGGGGGGGGGX                 GGGGX                XGGGGGGGGGGGGGGGGGGGGGGGGGGGGX                 GGGGXXXXXXXXXXXXXXXXXXGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG.GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGX        XXXXXXXXXGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGXXXXXXXXXXXXXXXXGGGX                XGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG               XXGGX                XGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG                XGGX                XGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG                XGGX                XGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG                XGGX                XGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG                XGGXXXXXXXXXX       XGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG                XGG                 XGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG                XGG                 XGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG                XGG                 XGGGGGGGGGGGGGGGGGGGGGGGGGGGGG                  XGG             XXXXXGGGGGGGGGXXXXXXGGGGGGGGGGGGGG                  XGG              GGGGGGGGGGGGG     XXXGGGGGGGGGGGG                  XGG              GGGGGGGGGGGGG          GGGGGGGGGG                  XGG     GGGGGGG  GGGG  XXXXXXXX          XGGGGGGGG                  XGG     GGGGGGG  GGGG                    XGGGGGGGGGG                XGG              GGGG                    XGGGGGGGGGG                XGX    XXXXXXXX  XXXX                    XGGGGGGGGGG                  X                 X                      GGGGGGG                    X                 X                      GGGGGGG   G GGGGG GGG  GG  X                 X                      XGGGGGGXX                  X                                        XGGGGGGX                   X                                        XGGGGGGX                 XGX                 X                      XGGGGGGX                 XGXX                X                      XGGGGGGX                 XGGX                                XXXXXXXXGGGGGGXXXXXXXXXXXXXXXXXXXGGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG',
-buildMap: '-XXXXXXXXXXXXXXXXXX--------------------------------------------------X                 ----XXXXXXXXXXXXXXXXXX----------------------------X                 ----X                 ----------------------------X       X         ----X                 ----------------------------X       X         ----X                 ----------------------------X       X         ----X                 ----------------------------X                 ----X                 ----------------------------X   X  X  X X  X  ----                  ----------------------------X                 ----                  ----------------------------X                 ----X                 ----------------------------X                 ----X                X----------------------------X                 ----XXXXXXXXXXXXXXXXXX------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------X        XXXXXXXXX-------------------------------XXXXXXXXXXXXXXXX---X                X-------------------------------               XX--X                X-------------------------------                X--X                X-------------------------------                X--X                X-------------------------------                X--X                X-------------------------------                X--XXXXXXXXXX       X-------------------------------                X--                 X-------------------------------                X--                 X-------------------------------                X--                 X-----------------------------                  X--             XXXXX---------XXXXXX--------------                  X--              -------------     XXX------------                  X--              -------------          ----------                  X--     -------  ----  XXXXXXXX          X--------                  X--     -------  ----                    X----------                X--              ----                    X----------                X-X    XXXXXXXX  XXXX                    X----------                  X                 X                      -------                    X                 X                      -------   - ----- ---  --  X                 X                      X------XX                  X                                        X------X                   X                                        X------X                 X-X                 X                      X------X                 X-XX                X                      X------X                 X--X                                XXXXXXXX------XXXXXXXXXXXXXXXXXXX--XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX---------------------------------',
+            terrainMap: 'GXXXXXXXXXXXXXXXXXXGG.GGGGGGGGGGGGGGGGGGGGXXXXXXXXXXGGGGX     GGGGGGGX                 GGGGXXXXXXXXXXXXXXXXXXGX         GGGGX        GGGGX                 GGGGX                 GX         GGGGX        GGGGX       X         GGGGX                 GXXXG      GGGGX          GGX       X         GGGGX                 GG.XX      GGGGX           GX       X         GGGGX                 GGGGX       GGGX           GX                 GGGGX                 GGGGG        XGX   G    G  GX   X  X  X X  X  GGGG                  GGGGG        XGX           GX                 GGGG                  GGGG         XGX           GX                 GGGGX                 GGG          XGX     GG    GX                 GGGGX                XGGG          XGX           GX                 GGGGXXXXXXXXXXXXXXXXXXGGG         GGGX           GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG        GGGGX          GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGXXXX    GGGGX         GGGGGGGGGGGGGGGGGGGGGGGGGGGGGG       GGGGGGGGGGGGXXXXXGGGGGG      GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG       GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGX        XXXXXXXXXGGG                   GGGGGGGGGXXXXXX          GGGX                XGGG                   GGGGGGGGG               XXGGX                 GG                     GGGGGGGG                XGGX                 GG  GGGGG GGGGG GGGGG  GGGGGGGG                XGGX                 GG                     GGGGGGGG                XGGX                XGGG                   GGGGGGGGG                XGGXXXXXXXXXX       XGGG                   GGGGGGGGG                XGG                  GGGGGGGGG       GGGGGGGGGGGGGGG                XGG                  GGGGGGGGG       GGGGGGGGGGGGGGG                XGG                 XGGGGGGGGGGGGGGGGGGGGGGGGGGGGG                  XGG             XXXXXGGGGGGGGGXXXXXXGGGGGGGGGGGGGG                  XGG              GGGGGGGGGGGGG     XXXGGGGGGGGGGGG                  XGG              GGGGGGGGGGGGG          GGGGGGGGGG                  XGG     GGGGGGG  GGGG  XXXXXXXX          XGGGGGGGG                  XGG     GGGGGGG  GGGG                    XGGGGGGGGGG                XGG              GGGG                    XGGGGGGGGGG                XGX    XXXXXXXX  XXXX                    XGGGGGGGGGG                  X                 X                      GGGGGGG                    X                 X                      GGGGGGG   G GGGGG GGG  GG  X                 X                      XGGGGGGXX                  X                                        XGGGGGGX                   X                                        XGGGGGGX                 XGX                 X                      XGGGGGGX                 XGXX                X                      XGGGGGGX                 XGGX                                XXXXXXXXGGGGGGXXXXXXXXXXXXXXXXXXXGGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG',
+buildMap: '-XXXXXXXXXXXXXXXXXX-----------------------XXXXXXXXXX----X     -------X                 ----XXXXXXXXXXXXXXXXXX-X         ----X        ----X                 ----X                 -X         ----X        ----X       X         ----X                 -XXX-      ----X          --X       X         ----X                 ---XX      ----X           -X       X         ----X                 ----X       ---X           -X                 ----X                 -----        X-X   -    -  -X   X  X  X X  X  ----                  -----        X-X           -X                 ----                  ----         X-X           -X                 ----X                 ---          X-X     --    -X                 ----X                X---          X-X           -X                 ----XXXXXXXXXXXXXXXXXX---         ---X           --------------------------------------------        ----X          ---------------------------------------------XXXX    ----X         ------------------------------       ------------XXXXX------      --------------------------------       ----------------------------------X        XXXXXXXXX---                   ---------XXXXXX          ---X                X---                   ---------               XX--X                 --                     --------                X--X                 --  ----- ----- -----  --------                X--X                 --                     --------                X--X                X---                   ---------                X--XXXXXXXXXX       X---                   ---------                X--                  ---------       ---------------                X--                  ---------       ---------------                X--                 X-----------------------------                  X--             XXXXX---------XXXXXX--------------                  X--              -------------     XXX------------                  X--              -------------          ----------                  X--     -------  ----  XXXXXXXX          X--------                  X--     -------  ----                    X----------                X--              ----                    X----------                X-X    XXXXXXXX  XXXX                    X----------                  X                 X                      -------                    X                 X                      -------   - ----- ---  --  X                 X                      X------XX                  X                                        X------X                   X                                        X------X                 X-X                 X                      X------X                 X-XX                X                      X------X                 X--X                                XXXXXXXX------XXXXXXXXXXXXXXXXXXX--XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX---------------------------------',
+
+
+
+
 
 
 
@@ -94,7 +98,31 @@ buildMap: '-XXXXXXXXXXXXXXXXXX--------------------------------------------------
                 { id: "d1", name: "D1", idNum: 1, price: 2e9, locations: [{ x: 1, y: 0, x2: 18, y2: 11 }] },
                 { id: "d2", name: "D2", idNum: 2, price: 15e9, locations: [{ x: 23, y: 1, x2: 40, y2: 11 }] },
                 { id: "d3", name: "D3", idNum: 3, price: 74e9, locations: [{ x: 1, y: 16, x2: 18, y2: 26 },{ x: 1, y: 27, x2: 14, y2: 31 }] },
-                { id: "d4", name: "D4", idNum: 4, price: 6.5e11, locations: [{ x: 48, y: 16, x2: 67, y2: 40 }] }
+                { id: "d4", name: "D4", idNum: 4, price: 6.5e11, locations: [{ x: 48, y: 16, x2: 67, y2: 40 }] },
+                { id: "d5", name: "D5", idNum: 5, price: 5e10, locations: [{ x: 21, y: 16, x2: 41, y2: 22 },{ x: 28, y: 14, x2: 34, y2: 15 },{ x: 28, y: 23, x2: 34, y2: 24 }] },
+                { id: "d6", name: "D6", idNum: 6, price: 15e9, locations: [{ x: 44, y: 6, x2: 54, y2: 8 },{ x: 44, y: 4, x2: 52, y2: 5 },{ x: 42, y: 0, x2: 51, y2: 3 },{ x: 44, y: 9, x2: 54, y2: 10 },{ x: 44, y: 11, x2: 52, y2: 14 }] },
+            ],
+        },
+        {
+            id: "level14",
+            idNum: 14,
+            name: "Command Center",
+            tilesX: 58,
+            tilesY: 40,
+            startX: 10,
+            startY: 10,
+            price: 50e10,
+            terrains: { G: "grass", X: "wall", ".": "road", " ": "floor" },
+            buildableTerrains: { floor: !0 },
+            terrainMap: 'GGGGGGGGGGGGGGGGGGGGGGGGGGGG..GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG..GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXGGGGX                         ..                         XGGGGX                         ..                         XGGGGX                         ..                         XGGGGX                         ..                         XGGGGX                         ..                         XGGGGX                         ..                         XGGGGX                         ..                         XGGGGX   XXXXX   XXXXX         ..         XXXXX   XXXX    XGGGGX                         ..                         XGGGGX                         ..                         XGGGGX                         ..                         XGGGGX                  X      ..      X                  XGGGGX                  X              X                  XGGGGX                  X              X                  XGGGGX                  X              X                  XGGGGX                  X              X                  XGGGGX....................            ....................XGGGGX....................            ....................XGGGGX                  X              X                  XGGGGX                  X              X                  XGGGGX                  X              X                  XGGGGX                  X              X                  XGGGGX                  X      ..      X                  XGGGGX                         ..                         XGGGGX                         ..                         XGGGGX                         ..                         XGGGGX   XXXXX   XXXXX         ..         XXXXX   XXXX    XGGGGX                         ..                         XGGGGX                         ..                         XGGGGX                         ..                         XGGGGX                         ..                         XGGGGX                         ..                         XGGGGX                         ..                         XGGGGX                         ..                         XGGGGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG..GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG..GGGGGGGGGGGGGGGGGGGGGGGGGGGG',
+buildMap: 'XXXXXXXXXXXXXXXXXXXXXXXXXXXX--XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX--XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX                         --                         XXXXXX                         --                         XXXXXX                         --                         XXXXXX                         --                         XXXXXX                         --                         XXXXXX                         --                         XXXXXX                         --                         XXXXXX   XXXXX   XXXXX         --         XXXXX   XXXX    XXXXXX                         --                         XXXXXX                         --                         XXXXXX                         --                         XXXXXX                  X      --      X                  XXXXXX                  X              X                  XXXXXX                  X              X                  XXXXXX                  X              X                  XXXXXX                  X              X                  XXXXXX--------------------            --------------------XXXXXX--------------------            --------------------XXXXXX                  X              X                  XXXXXX                  X              X                  XXXXXX                  X              X                  XXXXXX                  X              X                  XXXXXX                  X      --      X                  XXXXXX                         --                         XXXXXX                         --                         XXXXXX                         --                         XXXXXX   XXXXX   XXXXX         --         XXXXX   XXXX    XXXXXX                         --                         XXXXXX                         --                         XXXXXX                         --                         XXXXXX                         --                         XXXXXX                         --                         XXXXXX                         --                         XXXXXX                         --                         XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX--XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX--XXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+
+
+            areas: [
+                { id: "l1", name: "L1", idNum: 1, price: 100e9, locations: [{ x: 3, y: 3, x2: 54, y2: 9 }] },
+                { id: "l2", name: "L2", idNum: 2, price: 50e12, locations: [{ x: 22, y: 10, x2: 35, y2: 29 }] },
+                { id: "l3", name: "L3", idNum: 3, price: 50e11, locations: [{ x: 3, y: 10, x2: 21, y2: 29 }] },
+                { id: "l4", name: "L4", idNum: 4, price: 50e11, locations: [{ x: 36, y: 10, x2: 54, y2: 29 }] }
             ],
         },
         {
@@ -105,7 +133,7 @@ buildMap: '-XXXXXXXXXXXXXXXXXX--------------------------------------------------
             tilesY: 42,
             startX: 10,
             startY: 3,
-            price: 125e3,
+            price: 50e10,
             terrains: { G: "grass", X: "wall", ".": "road", " ": "floor" },
             buildableTerrains: { floor: !0 },
             terrainMap:
@@ -146,7 +174,7 @@ buildMap: '-XXXXXXXXXXXXXXXXXX--------------------------------------------------
             tilesY: 40,
             startX: 9,
             startY: 8,
-            price: 5e6,
+            price: 1000e11,
             terrains: { G: "grass", X: "wall", ".": "road", " ": "floor" },
             buildableTerrains: { floor: !0 },
             terrainMap:
@@ -163,7 +191,7 @@ buildMap: '-XXXXXXXXXXXXXXXXXX--------------------------------------------------
             tilesY: 41,
             startX: 9,
             startY: 8,
-            price: 175e6,
+            price: 575e13,
             terrains: { G: "grass", X: "wall", ".": "road", " ": "floor" },
             buildableTerrains: { floor: !0 },
             terrainMap:
@@ -182,7 +210,7 @@ buildMap: '-XXXXXXXXXXXXXXXXXX--------------------------------------------------
             tilesY: 38,
             startX: 5,
             startY: 15,
-            price: 35e13,
+            price: 350e16,
             terrains: { G: "grass", X: "wall", ".": "road", " ": "floor" },
             buildableTerrains: { floor: !0 },
             terrainMap:
@@ -205,7 +233,7 @@ buildMap: '-XXXXXXXXXXXXXXXXXX--------------------------------------------------
             tilesY: 42,
             startX: 10,
             startY: 10,
-            price: 12e15,
+            price: 90e20,
             terrains: { G: "grass", X: "wall", ".": "road", " ": "floor" },
             buildableTerrains: { floor: !0 },
             terrainMap:
@@ -291,30 +319,7 @@ buildMap: '-XXXXXXXXXXXXXXXXXX--------------------------------------------------
                 { id: "k5", name: "K5", idNum: 5, price: 3e23, locations: [{ x: 3, y: 23, x2: 57, y2: 30 }] },
             ],
         },
-        {
-            id: "level14",
-            idNum: 14,
-            name: "Command Center",
-            tilesX: 58,
-            tilesY: 40,
-            startX: 10,
-            startY: 10,
-            price: 25e21,
-            terrains: { G: "grass", X: "wall", ".": "road", " ": "floor" },
-            buildableTerrains: { floor: !0 },
-            terrainMap:
-                "GGGGGGGGGGGGGGGGGGGGGGGGGGGG..GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG..GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXGGGGX                         ..                         XGGGGX                         ..                         XGGGGX                         ..                         XGGGGX                         ..                         XGGGGX                         ..                         XGGGGX                         ..                         XGGGGX                         ..                         XGGGGXXXXXXXXXX XXXXXXXXX      ..      XXXXXXXXXX XXXXXXXXXGGGGX                         ..                         XGGGGX                         ..                         XGGGGX                         ..                         XGGGGX                   XXXXXX..XXXXXX                   XGGGGX                   X            X                   XGGGGX                   X            X                   XGGGGX                   X            X                   XGGGGX                   X            X                   XGGGGX....................            ....................XGGGGX....................            ....................XGGGGX                   X            X                   XGGGGX                   X            X                   XGGGGX                   X            X                   XGGGGX                   X            X                   XGGGGX                   XXXXXX..XXXXXX                   XGGGGX                         ..                         XGGGGX                         ..                         XGGGGX                         ..                         XGGGGXXXXXXXXXX XXXXXXXXX      ..      XXXXXXXXXX XXXXXXXXXGGGGX                         ..                         XGGGGX                         ..                         XGGGGX                         ..                         XGGGGX                         ..                         XGGGGX                         ..                         XGGGGX                         ..                         XGGGGX                         ..                         XGGGGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG..GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG..GGGGGGGGGGGGGGGGGGGGGGGGGGGG",
-            buildMap:
-                "XXXXXXXXXXXXXXXXXXXXXXXXXXXX--XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX--XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX                         --                         XXXXXX                         --                         XXXXXX                         --                         XXXXXX                         --                         XXXXXX                         --                         XXXXXX                         --                         XXXXXX                         --                         XXXXXXXXXXXXXXX XXXXXXXXX      --      XXXXXXXXXX XXXXXXXXXXXXXX                         --                         XXXXXX                         --                         XXXXXX                         --                         XXXXXX                   XXXXXX--XXXXXX                   XXXXXX                   X            X                   XXXXXX                   X            X                   XXXXXX                   X            X                   XXXXXX                   X            X                   XXXXXX--------------------            --------------------XXXXXX--------------------            --------------------XXXXXX                   X            X                   XXXXXX                   X            X                   XXXXXX                   X            X                   XXXXXX                   X            X                   XXXXXX                   XXXXXX--XXXXXX                   XXXXXX                         --                         XXXXXX                         --                         XXXXXX                         --                         XXXXXXXXXXXXXXX XXXXXXXXX      --      XXXXXXXXXX XXXXXXXXXXXXXX                         --                         XXXXXX                         --                         XXXXXX                         --                         XXXXXX                         --                         XXXXXX                         --                         XXXXXX                         --                         XXXXXX                         --                         XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX--XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX--XXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-            areas: [
-                { id: "l1", name: "L1", idNum: 1, price: 2e23, locations: [{ x: 3, y: 3, x2: 21, y2: 9 }] },
-                { id: "l2", name: "L2", idNum: 2, price: 2e23, locations: [{ x: 36, y: 3, x2: 54, y2: 9 }] },
-                { id: "l3", name: "L3", idNum: 3, price: 5e23, locations: [{ x: 23, y: 15, x2: 34, y2: 24 }] },
-                { id: "l4", name: "L4", idNum: 4, price: 8e23, locations: [{ x: 3, y: 11, x2: 21, y2: 37 }] },
-                { id: "l5", name: "L5", idNum: 5, price: 8e23, locations: [{ x: 36, y: 11, x2: 54, y2: 37 }] },
-                { id: "l6", name: "L6", idNum: 6, price: 2e24, locations: [{ x: 3, y: 30, x2: 54, y2: 37 }] },
-            ],
-        },
+        
         {
             id: "level15",
             idNum: 15,
