@@ -1,8 +1,6 @@
 import Handlebars from "handlebars";
 import loadingTemplateHtml from "../../template/helper/loading.html?raw";
 
-import UiUtils from "../utils/UiUtils.js";
-
 let loadingCounter = 0;
 
 export default class LoadingUi {
@@ -34,10 +32,6 @@ export default class LoadingUi {
         this.element = document.getElementById(this.id);
         this.bg = document.getElementById(this.idBg);
 
-        
-
-        // Center
-        UiUtils.centerElement(this.element);
         // Fade in
         requestAnimationFrame(() => {
             this.element.classList.add('visible');

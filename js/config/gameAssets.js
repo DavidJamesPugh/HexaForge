@@ -8,7 +8,7 @@ const imageMap = new ImageMap(gameConfig.imageMap.path).addImages({
   redSelection: "mouse/red.png",
   blueSelection: "mouse/selected.png",
   cantPlace: "mouse/cantPlace.png",
-  terrains: "terrains1.png",
+  terrains: "terrains2.png",
   components: "components.png",
   componentIcons: "componentIcons.png",
   transportLine: "transportLine.png",
