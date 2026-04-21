@@ -29,6 +29,7 @@ export default class TransportCalculator {
     }
   
     step(tile) {
+      if (!tile) return;
       if (!this.doneIndex[tile.getId()]) {
         const outputs = tile.getInputOutputManager().getOutputsList();
         if (outputs.length > 1) {
@@ -43,11 +44,17 @@ export default class TransportCalculator {
         this.log(`Calculate ${tile.getIdStr()}`);
   
         const component = tile.getComponent();
+        if (!component) {
+          this.log(`${tile.getIdStr()} has no component, skip transport step`);
+          return;
+        }
+
         const strategy = component.getStrategy();
         strategy.calculateTransport?.();
   
         const inputs = tile.getInputOutputManager().getInputsList();
         for (const inputTile of inputs) {
+          if (!inputTile) continue;
           this.queue.push(inputTile);
           this.log(`${inputTile.getIdStr()} added to queue`);
         }

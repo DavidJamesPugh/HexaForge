@@ -2,6 +2,7 @@
 import BackgroundLayer from "./mapLayers/BackgroundLayer.js";
 import ComponentLayer from "./mapLayers/ComponentLayer.js";
 import PackageLayer from "./mapLayers/PackageLayer.js";
+import DirectNeighborFlowLayer from "./mapLayers/DirectNeighborFlowLayer.js";
 import MouseLayer from "./mapLayers/MouseLayer.js";
 import AreasLayer from "./mapLayers/AreasLayer.js";
 import TileCoordsLayer from "./mapLayers/TileCoordsLayer.js";
@@ -21,6 +22,7 @@ export default class MapUi {
     this.backgroundLayer = new BackgroundLayer(this.imageMap, factory, { tileSize: this.tileSize });
     this.componentLayer = new ComponentLayer(this.imageMap, factory, { tileSize: this.tileSize });
     this.packageLayer = new PackageLayer(this.imageMap, factory, { tileSize: this.tileSize });
+    //this.directNeighborFlowLayer = new DirectNeighborFlowLayer(factory, { tileSize: this.tileSize });
     this.mouseLayer = new MouseLayer(this.imageMap, factory, { tileSize: this.tileSize });
     this.areasLayer = new AreasLayer(this.imageMap, factory, { tileSize: this.tileSize });
     this.tileCoordsLayer = this.game.isDevMode ? new TileCoordsLayer(factory, { tileSize: this.tileSize }) : null;
@@ -56,10 +58,14 @@ export default class MapUi {
     this.setupMapDragging();
 
     this.backgroundLayer.display(this.element);
-    if (this.tileCoordsLayer) this.tileCoordsLayer.display(this.element);
+    if (this.tileCoordsLayer) {
+      this.tileCoordsLayer.display(this.element);
+      this.tileCoordsLayer.setVisible(this.game.showTileCoords);
+    }
     this.componentLayer.display(this.element);
     
     this.packageLayer.display(this.element);
+    //this.directNeighborFlowLayer.display(this.element);
     this.mouseLayer.display(this.element);
     this.areasLayer.display(this.element);
 
@@ -69,7 +75,8 @@ export default class MapUi {
         { tileSize: this.tileSize },
         this.backgroundLayer.getCanvas(),
         this.componentLayer.getCanvas(),
-        this.packageLayer.getCanvas()
+        this.packageLayer.getCanvas(),
+        //this.directNeighborFlowLayer.getCanvas()
       ).open();
     });
 
@@ -150,6 +157,7 @@ export default class MapUi {
     if (this.tileCoordsLayer) this.tileCoordsLayer.destroy();
     this.componentLayer.destroy();
     this.packageLayer.destroy();
+    //this.directNeighborFlowLayer.destroy();
     this.mouseLayer.destroy();
     this.areasLayer.destroy();
     this.container.innerHTML = "";

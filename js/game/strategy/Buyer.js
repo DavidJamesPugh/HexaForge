@@ -1,4 +1,5 @@
 import ResourceOutput from "./helper/ResourceOutput.js";
+import DirectEdgeOutputQueues from "./helper/DirectEdgeOutputQueues.js";
 import DelayedAction from "./helper/DelayedAction.js";
 import { lcFirst } from "/js/utils/stringHelpers.js";
 import numberFormat from "/js/base/NumberFormat.js";
@@ -11,6 +12,7 @@ export default class Buyer {
     this.meta = meta;
 
     this.outResourcesManager = new ResourceOutput(component, meta.purchaseResources, meta.outputResourcesOrder);
+    this._directOut = new DirectEdgeOutputQueues();
 
     this.producer = new DelayedAction(meta.interval);
     this.producer.canStart = this.canBuy.bind(this);
@@ -71,6 +73,16 @@ export default class Buyer {
   clearContents() {
     this.outResourcesManager.reset();
     this.producer.reset();
+    this._directOut.reset();
+  }
+
+  getDirectOutputQueue(edgeTile, dir) {
+    return this._directOut.get(edgeTile, dir);
+  }
+
+  /** @deprecated Prefer getDirectOutputQueue(edgeTile, dir) for multi-tile edges */
+  getOutputQueue(dir) {
+    return this._directOut.get(this.component.getMainTile(), dir);
   }
 
   calculateOutputTick(state) {
@@ -114,10 +126,18 @@ export default class Buyer {
   exportToWriter(writer) {
     this.outResourcesManager.exportToWriter(writer);
     this.producer.exportToWriter(writer);
+    this._directOut.exportToWriter(writer);
   }
 
-  importFromReader(reader) {
+  importFromReader(reader, version) {
     this.outResourcesManager.importFromReader(reader);
     this.producer.importFromReader(reader);
+    if (version >= 10) {
+      this._directOut.importFromReaderV10(reader, this.component.getFactory());
+    } else if (version >= 9) {
+      this._directOut.importLegacyV9(reader, this.component.getMainTile());
+    } else {
+      this._directOut.reset();
+    }
   }
 }

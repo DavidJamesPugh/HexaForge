@@ -116,15 +116,22 @@ export default class Transport {
   pullFromOutsideToInputs(dir, inputQ) {
     if (!inputQ) return;
     const neighborTile = this.tile.getTileInDirection(dir);
+    if (!neighborTile) return;
     const neighborComponent = neighborTile.getComponent();
-    if (neighborComponent.getMeta().strategy.type === "transport") {
-      const outputQ = neighborComponent.getStrategy().getOutputQueue(OPPOSITE[dir]);
-      if (!inputQ.getFirst() && outputQ.getLast()) {
-        inputQ.setFirst(outputQ.getLast());
-        outputQ.unsetLast();
-      }
-      outputQ.forward();
+    if (!neighborComponent) return;
+    if (neighborComponent.getMeta().strategy.type !== "transport") return;
+
+    const nStrat = neighborComponent.getStrategy();
+    const outputQ =
+      nStrat.getDirectOutputQueue?.(neighborTile, neighborTile.getDirection(this.tile)) ??
+      nStrat.getOutputQueue(OPPOSITE[dir]);
+    if (!outputQ) return;
+
+    if (!inputQ.getFirst() && outputQ.getLast()) {
+      inputQ.setFirst(outputQ.getLast());
+      outputQ.unsetLast();
     }
+    outputQ.forward();
   }
 
   toString() {

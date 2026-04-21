@@ -42,7 +42,11 @@ export default class Sorter {
 
       for (let i = 0; i < tiles.length; i++) {
         const t = tiles[(index + i) % tiles.length];
-        const q = t.tile.getComponent().getStrategy().getOutputQueue(t.direction);
+        const srcTile = t.tile;
+        const strat = srcTile.getComponent().getStrategy();
+        const q =
+          strat.getDirectOutputQueue?.(srcTile, t.direction) ?? strat.getOutputQueue(t.direction);
+        if (!q) continue;
         const item = q.getLast();
         if (item && !this.inItem) {
           q.unsetLast();

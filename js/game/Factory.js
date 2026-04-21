@@ -6,6 +6,7 @@ import AreasManager from "./AreasManager.js";
 import FactorySetup from "./FactorySetup.js";
 import FactoryEvent from "../config/event/FactoryEvent.js";
 import BinaryArrayWriter from "/js/base/BinaryArrayWriter.js";
+import ComponentFootprint from "./ComponentFootprint.js";
 
 export default class Factory {
   constructor(meta, game) {
@@ -76,6 +77,15 @@ export default class Factory {
     return this.tiles[y * this.meta.tilesX + x];
   }
 
+  /** Rebuild per-component edge adjacency after any map/building change (neighbors do not run outputsInputsChanged). */
+  refreshAllComponentEdgeCaches() {
+    for (const tile of this.tiles) {
+      if (!tile.isMainComponentContainer()) continue;
+      const comp = tile.getComponent();
+      if (comp) comp.refreshEdgeCaches();
+    }
+  }
+
   getIsPaused() {
     return this.isPaused;
   }
@@ -88,16 +98,19 @@ export default class Factory {
     return x >= 0 && y >= 0 && x + width <= this.meta.tilesX && y + height <= this.meta.tilesY;
   }
 
-  isPossibleToBuildOnTypeWithSize(x, y, width = 1, height = 1, type) {
-    if (!this.isOnMap(x, y, width, height)) return false;
-
-    for (let dx = 0; dx < width; dx++) {
-      for (let dy = 0; dy < height; dy++) {
-        const tile = this.getTile(x + dx, y + dy);
-        if (!tile || !tile.isPossibleToBuildOnType(type) || tile.getComponent()) return false;
+  isPossibleToBuildOnTypeWithSize(x, y, width = 1, height = 1, componentMeta) {
+    ComponentFootprint.ensurePrepared(componentMeta);
+    for (const { dx, dy } of componentMeta.occupiedCells) {
+      const gx = x + dx;
+      const gy = y + dy;
+      if (gx < 0 || gy < 0 || gx >= this.meta.tilesX || gy >= this.meta.tilesY) {
+        return false;
+      }
+      const tile = this.getTile(gx, gy);
+      if (!tile || !tile.isPossibleToBuildOnType(componentMeta) || tile.getComponent()) {
+        return false;
       }
     }
-
     return true;
   }
 

@@ -1,3 +1,5 @@
+import ComponentFootprint from "../../../../game/ComponentFootprint.js";
+
 export default class DefaultStrategy {
     constructor(imageMap, { tileSize }) {
         this.imageMap = imageMap;
@@ -5,38 +7,55 @@ export default class DefaultStrategy {
     }
 
     drawComponent(ctx, tile) {
-        const meta = tile.getComponent().getMeta();
-      
-        const x = tile.getX() * this.tileSize;
-        const y = tile.getY() * this.tileSize;
-        const w = this.tileSize * meta.width;
-        const h = this.tileSize * meta.height;
-      
-        ctx.clearRect(x, y, w, h);
-      
+        const comp = tile.getComponent();
+        const meta = ComponentFootprint.ensurePrepared(comp.getMeta());
+        const ax = comp.getX();
+        const ay = comp.getY();
+        for (const { dx, dy } of meta.occupiedCells) {
+          const px = (ax + dx) * this.tileSize;
+          const py = (ay + dy) * this.tileSize;
+          ctx.clearRect(px, py, this.tileSize, this.tileSize);
+        }
         this.drawComponentLayer(ctx, tile);
       }
 
     drawComponentLayer(ctx, tile) {
         if (!tile.isMainComponentContainer()) return;
-        
-        const meta = tile.getComponent().getMeta();
-        
+
+        const comp = tile.getComponent();
+        const meta = ComponentFootprint.ensurePrepared(comp.getMeta());
         const img = this.imageMap.getImage("components");
-        const srcX = meta.spriteX * (this.tileSize + 1);
-        const srcY = meta.spriteY * (this.tileSize + 1);
-        const x = tile.getX() * this.tileSize;
-        const y = tile.getY() * this.tileSize;
-        const w = this.tileSize * meta.width;
-        const h = this.tileSize * meta.height;
+        const ax = comp.getX();
+        const ay = comp.getY();
+        const baseSrcX = meta.spriteX * (this.tileSize + 1);
+        const baseSrcY = meta.spriteY * (this.tileSize + 1);
 
-        ctx.drawImage(img, srcX, srcY, w, h, x, y, w, h);
+        for (const { dx, dy } of meta.occupiedCells) {
+          const destX = (ax + dx) * this.tileSize;
+          const destY = (ay + dy) * this.tileSize;
+          const srcX = baseSrcX + dx * this.tileSize;
+          const srcY = baseSrcY + dy * this.tileSize;
+          ctx.drawImage(
+            img,
+            srcX,
+            srcY,
+            this.tileSize,
+            this.tileSize,
+            destX,
+            destY,
+            this.tileSize,
+            this.tileSize
+          );
+        }
 
-        
-        const paused = tile.getComponent().isPaused();
+        const paused = comp.isPaused();
         const pauseColor = paused ? "red" : "green"
         const pauseIndicatorWidth = 8;
         const roundness = paused ? [0,0,0,0]: [0,0,0,45];
+        const x = ax * this.tileSize;
+        const y = ay * this.tileSize;
+        const w = this.tileSize * meta.width;
+        const h = this.tileSize * meta.height;
         const pauseIndicatorTranslateX = (x - pauseIndicatorWidth) + w;
         const pauseIndicatorTranslateY = (y - pauseIndicatorWidth) + h;
         let pauseIndicatorX = -2;
@@ -55,10 +74,10 @@ export default class DefaultStrategy {
         ctx.fillStyle = pauseColor;
 
         ctx.beginPath();
-        ctx.roundRect(pauseIndicatorX,pauseIndicatorY,
-            pauseIndicatorWidth,pauseIndicatorWidth, roundness);
-        ctx.fill();
-        ctx.stroke();
+        // ctx.roundRect(pauseIndicatorX,pauseIndicatorY,
+        //     pauseIndicatorWidth,pauseIndicatorWidth, roundness);
+        // ctx.fill();
+        // ctx.stroke();
         ctx.restore();
     }
 }

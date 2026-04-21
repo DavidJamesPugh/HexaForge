@@ -1,3 +1,5 @@
+import ComponentFootprint from "../game/ComponentFootprint.js";
+
 export default class Ruleset {
     /**
      * Prepares meta object by building lookup tables for all collections
@@ -27,6 +29,9 @@ export default class Ruleset {
       // Components
       if (meta.components) {
         ({ byId: meta.componentsById, byIdNum: meta.componentsByIdNum } = buildLookup(meta.components));
+        for (const c of meta.components) {
+          ComponentFootprint.ensurePrepared(c);
+        }
       }
 
       // Factories

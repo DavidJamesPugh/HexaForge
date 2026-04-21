@@ -1,5 +1,6 @@
 import InputOutputManager from "./InputOutputManager.js";
 import Component from "./Component.js";
+import ComponentFootprint from "./ComponentFootprint.js";
 
 const DIRECTIONS = {
   top: [0, -1],
@@ -104,12 +105,11 @@ export default class Tile {
 
   setComponent(componentMeta) {
     if (componentMeta) {
+      ComponentFootprint.ensurePrepared(componentMeta);
       const newComponent = new Component(this.factory, this.x, this.y, componentMeta);
-      for (let i = 0; i < componentMeta.width; i++) {
-        for (let j = 0; j < componentMeta.height; j++) {
-          const tile = this.factory.getTile(this.x + i, this.y + j);
-          if (tile) tile.component = newComponent;
-        }
+      for (const { dx, dy } of componentMeta.occupiedCells) {
+        const tile = this.factory.getTile(this.x + dx, this.y + dy);
+        if (tile) tile.component = newComponent;
       }
       this.component = newComponent;
     } else {

@@ -23,8 +23,8 @@ export default class Game {
     this.em = GameContext.gameUiBus;
     this.factories = {};
     this.isDevMode = isDevMode;
-    /** Dev: show/hide factory map tile coordinate overlay (MainUi toggle). */
-    this.showTileCoords = Boolean(isDevMode);
+    /** Factory map tile coordinate overlay (MainUi dev toggle); default off at start. */
+    this.showTileCoords = false;
 
     for (const key in meta.factories) {
       const f = meta.factories[key];
@@ -112,7 +112,7 @@ export default class Game {
   exportToWriter() {
     const writer = new BinaryArrayWriter();
     
-    writer.writeUint16(8);
+    writer.writeUint16(10);
     writer.writeFloat64(this.money);
     writer.writeFloat64(this.researchPoints);
     writer.writeInt8(this.isPremium ? 1 : 0);

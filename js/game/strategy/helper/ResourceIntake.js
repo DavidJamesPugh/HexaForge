@@ -25,9 +25,11 @@ export default class ResourceIntake {
           allowed = this.component.getFactory().getGame().getResearchManager().getResearch(inputMeta.requiresResearch) > 0;
         }
         if (allowed) {
+          const resMeta = resourcesMeta[res];
+          if (!resMeta) continue;
           desc.stock.push({
             resourceId: res,
-            resourceName: resourcesMeta[res].nameShort,
+            resourceName: resMeta.nameShort,
             amount: this.resources[res],
             max: this.getMax(res),
           });
@@ -36,9 +38,17 @@ export default class ResourceIntake {
     }
   
     getMax(res) {
+      const input = this.inputResources?.[res];
+      if (!input) return 0;
       const meta = this.component.getMeta();
       const bonuses = this.component.getFactory().getUpgradesManager().getComponentBonuses(meta.applyUpgradesFrom ?? meta.id);
-      return this.inputResources[res].max * bonuses.maxStorageBonus;
+      const cap =
+        input.max != null && input.max > 0
+          ? input.max
+          : input.perOutputResource != null
+            ? 20 * input.perOutputResource
+            : 1e6;
+      return cap * bonuses.maxStorageBonus;
     }
   
     takeIn() {
@@ -49,7 +59,12 @@ export default class ResourceIntake {
   
         for (let i = 0; i < tiles.length && this.resources[res] < this.getMax(res); i++) {
           const tile = tiles[(offset + i) % tiles.length];
-          const outputQ = tile.tile.getComponent().getStrategy().getOutputQueue(tile.direction);
+          const srcTile = tile.tile;
+          const strat = srcTile.getComponent().getStrategy();
+          const outputQ =
+            strat.getDirectOutputQueue?.(srcTile, tile.direction) ??
+            strat.getOutputQueue?.(tile.direction);
+          if (!outputQ) continue;
           const last = outputQ.getLast();
           if (last && last.getResourceId() === res) {
             outputQ.unsetLast();
@@ -62,7 +77,12 @@ export default class ResourceIntake {
       }
   
       for (const tile of tiles) {
-        tile.tile.getComponent().getStrategy().getOutputQueue(tile.direction).forward();
+        const srcTile = tile.tile;
+        const strat = srcTile.getComponent().getStrategy();
+        const q =
+          strat.getDirectOutputQueue?.(srcTile, tile.direction) ??
+          strat.getOutputQueue?.(tile.direction);
+        if (q) q.forward();
       }
     }
   

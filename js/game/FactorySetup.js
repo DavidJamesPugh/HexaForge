@@ -11,6 +11,7 @@ export default class FactorySetup {
   init() {
     this._initComponents();
     this._initTransportLines();
+    this.factory.refreshAllComponentEdgeCaches();
     return this;
   }
 

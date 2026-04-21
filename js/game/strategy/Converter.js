@@ -1,6 +1,7 @@
 // game/strategy/Converter.js
 import ResourceIntake from "./helper/ResourceIntake.js";
 import ResourceOutput from "./helper/ResourceOutput.js";
+import DirectEdgeOutputQueues from "./helper/DirectEdgeOutputQueues.js";
 import DelayedAction from "./helper/DelayedAction.js";
 import { arrayToHumanStr } from "/js/utils/arrayHelpers.js";
 import { lcFirst } from "/js/utils/stringHelpers.js";
@@ -12,6 +13,7 @@ export default class Converter {
 
     this.inResourcesManager = new ResourceIntake(component, meta.inputResources, meta.production);
     this.outResourcesManager = new ResourceOutput(component, meta.production, meta.outputResourcesOrder);
+    this._directOut = new DirectEdgeOutputQueues();
     this.producer = new DelayedAction(meta.interval);
 
     // Bind hooks
@@ -24,6 +26,16 @@ export default class Converter {
     this.inResourcesManager.reset();
     this.outResourcesManager.reset();
     this.producer.reset();
+    this._directOut.reset();
+  }
+
+  getDirectOutputQueue(edgeTile, dir) {
+    return this._directOut.get(edgeTile, dir);
+  }
+
+  /** @deprecated Prefer getDirectOutputQueue(edgeTile, dir) for multi-tile edges */
+  getOutputQueue(dir) {
+    return this._directOut.get(this.component.getMainTile(), dir);
   }
 
   static getMetaUseAmount(meta, resourceId, factory) {
@@ -132,11 +144,19 @@ export default class Converter {
     this.outResourcesManager.exportToWriter(writer);
     this.inResourcesManager.exportToWriter(writer);
     this.producer.exportToWriter(writer);
+    this._directOut.exportToWriter(writer);
   }
 
   importFromReader(reader, version) {
     this.outResourcesManager.importFromReader(reader, version);
     this.inResourcesManager.importFromReader(reader, version);
     this.producer.importFromReader(reader, version);
+    if (version >= 10) {
+      this._directOut.importFromReaderV10(reader, this.component.getFactory());
+    } else if (version >= 9) {
+      this._directOut.importLegacyV9(reader, this.component.getMainTile());
+    } else {
+      this._directOut.reset();
+    }
   }
 }

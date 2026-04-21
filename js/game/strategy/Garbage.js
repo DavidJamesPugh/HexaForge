@@ -43,7 +43,11 @@ export default class Garbage {
 
     for (let i = 0; i < tiles.length; i++) {
       const t = tiles[(index + i) % tiles.length];
-      const q = t.tile.getComponent().getStrategy().getOutputQueue(t.direction);
+      const srcTile = t.tile;
+      const strat = srcTile.getComponent().getStrategy();
+      const q =
+        strat.getDirectOutputQueue?.(srcTile, t.direction) ?? strat.getOutputQueue?.(t.direction);
+      if (!q) continue;
       if (q.getLast() && this.noOfItems < this.getMax()) {
         q.unsetLast();
         index = (index + i + 1) % tiles.length;

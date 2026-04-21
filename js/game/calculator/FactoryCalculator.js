@@ -53,6 +53,7 @@ export default class FactoryCalculator {
   setup() {
     this.factory.getEventManager().addListener("FactoryCalculator", FactoryEvent.FACTORY_COMPONENTS_CHANGED, () => {
       this.cachesOk = false;
+      this.factory.refreshAllComponentEdgeCaches();
     });
   }
 

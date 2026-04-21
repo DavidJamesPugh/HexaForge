@@ -1,6 +1,7 @@
 import DefaultStrategy from "./strategy/Default.js";
 import TrackStrategy from "./strategy/Track.js";
 import FactoryEvent from "/js/config/event/FactoryEvent.js"; // assuming
+import ComponentFootprint from "../../../game/ComponentFootprint.js";
 
 export default class ComponentLayer {
   constructor(imageMap, factory, options) {
@@ -93,7 +94,8 @@ export default class ComponentLayer {
       // Skip drawing components whose main tile is not inside bought areas, to match visibility rules
       // If areas are not used, this no-ops
       const areas = this.factory.getAreasManager?.();
-      if (areas && !areas.canBuildAt(tile.getX(), tile.getY(), tile.getComponent().getMeta().width, tile.getComponent().getMeta().height)) {
+      const compMeta = ComponentFootprint.ensurePrepared(tile.getComponent().getMeta());
+      if (areas && !areas.canBuildAt(tile.getX(), tile.getY(), compMeta.footprintWidth, compMeta.footprintHeight)) {
         continue;
       }
       const strategyName = tile.getComponent().getMeta().drawStrategy || "default";

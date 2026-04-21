@@ -1,4 +1,5 @@
 import Package from "./Package.js";
+import DirectNeighborTransfer from "./DirectNeighborTransfer.js";
 
 export default class ResourceOutput {
   constructor(component, handledResources, outputResourcesOrder) {
@@ -19,9 +20,11 @@ export default class ResourceOutput {
     desc.stock ||= [];
     const resourcesMeta = this.component.getFactory().getGame().getMeta().resourcesById;
     for (const id in this.resources) {
+      const resMeta = resourcesMeta[id];
+      if (!resMeta || !this.handledResources?.[id]) continue;
       desc.stock.push({
         resourceId: id,
-        resourceName: resourcesMeta[id].nameShort,
+        resourceName: resMeta.nameShort,
         amount: this.resources[id],
         max: this.getMax(id),
       });
@@ -29,12 +32,14 @@ export default class ResourceOutput {
   }
 
   getMax(resId) {
+    const handled = this.handledResources?.[resId];
+    if (!handled) return 0;
     const meta = this.component.getMeta();
     const bonuses = this.component
       .getFactory()
       .getUpgradesManager()
       .getComponentBonuses(meta.applyUpgradesFrom ?? meta.id);
-    return this.handledResources[resId].max * bonuses.maxStorageBonus;
+    return handled.max * bonuses.maxStorageBonus;
   }
 
   static getMetaOutputAmount(meta, factory) {
@@ -53,12 +58,32 @@ export default class ResourceOutput {
       if (!resourceId) break;
       const tileInfo = tiles[this.distributeTileIndex];
       this.distributeTileIndex = (this.distributeTileIndex + 1) % tiles.length;
-      const inputQueue = tileInfo.tile.getComponent().getStrategy().getInputQueue(tileInfo.oppositeDirection);
-      if (!inputQueue.getFirst()) {
-        const amount = this.getOutputAmount();
-        inputQueue.setFirst(new Package(resourceId, amount, this.component.getFactory()));
-        this.resources[resourceId] -= amount;
-        this.outResourceSelectionIndex = (this.outResourceSelectionIndex + 1) % this.outputResourcesOrder.length;
+      const neighbor = tileInfo.tile.getComponent();
+      const neighborStrat = neighbor.getStrategy();
+      const inputQueue = neighborStrat.getInputQueue?.(tileInfo.oppositeDirection);
+      if (inputQueue) {
+        if (!inputQueue.getFirst()) {
+          const amount = this.getOutputAmount();
+          inputQueue.setFirst(new Package(resourceId, amount, this.component.getFactory()));
+          this.resources[resourceId] -= amount;
+          this.outResourceSelectionIndex = (this.outResourceSelectionIndex + 1) % this.outputResourcesOrder.length;
+        }
+        continue;
+      }
+      if (
+        tileInfo.directEdge &&
+        DirectNeighborTransfer.acceptsResourceForDirectInput(neighbor.getMeta(), resourceId)
+      ) {
+        const outDir = tileInfo.from.getDirection(tileInfo.tile);
+        const outQ =
+          this.component.getStrategy().getDirectOutputQueue?.(tileInfo.from, outDir) ??
+          this.component.getStrategy().getOutputQueue?.(outDir);
+        if (outQ && !outQ.getLast()) {
+          const amount = this.getOutputAmount();
+          outQ.setLast(new Package(resourceId, amount, this.component.getFactory()));
+          this.resources[resourceId] -= amount;
+          this.outResourceSelectionIndex = (this.outResourceSelectionIndex + 1) % this.outputResourcesOrder.length;
+        }
       }
     }
   }

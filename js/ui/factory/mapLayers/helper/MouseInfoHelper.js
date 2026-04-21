@@ -1,5 +1,6 @@
 // src/ui/factory/mapLayers/helper/MouseInfoHelper.js
 import BuyComponentAction from "../../../../game/action/BuyComponentAction.js";
+import ComponentFootprint from "../../../../game/ComponentFootprint.js";
 import TipUi from "../../../../ui/helper/TipUi.js";
 
 export default class MouseInfoHelper {
@@ -36,16 +37,16 @@ export default class MouseInfoHelper {
         return;
     }
 
-    const compMeta = this.game.getMeta().componentsById[componentId];
+    const compMeta = ComponentFootprint.ensurePrepared(this.game.getMeta().componentsById[componentId]);
     const tile = this.factory.getTile(pos.x, pos.y);
     const buyAction = new BuyComponentAction(tile, compMeta);
 
-    const isOutOfMap = !this.factory.isOnMap(pos.x, pos.y, compMeta.width, compMeta.height);
+    const isOutOfMap = !this.factory.isOnMap(pos.x, pos.y, compMeta.footprintWidth, compMeta.footprintHeight);
     const canBuildType = this.factory.isPossibleToBuildOnTypeWithSize(
-        pos.x, pos.y, compMeta.width, compMeta.height, compMeta
+        pos.x, pos.y, compMeta.footprintWidth, compMeta.footprintHeight, compMeta
     );
     const canBuildArea = this.factory.getAreasManager().canBuildAt(
-        pos.x, pos.y, compMeta.width, compMeta.height
+        pos.x, pos.y, compMeta.footprintWidth, compMeta.footprintHeight
     );
 
     // Handle build mode / out-of-map
@@ -70,18 +71,13 @@ export default class MouseInfoHelper {
   updateComponentSelected(component) {
     if (!component) return this.turnOffComponentSelected();
 
-    const meta = component.getMeta();
+    const meta = ComponentFootprint.ensurePrepared(component.getMeta());
     if (!this.componentSelectedElement) {
-      this.componentSelectedElement = this.createOverlayElement("rgba(56, 189, 248, 0.35)", "blueSelection");
+      this.componentSelectedElement = this._createFootprintOverlayRoot();
       this.container.appendChild(this.componentSelectedElement);
     }
 
-    this.setElementStyle(this.componentSelectedElement, {
-      left: component.getX() * this.tileSize + "px",
-      top: component.getY() * this.tileSize + "px",
-      width: this.tileSize * meta.width + "px",
-      height: this.tileSize * meta.height + "px",
-    });
+    this._layoutFootprintOverlay(this.componentSelectedElement, component.getX(), component.getY(), meta, "blueSelection", "rgba(56, 189, 248, 0.35)");
   }
 
   turnOffComponentSelected() {
@@ -92,18 +88,13 @@ export default class MouseInfoHelper {
   }
 
   updateBuildMode(componentId, pos) {
-    const meta = this.game.getMeta().componentsById[componentId];
+    const meta = ComponentFootprint.ensurePrepared(this.game.getMeta().componentsById[componentId]);
     if (!this.mouseSelectionElement) {
-      this.mouseSelectionElement = this.createOverlayElement("rgba(250, 204, 21, 0.4)", "yellowSelection");
+      this.mouseSelectionElement = this._createFootprintOverlayRoot();
       this.container.appendChild(this.mouseSelectionElement);
     }
 
-    this.setElementStyle(this.mouseSelectionElement, {
-      left: pos.x * this.tileSize + "px",
-      top: pos.y * this.tileSize + "px",
-      width: this.tileSize * meta.width + "px",
-      height: this.tileSize * meta.height + "px",
-    });
+    this._layoutFootprintOverlay(this.mouseSelectionElement, pos.x, pos.y, meta, "yellowSelection", "rgba(250, 204, 21, 0.4)");
   }
 
   turnOffBuildMode() {
@@ -114,18 +105,13 @@ export default class MouseInfoHelper {
   }
 
   updateCantBuildMode(componentId, pos) {
-    const meta = this.game.getMeta().componentsById[componentId];
+    const meta = ComponentFootprint.ensurePrepared(this.game.getMeta().componentsById[componentId]);
     if (!this.cantPlaceElement) {
-      this.cantPlaceElement = this.createOverlayElement("rgba(248, 113, 113, 0.45)", "cantPlace");
+      this.cantPlaceElement = this._createFootprintOverlayRoot();
       this.container.appendChild(this.cantPlaceElement);
     }
 
-    this.setElementStyle(this.cantPlaceElement, {
-      left: pos.x * this.tileSize + "px",
-      top: pos.y * this.tileSize + "px",
-      width: this.tileSize * meta.width + "px",
-      height: this.tileSize * meta.height + "px",
-    });
+    this._layoutFootprintOverlay(this.cantPlaceElement, pos.x, pos.y, meta, "cantPlace", "rgba(248, 113, 113, 0.45)");
   }
 
   turnOffCantBuildMode() {
@@ -154,6 +140,39 @@ export default class MouseInfoHelper {
   }
 
   // --- Helper functions ---
+
+  _createFootprintOverlayRoot() {
+    const el = document.createElement("div");
+    el.style.position = "absolute";
+    el.style.pointerEvents = "none";
+    el.style.zIndex = "100";
+    el.style.width = "0";
+    el.style.height = "0";
+    el.style.overflow = "visible";
+    return el;
+  }
+
+  /**
+   * One tile-sized overlay per occupied cell so L-shapes match the footprint (not the bbox).
+   */
+  _layoutFootprintOverlay(root, anchorX, anchorY, meta, imageName, fallbackColor) {
+    root.replaceChildren();
+    this.setElementStyle(root, {
+      left: anchorX * this.tileSize + "px",
+      top: anchorY * this.tileSize + "px",
+    });
+    for (const { dx, dy } of meta.occupiedCells) {
+      const cell = this.createOverlayElement(fallbackColor, imageName);
+      this.setElementStyle(cell, {
+        position: "absolute",
+        left: dx * this.tileSize + "px",
+        top: dy * this.tileSize + "px",
+        width: this.tileSize + "px",
+        height: this.tileSize + "px",
+      });
+      root.appendChild(cell);
+    }
+  }
 
   createOverlayElement(color, imageName) {
     const el = document.createElement("div");

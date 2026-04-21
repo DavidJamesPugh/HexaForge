@@ -19,8 +19,8 @@ export default class BuyComponentAction {
       this.factory.isPossibleToBuildOnTypeWithSize(
         this.tile.getX(),
         this.tile.getY(),
-        this.componentMeta.width,
-        this.componentMeta.height,
+        this.componentMeta.footprintWidth,
+        this.componentMeta.footprintHeight,
         this.componentMeta
       ) &&
       (isDevMode || !(this.componentMeta.price > this.factory.getGame().getMoney())) &&
@@ -28,8 +28,8 @@ export default class BuyComponentAction {
       (isDevMode || this.factory.getAreasManager().canBuildAt(
         this.tile.getX(),
         this.tile.getY(),
-        this.componentMeta.width,
-        this.componentMeta.height
+        this.componentMeta.footprintWidth,
+        this.componentMeta.footprintHeight
       ))
     );
   }

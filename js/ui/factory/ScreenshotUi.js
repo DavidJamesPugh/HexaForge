@@ -1,12 +1,13 @@
 // ScreenShotUi.js
 export default class ScreenShotUi {
-    constructor(factory, { tileSize }, backgroundCanvas, componentsCanvas, packagesCanvas) {
+    constructor(factory, { tileSize }, backgroundCanvas, componentsCanvas, packagesCanvas, directFlowCanvas = null) {
       this.tileSize = tileSize;
       this.tilesX = factory.getMeta().tilesX;
       this.tilesY = factory.getMeta().tilesY;
       this.backgroundCanvas = backgroundCanvas;
       this.componentsCanvas = componentsCanvas;
       this.packagesCanvas = packagesCanvas;
+      this.directFlowCanvas = directFlowCanvas;
     }
   
     open() {
@@ -18,6 +19,7 @@ export default class ScreenShotUi {
       ctx.drawImage(this.backgroundCanvas, 0, 0);
       ctx.drawImage(this.componentsCanvas, 0, 0);
       ctx.drawImage(this.packagesCanvas, 0, 0);
+      if (this.directFlowCanvas) ctx.drawImage(this.directFlowCanvas, 0, 0);
   
       window.open("about:blank", "image from canvas").document.write(`
         <html>

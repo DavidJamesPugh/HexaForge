@@ -1,5 +1,6 @@
 import ResourceIntake from "./helper/ResourceIntake";
 import ResourceOutput from "./helper/ResourceOutput";
+import DirectEdgeOutputQueues from "./helper/DirectEdgeOutputQueues.js";
 import DelayedAction from "./helper/DelayedAction";
 import { lcFirst } from "/js/utils/stringHelpers.js";
 import { arrayToHumanStr } from "/js/utils/arrayHelpers.js";
@@ -10,6 +11,7 @@ export default class Lab {
         this.meta = meta;
         this.inResourcesManager = new ResourceIntake(component, meta.inputResources);
         this.outResourcesManager = new ResourceOutput(component, meta.production, meta.outputResourcesOrder);
+        this._directOut = new DirectEdgeOutputQueues();
         this.productionBonus = 0;
         this.producer = new DelayedAction(meta.interval);
         this.producer.canStart = this.canStartProduction.bind(this);
@@ -21,6 +23,15 @@ export default class Lab {
         this.inResourcesManager.reset();
         this.outResourcesManager.reset();
         this.producer.reset();
+        this._directOut.reset();
+    }
+
+    getDirectOutputQueue(edgeTile, dir) {
+        return this._directOut.get(edgeTile, dir);
+    }
+
+    getOutputQueue(dir) {
+        return this._directOut.get(this.component.getMainTile(), dir);
     }
 
     static isProducing(game, meta, resourceId) {
@@ -122,12 +133,18 @@ export default class Lab {
         this.outResourcesManager.exportToWriter(writer);
         this.inResourcesManager.exportToWriter(writer);
         this.producer.exportToWriter(writer);
+        this._directOut.exportToWriter(writer);
     }
 
-    importFromReader(reader) {
+    importFromReader(reader, version) {
         this.productionBonus = reader.readUint32();
         this.outResourcesManager.importFromReader(reader);
         this.inResourcesManager.importFromReader(reader);
         this.producer.importFromReader(reader);
+        if (version >= 10) {
+            this._directOut.importFromReaderV10(reader, this.component.getFactory());
+        } else {
+            this._directOut.reset();
+        }
     }
 }

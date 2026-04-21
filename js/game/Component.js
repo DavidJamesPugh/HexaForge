@@ -1,5 +1,7 @@
 import StrategyFactory from "./strategy/Factory.js";
 import numberFormat from "/js/base/NumberFormat.js";
+import ComponentFootprint from "./ComponentFootprint.js";
+import DirectNeighborTransfer from "./strategy/helper/DirectNeighborTransfer.js";
 
 export default class Component {
   constructor(factory, x, y, meta) {
@@ -44,36 +46,86 @@ export default class Component {
     return Component.getMetaRunningCostPerTick(this.meta, this.factory);
   }
 
-  _checkForSurroundedInputsOutputs(x, y, direction) {
-    const tile = this.factory.getTile(x, y);
-    
-    const outputs = tile.getInputOutputManager().getOutputsByDirection()[direction];
-    if (outputs) {
-      this.surroundedOutputTiles.push({
-        tile: outputs,
-        from: tile,
-        direction: tile.getDirection(outputs),
-        oppositeDirection: outputs.getDirection(tile),
-      });
-    }
-    const inputs = tile.getInputOutputManager().getInputsByDirection()[direction];
-    if (inputs) {
-      this.surroundedInputTiles.push({
-        tile: inputs,
-        from: tile,
-        direction: inputs.getDirection(tile),
-        oppositeDirection: tile.getDirection(inputs),
-      });
-    }
-  }
-
   _updateSurroundedTilesCache() {
     this.surroundedInputTiles = [];
     this.surroundedOutputTiles = [];
-    for (let x = this.x; x < this.x + this.meta.width; x++) this._checkForSurroundedInputsOutputs(x, this.y, "top");
-    for (let y = this.y; y < this.y + this.meta.height; y++) this._checkForSurroundedInputsOutputs(this.x + this.meta.width - 1, y, "right");
-    for (let x = this.x + this.meta.width - 1; x >= this.x; x--) this._checkForSurroundedInputsOutputs(x, this.y + this.meta.height - 1, "bottom");
-    for (let y = this.y + this.meta.height - 1; y >= this.y; y--) this._checkForSurroundedInputsOutputs(this.x, y, "left");
+    const meta = ComponentFootprint.ensurePrepared(this.meta);
+    const ax = this.x;
+    const ay = this.y;
+    const occRel = new Set(meta.occupiedCells.map((c) => `${c.dx},${c.dy}`));
+    const isSameShapeCell = (gx, gy) => occRel.has(`${gx - ax},${gy - ay}`);
+
+    ComponentFootprint.eachOccupied(ax, ay, meta, (wx, wy) => {
+      const tile = this.factory.getTile(wx, wy);
+      if (!tile) return;
+
+      for (const dir of ComponentFootprint.CARDINAL) {
+        const [dx, dy] = ComponentFootprint.DELTA[dir];
+        const nx = wx + dx;
+        const ny = wy + dy;
+        if (isSameShapeCell(nx, ny)) continue;
+
+        const neighborTile = this.factory.getTile(nx, ny);
+        if (!neighborTile) continue;
+
+        const nComp = neighborTile.getComponent();
+        const myComp = tile.getComponent();
+
+        const outLinked = tile.getInputOutputManager().getOutputsByDirection()[dir];
+        if (outLinked && outLinked.getId() === neighborTile.getId()) {
+          this.surroundedOutputTiles.push({
+            tile: outLinked,
+            from: tile,
+            direction: tile.getDirection(outLinked),
+            oppositeDirection: outLinked.getDirection(tile),
+            directEdge: false,
+          });
+        } else if (
+          nComp &&
+          nComp !== myComp &&
+          DirectNeighborTransfer.canDirectEdgeOutput(nComp.getMeta())
+        ) {
+          this.surroundedOutputTiles.push({
+            tile: neighborTile,
+            from: tile,
+            direction: tile.getDirection(neighborTile),
+            oppositeDirection: neighborTile.getDirection(tile),
+            directEdge: true,
+          });
+        }
+
+        const inLinked = tile.getInputOutputManager().getInputsByDirection()[dir];
+        if (inLinked && inLinked.getId() === neighborTile.getId()) {
+          this.surroundedInputTiles.push({
+            tile: inLinked,
+            from: tile,
+            direction: inLinked.getDirection(tile),
+            oppositeDirection: tile.getDirection(inLinked),
+            directEdge: false,
+          });
+        } else if (
+          nComp &&
+          nComp !== myComp &&
+          DirectNeighborTransfer.canDirectEdgeInputSource(nComp.getMeta())
+        ) {
+          this.surroundedInputTiles.push({
+            tile: neighborTile,
+            from: tile,
+            direction: neighborTile.getDirection(tile),
+            oppositeDirection: tile.getDirection(neighborTile),
+            directEdge: true,
+          });
+        }
+      }
+    });
+  }
+
+  /**
+   * Recompute direct / conveyor adjacency only (no inventory reset).
+   * Call when a neighbor building is placed or removed so edge lists stay in sync.
+   */
+  refreshEdgeCaches() {
+    this._updateSurroundedTilesCache();
   }
 
   outputsInputsChanged() {

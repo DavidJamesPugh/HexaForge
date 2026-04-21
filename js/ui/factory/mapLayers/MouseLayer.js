@@ -5,6 +5,7 @@ import UpdateComponentInputOutputAction from "../../../game/action/UpdateCompone
 import UpdateTileAction from "../../../game/action/UpdateTileAction.js";
 import MouseInfoHelper from "./helper/MouseInfoHelper.js";
 import FactoryEvent from "/js/config/event/FactoryEvent.js";
+import ComponentFootprint from "../../../game/ComponentFootprint.js";
 
 const LAYER_MOUSE = "LayerMouse";
 
@@ -26,7 +27,9 @@ class MouseLayer {
   _tilePointerEventFromClient(e) {
     let size = { width: 1, height: 1 };
     if (this.selectedComponentMetaId) {
-      size = this.game.getMeta().componentsById[this.selectedComponentMetaId];
+      const compMeta = this.game.getMeta().componentsById[this.selectedComponentMetaId];
+      ComponentFootprint.ensurePrepared(compMeta);
+      size = { width: compMeta.footprintWidth, height: compMeta.footprintHeight };
     }
     const rect = this.element.getBoundingClientRect();
     const localX = e.clientX - rect.left - (this.tileSize * size.width) / 2;
@@ -234,11 +237,15 @@ class MouseLayer {
   }
 
   sellComponent(event) {
-    const meta = this.game.getMeta().componentsById[this.selectedComponentMetaId];
+    const meta = this.selectedComponentMetaId
+      ? ComponentFootprint.ensurePrepared(
+          this.game.getMeta().componentsById[this.selectedComponentMetaId]
+        )
+      : null;
     const action = new SellComponentAction(
       this.factory.getTile(event.x, event.y),
-      meta ? meta.width : 1,
-      meta ? meta.height : 1
+      meta ? meta.footprintWidth : 1,
+      meta ? meta.footprintHeight : 1
     );
     if (action.canSell()) action.sell();
   }
