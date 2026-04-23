@@ -46,6 +46,22 @@ export default function GoogleAdsUi() {
 
   main.classList.add("mainWithAdd");
 
+  // Keep factory grid (100dvh - inset) in sync with actual space used above #gameArea.
+  const syncTopInset = () => {
+    const gameArea = document.getElementById("gameArea");
+    if (!gameArea) return;
+    const t = gameArea.getBoundingClientRect().top;
+    // On #main so it wins over :root; .factoryGrid inherits. Keeps layout height in sync with ad rows above #gameArea.
+    main.style.setProperty("--main-top-inset", `${Math.max(0, Math.round(t))}px`);
+  };
+  const onResize = () => {
+    syncTopInset();
+  };
+  window.addEventListener("resize", onResize, { passive: true });
+  requestAnimationFrame(() => {
+    requestAnimationFrame(syncTopInset);
+  });
+
   // Initialize ads
   window.adsbygoogle = window.adsbygoogle || [];
   window.adsbygoogle.push({});

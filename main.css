@@ -47,6 +47,17 @@
     --drawer-width-md: 560px;
     --drawer-width-lg: 840px;
     --drawer-speed: 300ms;
+
+    /* Factory view: #gameArea sits below top ad strip when .mainWithAdd; grid height must not be a full 100vh or the bar scrolls off-screen. */
+    --main-top-inset: 0px;
+    /* Centered .main max width — must match .main { max-width } (horizontal margin from viewport) */
+    --main-layout-max: 1200px;
+    /* Factory component sidebar width — keep in sync with .factoryGrid column 1 */
+    --factory-sidebar-w: 220px;
+    /* Horizontal offset to align with centered main column: max(0, (100vw - W) / 2) */
+    --main-layout-gutter: max(0px, calc((100vw - min(100vw, var(--main-layout-max))) / 2));
+    /* Room for fixed .factoryGrid-info (component info) above map; adjust if the info panel grows */
+    --factory-info-bottom-pad: clamp(3.25rem, 10vh, 9rem);
 }
 
 .drawer-bg {
@@ -1940,7 +1951,7 @@ div.vis-color-picker input.vis-range {
 }
 
 .factories .factoryButton .factoryPreview.locked {
-    background: var(--bg-tertiary) url('img/previewLock.png') no-repeat center center;
+    background: var(--bg-tertiary) url('../img/previewLock.png') no-repeat center center;
     background-size: 24px 24px;
     opacity: 0.4;
 }
@@ -2192,14 +2203,15 @@ div.vis-color-picker input.vis-range {
 
 .factoryGrid {
     display: grid;
-    grid-template-columns: 220px 1fr;
-    grid-template-rows: auto auto 1fr auto;
+    grid-template-columns: var(--factory-sidebar-w) 1fr;
+    /* Fourth row is 0: .factoryGrid-info is position:fixed to the viewport bottom so it stays visible when top ads grow page height. */
+    grid-template-rows: auto auto minmax(0, 1fr) 0;
     grid-template-areas:
         "status  status"
         "nav     nav"
         "sidebar main"
         "info    info";
-    height: calc(100vh - 10px);
+    height: calc(100dvh - 10px - var(--main-top-inset, 0px));
     min-height: 500px;
     overflow: hidden;
 }
@@ -2260,6 +2272,8 @@ div.vis-color-picker input.vis-range {
     overflow: hidden;
     position: relative;
     min-height: 0;
+    padding-bottom: calc(var(--factory-info-bottom-pad) + env(safe-area-inset-bottom, 0px));
+    box-sizing: border-box;
 }
 
 .factoryGrid-main .mapContainer {
@@ -2269,11 +2283,23 @@ div.vis-color-picker input.vis-range {
 
 .factoryGrid-info {
     grid-area: info;
+    position: fixed;
+    /* Main column only — align with .factoryGrid map area so the bar does not sit over the components list */
+    left: calc(var(--main-layout-gutter) + var(--factory-sidebar-w));
+    right: var(--main-layout-gutter);
+    width: auto;
+    bottom: env(safe-area-inset-bottom, 0px);
+    z-index: 20;
+    box-sizing: border-box;
+    border-top-left-radius: var(--radius-md);
     border-top: 1px solid var(--border-secondary);
     padding: 6px 10px;
     min-height: 40px;
-    overflow: hidden;
+    max-height: 45vh;
+    overflow-x: hidden;
+    overflow-y: auto;
     background: var(--bg-secondary);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.35);
 }
 
 .factoryGrid-status .overviewContainer {

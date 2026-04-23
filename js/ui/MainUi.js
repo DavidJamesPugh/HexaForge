@@ -7,6 +7,7 @@ import globalUiBus from "../base/GlobalUiBus.js";
 import RunningInBackgroundInfoUi from "./RunningInBackgroundInfoUi.js";
 import AlertUi from "./helper/AlertUi.js";
 import IntroUi from "./IntroUi.js";
+import GoogleAdsUi from "./GoogleAdsUi.js";
 
 export default class MainUi {
     constructor(play, imageMap) {
