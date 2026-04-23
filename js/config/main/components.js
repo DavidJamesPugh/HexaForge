@@ -138,7 +138,7 @@ const scale = (base, exponent) => base * Math.pow(1000, exponent);
                     height: 2,
                     spriteX: 0,
                     spriteY: 0,
-                    occupiedCells: [[0,0],[1,0],[1,1]],
+                    occupiedCells: [[0,0],[1,0],[2,0],[3,0],[0,1],[3,1]],
                     iconX: 3,
                     iconY: 0,
                     runningCostPerTick: 0,

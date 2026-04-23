@@ -19,7 +19,7 @@ export default function GoogleAdsUi() {
     `<div style="float:right;width:320px;height:100px">
       <ins class="adsbygoogle"
         style="display:inline-block;width:320px;height:100px"
-        data-ad-client="ca-pub-2388056053538220"
+        data-ad-client="ca-pub-3638495999842466"
         data-ad-slot="4288235097"></ins>
     </div>`
   );
@@ -29,7 +29,7 @@ export default function GoogleAdsUi() {
     `<div style="float:left;width:728px;height:90px">
       <ins class="adsbygoogle"
         style="display:inline-block;width:728px;height:90px"
-        data-ad-client="ca-pub-2388056053538220"
+        data-ad-client="ca-pub-3638495999842466"
         data-ad-slot="2811501890"></ins>
     </div>`
   );
@@ -39,7 +39,7 @@ export default function GoogleAdsUi() {
     `<div style="float:right;width:300px;height:600px">
       <ins class="adsbygoogle"
         style="display:inline-block;width:300px;height:600px"
-        data-ad-client="ca-pub-2388056053538220"
+        data-ad-client="ca-pub-3638495999842466"
         data-ad-slot="1334768690"></ins>
     </div>`
   );

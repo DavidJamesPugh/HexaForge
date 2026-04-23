@@ -51,11 +51,11 @@ export default class MainUi {
         this.setupFocusChecker();
 
         // Google Ads
-        // if (this.play.getGame().getIsPremium()) {
-        //     console.info("MainUi: Premium version, skipping loading ads");
-        //  } else {
-        //     GoogleAdsUi();
-        //  }
+        if (this.play.getGame().getIsPremium()) {
+            console.info("MainUi: Premium version, skipping loading ads");
+         } else {
+            GoogleAdsUi();
+         }
 
         // Key press listener
         window.addEventListener("keypress", (e) => {
