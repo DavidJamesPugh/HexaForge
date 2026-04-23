@@ -20,7 +20,7 @@ export default function GoogleAdsUi() {
       <ins class="adsbygoogle"
         style="display:inline-block;width:320px;height:100px"
         data-ad-client="ca-pub-3638495999842466"
-        data-ad-slot="4288235097"></ins>
+        data-ad-slot="8895924371"></ins>
     </div>`
   );
 
@@ -30,7 +30,7 @@ export default function GoogleAdsUi() {
       <ins class="adsbygoogle"
         style="display:inline-block;width:728px;height:90px"
         data-ad-client="ca-pub-3638495999842466"
-        data-ad-slot="2811501890"></ins>
+        data-ad-slot="3835169385"></ins>
     </div>`
   );
 
@@ -40,7 +40,7 @@ export default function GoogleAdsUi() {
       <ins class="adsbygoogle"
         style="display:inline-block;width:300px;height:600px"
         data-ad-client="ca-pub-3638495999842466"
-        data-ad-slot="1334768690"></ins>
+        data-ad-slot="8374014348"></ins>
     </div>`
   );
 
