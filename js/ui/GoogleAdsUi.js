@@ -63,8 +63,7 @@ export default function GoogleAdsUi() {
   });
 
   // Initialize ads
-  window.adsbygoogle = window.adsbygoogle || [];
-  window.adsbygoogle.push({});
-  window.adsbygoogle.push({});
-  window.adsbygoogle.push({});
+  (adsbygoogle = window.adsbygoogle || []).push({});
+  (adsbygoogle = window.adsbygoogle || []).push({});
+  (adsbygoogle = window.adsbygoogle || []).push({});
 }
